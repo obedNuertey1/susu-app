@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import SusuNavBar from './components/SusuNavBar/SusuNavBar'
+import SusuFooter from './components/SusuFooter/SusuFooter'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
       <SusuNavBar />
         {children}
+      <SusuFooter />
         </body>
     </html>
   )
