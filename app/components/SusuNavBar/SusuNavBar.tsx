@@ -32,7 +32,7 @@ const SusuNavBar = () => {
                 </button>
             </div>
         </div>
-        <div className='mb-16'></div>
+        {/* <div className='mb-16'></div> */}
     </>
   )
 }
