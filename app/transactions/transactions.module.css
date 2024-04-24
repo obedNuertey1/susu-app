@@ -1,0 +1,23 @@
+.scaleDown{
+    transform-origin: 50% 50%;
+    transform: scale(0.75);
+    opacity: 0;
+}
+
+.showUpAnime{
+    transform-origin: 50% 50%;
+    transform: scale(0.75);
+    opacity: 0;
+    animation: showUp 1s ease-in 0s 1 forwards none;
+}
+
+@keyframes showUp {
+    0%{
+        opacity: 0;
+        transform: scale(0.75);
+    }
+    100%{
+        opacity: 1;
+        transform: scale(1);
+    }
+}

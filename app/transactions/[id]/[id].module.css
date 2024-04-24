@@ -1,0 +1,6 @@
+@media screen and (max-height:720px ){
+    .scaleDown{
+        transform-origin: 50% 50%;
+        transform: scale(0.9); 
+    }
+}
