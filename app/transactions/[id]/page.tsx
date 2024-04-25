@@ -13,11 +13,13 @@ function MakeTransaction({params, searchParams}: {params: {slug: string}, search
     console.log(searchParams)
   return (
     <>
-      <div className='hidden sm:block sm:fixed sm:w-full sm:h-screen'>
-        <Image src={blackAfroGirl} alt='black afro girl' className='w-80 absolute right-24 top-auto bottom-auto'/>
-        <Image src={blackGuyWhiteGirl} alt='black guy with white girl' className='w-2/5 left-2 top-0 bottom-0 absolute'/>
+      <div className='hidden sm:block sm:fixed sm:w-full sm:h-screen -z-50'>
+        <Image src={blackAfroGirl} alt='black afro girl' className='w-1/4 absolute right-24 top-1/3 bottom-0'/>
+        <Image src={blackGuyWhiteGirl} alt='black guy with white girl' className='w-2/5 left-2 top-1/3 bottom-0 absolute'/>
       </div>
-      <div className={`flex flex-col justify-center items-center w-full h-screen  lg:h-screen lg:mt-24 lg:mb-4 mt-16 md:mt-0 mb-4 md:mb-0 ${styles.scaleDown}`}>
+      <div className='navbar'></div>
+      <div className='navbar hidden lg:block'></div>
+      <div className={`flex flex-col justify-center items-center w-full h-screen  lg:h-screen lg:mb-4 mb-4 md:mb-0 ${styles.scaleDown}`}>
           <div className='flex flex-col gap-1 justify-center items-center'>
             <h1 className='block text-3xl font-extrabold'>Make A Transaction</h1>
             <div className='w-30 h-30 rounded-full'>

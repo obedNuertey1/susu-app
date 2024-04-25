@@ -242,8 +242,8 @@ function Borrowers() {
 
   return (
     <>
-        <div className='flex flex-col gap-3 w-full justify-center items-center fixed left-0 right-0 top-11 pt-8 pb-1 bg-white z-20'>
-            <div className='flex flex-row justify-between w-full px-5'>
+        <div className='flex flex-col gap-3 w-full justify-center items-center fixed left-0 right-0 top-11 pt-8 pb-1 bg-base-100 z-20'>
+            <div className='flex flex-row justify-between w-full px-5 bg-base-100'>
                 <Link href="/transactions" className='shadow-md h-16 w-16 bg-orangered text-white rounded-full self-start justify-self-start flex flex-col justify-center items-center hover:contrast-75 active:scale-95'>
                     <FontAwesomeIcon icon={faMailReply} className='w-5 h-5' />
                     <span className='text-xs font-semibold truncate'>Go Back</span>
@@ -253,9 +253,9 @@ function Borrowers() {
             </div>
             <div className='join scale-75 sm:scale-75'>
                 <label className="tooltip tooltip-top join-item border border-gray-300 flex items-center px-2 py-1 outline-none focus:outline-offset-0 focus:outline-none" data-tip={`Search for an \n item in the table`}>
-                    <input type="text" className="grow outline-none focus:outline-none focus:outline-offset-0" placeholder="Search" />
+                    <input type="text" className="grow outline-none focus:outline-none bg-base-100 focus:outline-offset-0" placeholder="Search" />
                 </label>
-                <div className="btn join-item">
+                <div className="btn join-item bg-base-100">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" /></svg>
                 </div>
                 <div className='tooltip tooltip-top ' data-tip={`Pick a keyword to search`}>
@@ -305,7 +305,7 @@ function Borrowers() {
                     <div className="join">
                         <button className="join-item btn active:bg-project-blue tooltip tooltip-top" data-tip="Previous Page">«</button>
                         <div className='tooltip tooltip-top' data-tip="Enter a page number">
-                            <input id='page-input' className="tooltip tooltip-top join-item text-center w-16 py-3 border-y border-y-gray-300 sm:border-y-gray-300 focus:outline-none grow" value={2} data-tip={`Enter a page number`} />
+                            <input id='page-input' className="tooltip tooltip-top join-item text-center w-16 py-3 border-y btn focus:outline-none grow" value={2} data-tip={`Enter a page number`} />
                         </div>
                         <button className="join-item btn active:bg-project-blue tooltip tooltip-top" data-tip="Next Page">»</button>
                     </div>

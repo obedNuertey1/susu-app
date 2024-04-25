@@ -1,0 +1,17 @@
+@media screen and (max-height:720px ){
+    .scaleDown{
+        transform-origin: 50% 50%;
+        transform: scale(0.9); 
+    }
+}
+
+@media screen and (max-width: 365px){
+    .top{
+        top: 5rem;
+    }
+}
+@media screen and (max-width: 350px){
+    .top{
+        top: 1rem;
+    }
+}

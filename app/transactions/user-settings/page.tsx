@@ -1,8 +1,8 @@
-import { faGears, faMailReply } from '@fortawesome/free-solid-svg-icons'
+import { faGears, faMailReply, faUserGear } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
 import React from 'react'
-import styles from "./system-settings.module.css";
+import styles from "./user-settings.module.css";
 import girlEngineer from "../../assets/Groupengineering-girl.svg"
 import Image from 'next/image';
 
@@ -10,7 +10,7 @@ export default function page() {
   return (
     <>
       <div className='hidden sm:block sm:fixed sm:w-full sm:h-screen'>
-      <Image src={girlEngineer} alt='black afro girl' className='w-80 absolute right-4 lg:right-24 top-1/3 bottom-0'/>
+        <Image src={girlEngineer} alt='black afro girl' className='w-80 absolute right-4 lg:right-24 top-1/3 bottom-0'/>
         <Image src={girlEngineer} alt='black guy with white girl' className='w-80 left-4 lg:left-24 top-1/3 bottom-0 absolute transfrom scale-x-[-1]'/>
       </div>
       <div className='navbar'></div>
@@ -25,9 +25,9 @@ export default function page() {
             <div className='h-16 w-16'></div>
         </div>
         <div className='flex flex-col gap-1 justify-center items-center'>
-            <h1 className='block text-3xl font-extrabold'>System Settings</h1>
-            <div className='w-30 h-30 rounded-full p-2 shadow-md'>
-              <FontAwesomeIcon className='object-cover text-lg text-inherit w-16 h-16' icon={faGears} />
+            <h1 className='block text-3xl font-extrabold'>User Settings</h1>
+            <div className='w-30 h-30 rounded-full p-3 shadow-md'>
+              <FontAwesomeIcon className='object-cover text-inherit w-14 h-14' icon={faUserGear} />
             </div>
           </div>
           <div className="card  w-full max-w-sm shadow-2xl bg-base-100 sm:scale-90">

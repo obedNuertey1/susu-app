@@ -21,3 +21,8 @@
         transform: scale(1);
     }
 }
+
+.smallText{
+    font-size: 0.6rem;
+    line-height: 0.6rem;
+}
