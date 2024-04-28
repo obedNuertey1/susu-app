@@ -182,6 +182,7 @@ const Register = () => {
     console.log("status=",status);
   }, [username, usernameCheckText, usernameWarnColor]);
 
+  // git branch fix/username-in-database
 
   return (
     <>
@@ -207,7 +208,7 @@ const Register = () => {
               // @ts-ignore
               warnColor={usernameWarnColor}
               queryStatus={status}
-              queryData={data}
+              queryData={data} 
               refetchInputData={refetch}
               />
               <InputField isRequired={true} placeholder='Enter your email address' ref={emailRef} inputText={setEmail} inputTextValue={email} inputTypeValue='email' labelText='Email:' />
