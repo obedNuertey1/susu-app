@@ -6,7 +6,7 @@ const SusuNavBar = () => {
     <>
         <div className="navbar bg-base-100 fixed top-0 z-40">
             <div className="navbar-start">
-                <div className="drawer">
+                <div className="drawer inline">
                     <input id="my-drawer" type="checkbox" className="drawer-toggle" />
                     <div className="drawer-content">
                         <label htmlFor='my-drawer' className="btn btn-circle bg-base-100 swap swap-rotate">
@@ -34,7 +34,7 @@ const SusuNavBar = () => {
                     </div>
                 </div>
                 </div>
-                <h1 className="btn bg-transparent border-none shadow-none text-lg hover:bg-transparent active:scale-100 hover:cursor-default min-w-fit text-nowrap">MSys</h1>
+                <h1 className="btn bg-transparent border-none shadow-none text-lg hover:bg-transparent active:scale-100 hover:cursor-default min-w-fit text-nowrap">MSys Consult</h1>
             <div className="navbar-end">
             <label className="swap swap-rotate">
                 

@@ -265,7 +265,7 @@ function Borrowers() {
                         <option value='val2' className='text-xs'>val2</option>
                     </select>
                 </div>
-                <div className='px-3 border-y border-r  text-gray-700 w-9 join-item flex flex-row justify-center text-center items-center'>
+                <div className='px-3 border-y border-r  w-9 join-item flex flex-row justify-center text-center items-center'>
                     <FontAwesomeIcon icon={faFilter} className="" />
                 </div>
             </div>
