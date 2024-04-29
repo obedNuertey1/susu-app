@@ -1,13 +1,13 @@
 'use client';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { Dispatch, SetStateAction, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { FC, Dispatch, SetStateAction, forwardRef, useImperativeHandle, useState } from 'react';
 
 export type inputType = "text" | "password" | "email" | "number" | "range" | "file" | "submit";
 export type warnColorType = "text-red-600" | "text-red-400" | "text-cyan-600" | "text-yellow-500" | "text-green-500" | "";
 export type warnTextType = "Very Weak" | 'Weak' | 'Moderate' | 'Strong' | 'Very Strong' | '';
 export type passwordMatchType = "Password don't Match" | "Password Matches" | "";
-export type usernameTextType = "Already taken" | "All good" | "Bad Network";
+export type usernameTextType = "Already taken" | "All good" | "Bad Network" | "";
 export type queryStatusType =  "idle" | "error" | "loading" | "success" | "";
 export type queryDataType = {
   verify: Boolean;
@@ -59,17 +59,15 @@ const InputField = forwardRef((props:IinputField<string>, ref:any)=>{
                   <span className={`label-text-alt`} style={{display:(danger)?"hidden":""}}>{
                     danger && (
                         (()=>{
-                          console.log("danger=",danger)
-                          console.log("queryStatus=",queryStatus);
-                          console.log("queryData=",queryData);
                           if(queryStatus == "success"){
                             if(queryData?.verify === true){
                               return <span className={`${warnColor}`}>{usernameCheckText}</span>;
                             }else if(queryData?.verify === false){
                               return <span className={`${warnColor}`}>{usernameCheckText}</span>
                             }
+                          }else{
+                            return <span><span>Verifying</span><span className="loading loading-ring loading-xs"></span></span>;
                           }
-                          return <span><span>Verifying</span><span className="loading loading-ring loading-xs"></span></span>;
                         })()
                     )
                   }</span> :

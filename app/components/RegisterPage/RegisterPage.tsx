@@ -40,24 +40,18 @@ const Register = () => {
   const [passwordWarnColor, setPasswordWarnColor] = useState("");
   const [password2WarnText, setPassword2WarnText] = useState("");
   const [password2WarnColor, setPassword2WarnColor] = useState("");
-  const [usernameCheckText, setUsernameCheckText] = useState("");
-  const [usernameWarnColor, setUsernameWarnColor] = useState("");
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef();
   const password2Ref = useRef(null);
+  const successRef = useRef(null);
+  const loadingRef = useRef(null);
+  const goodRef = useRef(null);
+  const takenRef = useRef(null);
 
-  const {status, data, refetch} = useQuery([username, ""], getData);
+  const {status, data} = useQuery([username], getData);
 
 
-  // getData({queryKey: "djeks"})
-// "text-red-600" | "text-red-400" | "text-cyan-600" | "text-yellow-500" | "text-green-500" | "";
-// "Very Weak" | 'Weak' | 'Moderate' | 'Strong' | 'Very Strong';
-// export type passwordMatchType = "Password don't Match" | "Password Matches" | "";
-
-  // useLayoutEffect(()=>{
-  // },[password])
-  
   // @ts-ignore
   useEffect(()=>{
     (async ()=>{ // For first password field
@@ -68,9 +62,6 @@ const Register = () => {
         setPasswordWarnText(checkPasswordStrength(password));
         setPasswordWarnColor(str);
       }
-      
-      // let myTimer;
-      // clearTimeout(myTimer);
       
       switch(checkPasswordStrength(password)){
         case 'Very Weak':
@@ -96,8 +87,6 @@ const Register = () => {
         default:
           passCheckTextAndColor("", "");
       }
-      // await waiting(4000);
-      // myTimer = await waiting(10000);
       if(password.length < 1){
         // @ts-ignore
         passwordRef?.current?.hideWarn();
@@ -113,22 +102,14 @@ const Register = () => {
         setPassword2WarnText(word);
         setPassword2WarnColor(str);
       }
-  
-      // let myTimer:any;
-      // clearTimeout(myTimer);
       
       if(password2.length > 1){
         if(password2 !== password){
           correctPassTextAndColor("text-red-600", "Password don't Match");
         }else if(password2 === password){
           correctPassTextAndColor("text-green-500", "Password Matches");
-          // myTimer = await waiting(2000);
-            // @ts-ignore
-            // password2Ref.current?.hideWarn();
         }else{
           correctPassTextAndColor("", "");
-          // @ts-ignore
-          // password2Ref.current?.hideWarn();
         }
       }else if(password2.length === 0){
         // @ts-ignore
@@ -136,54 +117,48 @@ const Register = () => {
       }
 
     })();
-    
-    
-    // const 
   }, [password2, password])
-  
-  
-  
-  useEffect(()=>{
-    (async (data:any)=>{
-      // console.log("data=",data)
+
+  const verifying = async (data:any)=>{
+
+    if(username.length > 0){
+      console.log("status=",status);
       // @ts-ignore
-      usernameRef.current?.showWarn();
-      // refetch();
-      if(username.length > 0){
-        if(status === "success"){
-          if(data?.verify === true){
-            setUsernameWarnColor("text-green-500");
-            setUsernameCheckText("All good");
-          }else if(data?.verify === false){
-            // @ts-ignore
-            usernameRef.current?.showWarn();
-            setUsernameWarnColor("text-red-600");
-            setUsernameCheckText("Already taken");
-          }
-    
-        }else if(status === "error" || status === "idle"){
-          // @ts-ignore
-          usernameRef.current?.showWarn();
-          setUsernameWarnColor("text-red-600");
-          setUsernameCheckText("Bad Network");
-        }
-      }
-    
-      if(username.length < 1){
+      console.log('successRef.current.classList.contains("hidden")=',successRef.current.classList.contains("hidden"))
+      // @ts-ignore
+      usernameRef.current.classList.remove("hidden");
+      if(status == "success"){
         // @ts-ignore
-        usernameRef.current?.hideWarn();
-        setUsernameCheckText("");
+        if(successRef.current.classList.contains("hidden") == true){
+          // @ts-ignore
+          successRef.current.classList.remove("hidden");
+          // @ts-ignore
+          loadingRef.current.classList.add("hidden");
+        }
+        if(data?.verify === true){
+          // @ts-ignore
+          goodRef.current.classList.remove("hidden");
+          // @ts-ignore
+          takenRef.current.classList.add("hidden");
+        }else if(data?.verify === false){
+          // @ts-ignore
+          takenRef.current.classList.remove("hidden");
+          // @ts-ignore
+          goodRef.current.classList.add("hidden");
+        }
+      }else{
+        // @ts-ignore
+        loadingRef.current.classList.remove("hidden");
+        // @ts-ignore
+        successRef.current.classList.add("hidden");
       }
-    })(data);
-
-    if(status==="loading"){
-      refetch();
+    }else{
+      // @ts-ignore
+      usernameRef.current?.classList.add("hidden");
     }
-    console.log("status=",status);
-  }, [username, usernameCheckText, usernameWarnColor]);
-
+  }
   // git branch fix/username-in-database
-
+  verifying(data);
   return (
     <>
       <div className='navbar'></div>
@@ -194,23 +169,30 @@ const Register = () => {
               <h2 className='text-center text-2xl font-extrabold'>Register</h2>
             </div>
             <form className='w-full'>
-              <InputField 
-              isRequired={true} 
-              placeholder='Choose a username' 
-              ref={usernameRef} 
-              inputText={setUsername} 
-              inputTextValue={username} 
-              inputTypeValue='text' 
-              labelText='Username:'
-              isRegisterUsername={true}
-              // @ts-ignore
-              usernameCheckText={usernameCheckText}
-              // @ts-ignore
-              warnColor={usernameWarnColor}
-              queryStatus={status}
-              queryData={data} 
-              refetchInputData={refetch}
-              />
+              <div className='flex items-center justify-center'>
+                  <label className="form-control w-full max-w-xs">
+                    <div className="label">
+                      <span className="label-text">Username:</span>
+                      <span className="label-text-alt hidden" ref={usernameRef}>
+                        <span className='is-loading hidden' ref={loadingRef} >
+                          <span>Verifying<span className="loading loading-ring loading-xs"></span></span>
+                        </span>
+                        <span className='is-success hidden' ref={successRef}>
+                          <span className="text-green-500 hidden" ref={goodRef}>All good</span>
+                          <span className="text-red-600 hidden" ref={takenRef}>Already taken</span>
+                        </span>
+                      </span>
+                    </div>
+                    <input type="text" 
+                    value={username} 
+                    onChange={(e)=>{
+                      setUsername(e.target.value);
+                    }} 
+                    placeholder="Choose a username" 
+                    className="input input-bordered w-full max-w-xs"
+                    />
+                </label>
+              </div>
               <InputField isRequired={true} placeholder='Enter your email address' ref={emailRef} inputText={setEmail} inputTextValue={email} inputTypeValue='email' labelText='Email:' />
               <InputField isRequired={true} placeholder='Enter your password' ref={passwordRef} inputText={setPassword} inputTextValue={password} inputTypeValue='password' labelText='Password:'
               // @ts-ignore 
@@ -231,7 +213,7 @@ const Register = () => {
               warnColor={password2WarnColor}
               queryStatus={status}
               />
-              <button type='submit' {...(usernameCheckText == "All good")?{disabled: false}:{disabled: true}} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
+              <button type='submit' {...(data?.verify === true)?{disabled: false}:{disabled: true}} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
             </form>
             <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/login"}>Login instead?</Link></span></p>
           </div>
