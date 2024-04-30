@@ -136,7 +136,7 @@ interface Itabledata{
 }
 
 function BorrowersPage() {
-    const [pageNum, setPageNum] = useState(0);
+    const [pageNum, setPageNum] = useState(1);
     const [searchByFilter, setSearchByFilter] = useState("");
     const [searchSpace, setSearchSpace] = useState("");
     const [searchByFilterValue, setSearchByFilterValue] = useState("");
@@ -146,10 +146,11 @@ function BorrowersPage() {
     const loadRef = useRef(null);
     const refreshRef = useRef(null);
     const noDataRef = useRef(null);
-
     let tableData:any = [];
     let fieldNames:any = [];
     let searchBy:any = [];
+
+    console.log("process.env.REACT_FIREBASE_APIKEY=",process.env.REACT_FIREBASE_APIKEY)
 
     type stateType = "display data" | "no data" | "loading" | "refresh";
 
@@ -193,6 +194,7 @@ function BorrowersPage() {
         }
     }
 
+
     const dataDisplayOperations = ()=>{
         try{
             if(status === "success"){
@@ -203,6 +205,7 @@ function BorrowersPage() {
                     dataDisplayStates("no data");
                     // @ts-ignore
                 }else if(data[2] > 0){
+                    // @ts-ignore
                    dataDisplayStates('display data');
                 // @ts-ignore
                 if(data[0] !== undefined || data[0] !== null || Boolean(data[0]) === true){
@@ -274,10 +277,8 @@ function BorrowersPage() {
                 }else{
                     dataDisplayStates("loading");
                 }
-            }else if(status === "loading"){
+            }else if(status === "loading" || status == "error" || status == "idle"){
                 dataDisplayStates("loading");
-            }else if(status == "error" || status == "idle"){
-                 dataDisplayStates("refresh");
             }else{
                 dataDisplayStates("no data");
             }
