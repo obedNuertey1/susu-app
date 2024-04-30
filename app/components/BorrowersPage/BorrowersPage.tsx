@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter, faMailForward, faMailReply} from "@fortawesome/free-solid-svg-icons";
 import Link from 'next/link';
@@ -98,7 +98,7 @@ async function getData(key:any){
           });
       }
 
-      const obj3 = chunk(obj2, 3);
+      const obj3 = chunk([...obj2, ...obj2, ...obj2, ...obj2, ...obj2], 1);
 
       const keysAndEntries = [Object?.keys(obj0[0]), obj3[key?.queryKey[0]], obj3.length];
       return keysAndEntries;
@@ -136,7 +136,7 @@ interface Itabledata{
 }
 
 function BorrowersPage() {
-    const [pageNum, setPageNum] = useState(1);
+    const [pageNum, setPageNum] = useState(0);
     const [searchByFilter, setSearchByFilter] = useState("");
     const [searchSpace, setSearchSpace] = useState("");
     const [searchByFilterValue, setSearchByFilterValue] = useState("");
@@ -146,185 +146,6 @@ function BorrowersPage() {
     const loadRef = useRef(null);
     const refreshRef = useRef(null);
     const noDataRef = useRef(null);
-
-    const tableArr:ItableArr[] = [
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-        {
-            name: "Cy Ganderton",
-            job: "Quality Control Specialist",
-            location: "Canada",
-            "Last Login": "12/16/2020",
-            "Favorite Color": "Blue",
-            company: "Littel, Schaden and Vandervort"
-        },
-    ];
 
     let tableData:any = [];
     let fieldNames:any = [];
@@ -484,6 +305,14 @@ function BorrowersPage() {
         }
     }
 
+    useLayoutEffect(()=>{
+        try{
+            // @ts-ignore
+            if(data[2] > 1 && pageNum == 0){
+                setPageNum(1);
+            }
+        }catch(e){}
+    },[pageNum]);
 
   return (
     <>
@@ -582,15 +411,13 @@ function BorrowersPage() {
                                 (e)=>{
                                     try{
                                         // @ts-ignore
-                                        if(Number(e.target.value) > data[2]){
-                                            // @ts-ignore
-                                            setPageNum(Number(data[2]))
-                                        }else if(Number(e.target.value) < 1){
-                                            setPageNum(1);
-                                        }else if(isNaN(Number(e.target.value))){
-                                            // setPageNum(1);
-                                        }else{
+                                        if(!isNaN(Number(e.target.value)) && Number(e.target.value) < data[2]){
                                             setPageNum(Number(e.target.value));
+                                        }
+                                        // @ts-ignore
+                                        if(!isNaN(Number(e.target.value)) && Number(e.target.value) > data[2]){
+                                            // @ts-ignore
+                                            setPageNum(data[2])
                                         }
                                     }catch(e){
                                         // console.log(e);
