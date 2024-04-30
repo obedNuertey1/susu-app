@@ -5,7 +5,7 @@ import businessIcon from "../../assets/business-deal-london-200-ico.svg";
 import Image from 'next/image';
 import blackAfroGirl from "../../assets/black-afro-girl.svg";
 import blackGuyWhiteGirl from "../../assets/black-guy-and-white-girl.svg";
-import styles from "./[id].module.css"
+import styles from "./[id].module.css";
 
 function MakeTransaction({params, searchParams}: {params: {slug: string}, searchParams?:{[key: string]:string|string[]|undefined},}) {
     const {id}:any = params;

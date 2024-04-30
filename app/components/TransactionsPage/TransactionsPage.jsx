@@ -1,38 +1,29 @@
 'use client';
 import React, {useState, useEffect} from 'react'
-import LoginAvatar from '../../components/LoginAvatar/LoginAvatar'
 import illustration_1 from "../../assets/Groupinfo-graph-1.svg"
 import illustration_2 from "../../assets/Groupinfo-graph-2.svg"
 import Image from 'next/image'
 import styles from './transactions.module.css';
 import './transactions.css'
-import {Animated} from "react-animated-css";
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserCircle, faPeopleGroup, faGears, faUserGear, faHandHoldingDollar } from '@fortawesome/free-solid-svg-icons';
-import {useQuery, QueryClient, QueryClientProvider} from 'react-query';
-import waiting from '@/app/funcs/waiting';
-
-// import { Lato } from 'next/font/google'
-
-// const lato = Lato({ subsets: ['latin'], weight: ["700"], style: ["normal"] });
+import {faPeopleGroup, faGears, faUserGear, faHandHoldingDollar } from '@fortawesome/free-solid-svg-icons';
+import {useQuery} from 'react-query';
 
 async function getData(key){
   try{
     const res = await fetch("https://jsonplaceholder.typicode.com/todos/1");
-    await waiting(4000);
     if(!res.ok){
       throw new Error("Network response was not ok");
     }
 
-    // console.log(key);
     const resData = await res.json();
   if(key?.queryKey[0] !== resData?.title){
     return {verify: false};
   }else{
     return {verify: true};
   }
-    // return resData;
+ 
   }catch(e){
     console.error(e);
   }
@@ -41,22 +32,7 @@ async function getData(key){
 export default function TransactionsPage() {
   const [accountNum, setAccountNum] = useState("");
   const {status, data} = useQuery([accountNum], getData);
-  const [linkDisabled, setLinkDisabled] = useState(true);
-
-  console.log(data);
-  useEffect(()=>{   
-    (async (data)=>{
-      if(data?.verify === true){
-        setLinkDisabled(false);
-        await waiting(5000);
-      }else{
-        setLinkDisabled(true);
-        await waiting(5000);
-      }
-    })(data);
-
-  },[accountNum]);
-
+ 
   const scaleDown = {
     transformOrigin: "50% 50%",
     transform: "scale(0.9)",
@@ -142,10 +118,10 @@ export default function TransactionsPage() {
                     required />
                   </div>
                   <div className="form-control mt-6">
-                    <Link role='button' href={`/transactions/[id]/?name=Obed+Nuertey&age=22&favorite=14`} as={`/transactions/${encodeURI(accountNum)}/?name=Obed+Nuertey&age=22&favorite=14`} className={`btn btn-primary ${(linkDisabled?"btn-disabled cursor-not-allowed":"")}`}>
+                    <Link role='button' href={`/transactions/[id]/?name=Obed+Nuertey&age=22&favorite=14`} as={`/transactions/${encodeURI(accountNum)}/?name=Obed+Nuertey&age=22&favorite=14`} className={`btn btn-primary ${(!(data?.verify === true)?"btn-disabled cursor-not-allowed":"")}`}>
                       {
                         (accountNum.length === 0)?"No Acc. No.":
-                        (status === "loading" | status === "idle")
+                        (status === "loading" || status === "idle")
                         ?<>Verifying<span className="loading loading-dots loading-xs -ml-1"></span></>
                         :(status === "error")?"Error":
                         (data?.verify === true)?"Next":"Invalid Acc. No."
@@ -157,30 +133,6 @@ export default function TransactionsPage() {
             </div>
             <div className='card w-full max-w-screen-md flex flex-row gap-3 flex-wrap justify-center items-center sm:gap-7'>
               {buttons}
-              {/* <div className='tooltip tooltip-bottom' data-tip="system settings page">
-                <Link href="/transactions/system-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
-                  <div className='flex flex-col justify-center items-center origin-center scale-90'>
-                    <FontAwesomeIcon icon={faGears} className='w-7 h-7' />
-                    <span className={`${styles.smallText} font-semibold text-wrap line`}>System Settings</span>
-                  </div>
-                </Link>
-              </div> */}
-              {/* <div className='tooltip tooltip-bottom' data-tip="user settings page" >
-                <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
-                  <div className='flex flex-col justify-center items-center origin-center scale-90'>
-                    <FontAwesomeIcon icon={faUserGear} className='w-7 h-7' />
-                    <span className={`${styles.smallText} font-semibold text-wrap line`}> <span style={{display: "block"}}>User</span> Settings</span>
-                  </div>
-                </Link>
-              </div> */}
-              {/* <div className='tooltip tooltip-bottom' data-tip="borrowers page">
-                <Link href="/transactions/borrowers" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
-                  <div className='flex flex-col justify-center items-center origin-center scale-90'>
-                    <FontAwesomeIcon icon={faHandHoldingDollar} className='w-7 h-7' />
-                    <span className={`${styles.smallText} font-semibold text-wrap line`}>Borrowers</span>
-                  </div>
-                </Link>
-              </div> */}
             </div>
           </div>
       </div>

@@ -40,3 +40,9 @@
         transform: translateX(0px);
     }
 }
+
+@media screen and (max-width: 361px){
+    .smallScreenSize{
+        transform: scale(0.65);
+    }
+}
