@@ -1,3 +1,4 @@
+"use client";
 import { faGears, faMailReply } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
@@ -5,8 +6,15 @@ import React from 'react'
 import styles from "./system-settings.module.css";
 import girlEngineer from "../../assets/Groupengineering-girl.svg"
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
 
 export default function SystemSettingsPage() {
+  const router = useRouter();
+  const {currentUser}:any = useAuth();
+  if(!currentUser){
+    return router.push("/login");
+  }
   return (
     <>
       <div className='hidden sm:block sm:fixed sm:w-full sm:h-screen'>

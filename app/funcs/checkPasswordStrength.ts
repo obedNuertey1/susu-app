@@ -1,3 +1,4 @@
+
 function checkPasswordStrength(password:string):string {
     const passReg1 = /[A-Z]/;
     const passReg2 = /[a-z]/;

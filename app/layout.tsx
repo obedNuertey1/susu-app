@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import SusuNavBar from './components/SusuNavBar/SusuNavBar'
 import SusuFooter from './components/SusuFooter/SusuFooter'
+import { AuthProvider } from './contexts/AuthContext'
+import { RedirectContextProvider } from './contexts/RedirectContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,8 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-      <SusuNavBar />
-        {children}
+        <AuthProvider>
+          <RedirectContextProvider>
+          <SusuNavBar />
+            {children}
+          </RedirectContextProvider>
+        </AuthProvider>
       <SusuFooter />
         </body>
     </html>

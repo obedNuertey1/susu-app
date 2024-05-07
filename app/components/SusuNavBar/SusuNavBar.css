@@ -1,0 +1,32 @@
+.scrollUp{
+    transform: translateY(0%);
+    opacity: 1;
+    animation: moveUp 0.4s linear 0s 1 forwards normal;
+}
+
+@keyframes moveUp {
+    0%{
+        transform: translateY(0%);
+        opacity: 1;
+    }
+    100%{
+        transform: translateY(-100%);
+        opacity: 1;
+    }
+}
+.scrollDown{
+    transform: translateY(-100%);
+    opacity: 0;
+    animation: moveDown 0.4s linear 0s 1 forwards normal;
+}
+
+@keyframes moveDown {
+    0%{
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}

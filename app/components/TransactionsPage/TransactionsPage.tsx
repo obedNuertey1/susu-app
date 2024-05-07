@@ -9,16 +9,21 @@ import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faPeopleGroup, faGears, faUserGear, faHandHoldingDollar } from '@fortawesome/free-solid-svg-icons';
 import {useQuery} from 'react-query';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
+import waiting from '@/app/funcs/waiting';
 
-async function getData(key){
+async function getData(key:any){
   try{
-    const res = await fetch("https://jsonplaceholder.typicode.com/todos/1");
+    await waiting(3000);
+    const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${key?.queryKey[0]}`);
     if(!res.ok){
       throw new Error("Network response was not ok");
     }
 
     const resData = await res.json();
-  if(key?.queryKey[0] !== resData?.title){
+
+  if(resData.hasOwnProperty("id") != true){
     return {verify: false};
   }else{
     return {verify: true};
@@ -30,6 +35,11 @@ async function getData(key){
 }
 
 export default function TransactionsPage() {
+  const router = useRouter();
+  const {currentUser}:any = useAuth();
+  if(!currentUser){
+    return router.push("/login");
+  }
   const [accountNum, setAccountNum] = useState("");
   const {status, data} = useQuery([accountNum], getData);
  
@@ -118,7 +128,7 @@ export default function TransactionsPage() {
                     required />
                   </div>
                   <div className="form-control mt-6">
-                    <Link role='button' href={`/transactions/[id]/?name=Obed+Nuertey&age=22&favorite=14`} as={`/transactions/${encodeURI(accountNum)}/?name=Obed+Nuertey&age=22&favorite=14`} className={`btn btn-primary ${(!(data?.verify === true)?"btn-disabled cursor-not-allowed":"")}`}>
+                    <Link role='button' href={`/transactions/[id]/?name=Obed+Nuertey&age=22&favorite=14`} as={`/transactions/${encodeURI(accountNum)}`} className={`btn btn-primary ${(!(data?.verify === true)?"btn-disabled cursor-not-allowed":"")}`}>
                       {
                         (accountNum.length === 0)?"No Acc. No.":
                         (status === "loading" || status === "idle")

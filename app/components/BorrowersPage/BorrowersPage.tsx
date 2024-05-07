@@ -7,141 +7,44 @@ import styles from "./borrowers.module.css";
 import "./borrowers.css";
 import { useQuery } from 'react-query';
 import { chunk } from 'lodash';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
 
 async function getData(key:any){
     try{
-      const res = await fetch(`https://jsonplaceholder.typicode.com/users`);
-      if(!res.ok){
-        throw new Error("Network response was not ok");
-      }
-  
-      const obj1 = await res.json();
-      const obj0 = obj1.map((elem:any)=>{
-        return {
-            "id": elem.id,
-            "name": elem.name,
-            "username": elem.username,
-            "email": elem.email,
-            "address street": elem.address.street,
-            "address suite": elem.address.suite,
-            "address city": elem.address.city,
-            "address zipcode": elem.address.zipcode,
-            "address geo lat": elem.address.geo.lat,
-            "address geo lng": elem.address.geo.lng,
-            "phone": elem.phone,
-            "website": elem.website,
-            "company name": elem.company.name,
-            "company catchPhrase": elem.company.catchPhrase,
-            "company bs": elem.company.bs
-        }
-      });
-      let obj2 = obj1.map((elem:any)=>{
-        return {
-            "id": elem.id,
-            "name": elem.name,
-            "username": elem.username,
-            "email": elem.email,
-            "address street": elem.address.street,
-            "address suite": elem.address.suite,
-            "address city": elem.address.city,
-            "address zipcode": elem.address.zipcode,
-            "address geo lat": elem.address.geo.lat,
-            "address geo lng": elem.address.geo.lng,
-            "phone": elem.phone,
-            "website": elem.website,
-            "company name": elem.company.name,
-            "company catchPhrase": elem.company.catchPhrase,
-            "company bs": elem.company.bs
-        }
-      });
-
-      if(key?.queryKey[1] === "" && key?.queryKey[2] !== ""){
-        obj2 = obj2.filter((elem:any)=>(
-            String(elem.id).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem.name).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem.username).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem.email).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["address street"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["address suite"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["address city"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["address zipcode"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["address geo lat"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["address geo lng"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem.phone).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem.website).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["company name"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["company catchPhrase"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["company catchPhrase"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase()) ||
-            String(elem["company bs"]).toLowerCase().includes((key?.queryKey[2]).toLowerCase())
-        ))
-      }else if(key?.queryKey[1] !== "" && key?.queryKey[2] !== ""){
-        obj2 = obj2.filter((elem:any)=>(String(elem[`${key?.queryKey[1]}`]).toLowerCase().includes((key?.queryKey[2]).toLowerCase())))
-      }else{
-        obj2 = obj1.map((elem:any)=>{
-            return {
-                "id": elem.id,
-                "name": elem.name,
-                "username": elem.username,
-                "email": elem.email,
-                "address street": elem.address.street,
-                "address suite": elem.address.suite,
-                "address city": elem.address.city,
-                "address zipcode": elem.address.zipcode,
-                "address geo lat": elem.address.geo.lat,
-                "address geo lng": elem.address.geo.lng,
-                "phone": elem.phone,
-                "website": elem.website,
-                "company name": elem.company.name,
-                "company catchPhrase": elem.company.catchPhrase,
-                "company bs": elem.company.bs
-            }
-          });
-      }
-
-      const obj3 = chunk([...obj2, ...obj2, ...obj2, ...obj2, ...obj2], 1);
-
-      const keysAndEntries = [Object?.keys(obj0[0]), obj3[key?.queryKey[0]], obj3.length];
-      return keysAndEntries;
+        console.log("key");
+        console.log(key)
+        const res2 = await Promise.all([fetch(`${process.env.REACT_SERVER_API}/borrowers?fields=true`), fetch(`${process.env.REACT_SERVER_API}/borrowers/alldata/?pageIndex=${key?.queryKey[0]}&rowsPerPage=20&searchKey=${key?.queryKey[1]}&searchQuery=${key?.queryKey[2]}`)]);
+        if(res2[0].ok == false || res2[1].ok == false){throw new Error("Network response was not ok")}
+        const res2data = await Promise.allSettled([res2[0].json(), res2[1].json()]);
+        //   @ts-ignore
+        const fields = res2data[0]?.value;
+        //   @ts-ignore
+        const pages = res2data[1]?.value.pages;
+        //   @ts-ignore
+        const queryResult = res2data[1]?.value.queryResult;
+        console.log("__________QueryResult____________");
+        console.log(queryResult)
+        return[fields, queryResult, pages];
    
     }catch(e){
       console.error(e);
     }
 }
 
-interface ItableArr {
-    name: String;
-    job: String;
-    company: String;
-    location: String;
-    "Last Login": String;
-    "Favorite Color": String;
-}
-
-interface Itabledata{
-    id: string;
-    name: string;
-    username: string;
-    email: string;
-    "address street": string;
-    "address suite": string;
-    "address city": string;
-    "address zipcode": string;
-    "address geo lat": string;
-    "address geo lng": string;
-    phone: string;
-    website: string;
-    "company name": string;
-    "company catchPhrase": string;
-    "company bs": string;
-}
 
 function BorrowersPage() {
+    const router = useRouter();
+    const {currentUser}:any = useAuth();
+    if(!currentUser){
+      return router.push("/login");
+    }
     const [pageNum, setPageNum] = useState(1);
     const [searchByFilter, setSearchByFilter] = useState("");
     const [searchSpace, setSearchSpace] = useState("");
     const [searchByFilterValue, setSearchByFilterValue] = useState("");
     const [searchSpaceValue, setSearchSpaceValue] = useState("");
-    const {status, data, refetch} = useQuery([pageNum-1, searchByFilterValue, searchSpaceValue], getData);
+    const {status, data, refetch} = useQuery([pageNum, searchByFilterValue, searchSpaceValue], getData);
     const tableRef = useRef(null);
     const loadRef = useRef(null);
     const refreshRef = useRef(null);
@@ -149,8 +52,26 @@ function BorrowersPage() {
     let tableData:any = [];
     let fieldNames:any = [];
     let searchBy:any = [];
+    const [searchByField, setSearchByField] = useState<string[]>([]);
 
-    console.log("process.env.REACT_FIREBASE_APIKEY=",process.env.REACT_FIREBASE_APIKEY)
+
+    useEffect(()=>{
+        getFieldData();
+
+        return ()=>{}
+    }, []);
+
+    const getFieldData = async ()=>{
+        try{
+            const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers?fields=true`);
+            if(!res.ok) throw new Error("Failed to fetch data");
+            const data = await res.json();
+            // console.log("_________data_________");
+            // console.log(data);
+            setSearchByField(data);
+        }catch{}
+    };
+
 
     type stateType = "display data" | "no data" | "loading" | "refresh";
 
@@ -199,7 +120,7 @@ function BorrowersPage() {
         try{
             if(status === "success"){
                 // @ts-ignore
-                searchBy = data[0]?.map((elem)=>{return <option value={elem} className='text-xs'>{elem}</option>})
+                searchBy = searchByField.map((elem)=>{return <option value={elem} className='text-xs'>{elem}</option>})
                 // @ts-ignore
                 if(data[2] == 0){
                     dataDisplayStates("no data");
@@ -222,24 +143,12 @@ function BorrowersPage() {
                                 transform: `translateX(200px)`,
                                 animation: `fadeInRight 0.1s linear ${0.1*i}s 1 forwards`
                             }
+
+                            let fieldVals = Object.values(elem).map((elem2:any)=><td>{elem2}</td>);
                             return (
                                 <tr style={{...translateRight, ...animateFadeInRight}}>
                                     <th>{i+1}</th> 
-                                    <td>{elem.id}</td> 
-                                    <td>{elem.name}</td> 
-                                    <td>{elem.username}</td> 
-                                    <td>{elem.email}</td> 
-                                    <td>{elem['address street']}</td> 
-                                    <td>{elem['address suite']}</td>
-                                    <td>{elem['address city']}</td>
-                                    <td>{elem['address zipcode']}</td>
-                                    <td>{elem['address geo lat']}</td>
-                                    <td>{elem['address geo lng']}</td>
-                                    <td>{elem.phone}</td>
-                                    <td>{elem.website}</td>
-                                    <td>{elem['company name']}</td>
-                                    <td>{elem['company catchPhrase']}</td>
-                                    <td>{elem['company bs']}</td>
+                                    {fieldVals}
                                 </tr>
                             );
                         }else{
@@ -251,24 +160,11 @@ function BorrowersPage() {
                                 transform: "translateX(-200px)",
                                 animation: `fadeInLeft 0.1s linear ${0.1*i}s 1 forwards`
                             }
+                            let fieldVals = Object.values(elem).map((elem2:any)=><td>{elem2}</td>);
                             return (
                                 <tr style={{...translateLeft, ...animateFadeInLeft}}>
-                                    <th>{i+1}</th> 
-                                    <td>{elem.id}</td> 
-                                    <td>{elem.name}</td> 
-                                    <td>{elem.username}</td> 
-                                    <td>{elem.email}</td> 
-                                    <td>{elem['address street']}</td> 
-                                    <td>{elem['address suite']}</td>
-                                    <td>{elem['address city']}</td>
-                                    <td>{elem['address zipcode']}</td>
-                                    <td>{elem['address geo lat']}</td>
-                                    <td>{elem['address geo lng']}</td>
-                                    <td>{elem.phone}</td>
-                                    <td>{elem.website}</td>
-                                    <td>{elem['company name']}</td>
-                                    <td>{elem['company catchPhrase']}</td>
-                                    <td>{elem['company bs']}</td>
+                                    <th>{i+1}</th>
+                                    {fieldVals}
                                 </tr>
                             );
                         }

@@ -7,12 +7,26 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import {useRouter} from 'next/navigation';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import waiting from '@/app/funcs/waiting';
+import { useRedirectContext } from '@/app/contexts/RedirectContext';
 
-const LoginPage = () => {
+
+const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchParams?:{[key: string]:string|string[]|undefined},}) => {
   const router = useRouter();
+  const {redirectHashId}:any = useRedirectContext();
   const redirectToTransactionsPage = () => {
     router.push("/transactions")
   };
+  const redirectToLoginPage = (hashId:string, query:any)=>{
+    const {usingEmail, hashInfo} = query;
+    if(hashId !== hashInfo || usingEmail != true){
+      router.push("/login");
+    }
+  }
+  redirectToLoginPage(redirectHashId, searchParams);
+  // Generate a v4 UUID
+  // ?usingEmail=true&hashInfo=${emailHash}
+
+  
   const warnRef = useRef(null);
   const warnRef2 = useRef(null);
   const [password, setPassword] = useState<string>("");
@@ -85,22 +99,23 @@ const LoginPage = () => {
           </div>
         </>
         }
-        <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 '>
+        <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 pb-6 flex flex-col gap-4 '>
 
             <div className='w-full mb-6'>
               <LoginAvatar />
-              <h2 className='text-center text-2xl font-extrabold'>Login</h2>
+              <h2 className='text-center text-xl font-extrabold'>Re-Login</h2>
+              <p className='text-center text-sm'>:With new password</p>
             </div>
             <form className='w-full' onSubmit={handleSubmit}>
               <InputField isRequired={true} placeholder='Enter your username' ref={warnRef2} inputText={setUsername} inputTextValue={username} inputTypeValue='text' labelText='Username:' />
-              <InputField passwordMatchText="Password don't Match" isRequired={true} placeholder='Enter your password' ref={warnRef} inputText={setPassword} inputTextValue={password} inputTypeValue='password' labelText='Password:' showPassword={true} />
+              <InputField passwordMatchText="Password don't Match" isRequired={true} placeholder='Enter your new password' ref={warnRef} inputText={setPassword} inputTextValue={password} inputTypeValue='password' labelText='New Password:' showPassword={true} />
               <button type='submit' {...(loading?({disabled:true}):({disabled:false}))} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
             </form>
-            <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/register"}>Register instead?</Link></span></p>
+            {/* <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/register"}>Register instead?</Link></span></p> */}
           </div>
       </div>
     </>
   )
 }
 
-export default LoginPage;
+export default ReLoginPage;
