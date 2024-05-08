@@ -75,6 +75,9 @@ const LoginPage = () => {
 
     }catch{
       setRegisterError("Failed to Login");
+      await waiting(4000);
+      setRegisterError("");
+      setLoading(false);
     }
 
   }

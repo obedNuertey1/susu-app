@@ -12,9 +12,10 @@ import waiting from '@/app/funcs/waiting';
 import InputField, { passwordMatchType } from '../InputField/InputField';
 import { warnTextType, warnColorType } from '../InputField/InputField';
 import checkPasswordStrength from '@/app/funcs/checkPasswordStrength';
-import {deleteUser, getAuth, updatePassword} from "firebase/auth";
+import {deleteUser, getAuth, updatePassword, reauthenticateWithCredential, AuthCredential} from "firebase/auth";
 import { useRedirectContext } from '@/app/contexts/RedirectContext';
 import {SHA256} from 'crypto-js';
+import generateRandomText from '@/app/funcs/generateRandomText';
 
 /*
 CREATE TABLE `user` (
@@ -42,6 +43,8 @@ export default function UserSettingsPage() {
     return router.push("/login");
   }
 
+  const auth2 = getAuth();
+
   const {setRedirectHashId, redirectHashId}:any = useRedirectContext();
 
   const [phone, setPhone] = useState<string>("");
@@ -68,6 +71,17 @@ export default function UserSettingsPage() {
 
 
   const [emailState, setEmailState] = useState<string>("");
+
+  const [deleteButtonDisabled, setDeleteButtonDisabled] = useState<boolean>(true);
+  const [randomText, setRandomText] = useState<string>("");
+  const [deleteInput, setDeleteInput] = useState<string>("");
+  const deleteInputRef = useRef<HTMLInputElement>(null);
+  const randomTextRef = useRef<HTMLSpanElement>(null);
+  const deleteDialogueRef = useRef<HTMLDialogElement>(null);
+
+  const [deletePasswordInput, setDeletePasswordInput] = useState<string>("");
+  const deletePasswordRef = useRef(null);
+
 
   useEffect(()=>{
     (async ()=>{
@@ -228,44 +242,43 @@ export default function UserSettingsPage() {
       setEmailState(currentUser.email);
       // delete current user from firebase
       console.log("emailState=",emailState);
-      const res1 = await Promise.allSettled([updatePassword(currentUser, password)]);
-      if(!res1[0]){
-        passwordModalRef?.current?.close();
-        setErrorMessage("Failed To Update Password Server");
-        await waiting(4000);
-        setErrorMessage("");
-        setEmailState(''); setPassword(''); setPassword2('');
-        return;
-      }
-      // update user password on server
-      const res = await fetch(`${process.env.REACT_SERVER_API}/users/email`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': "application/json"
-        },
-        body:JSON.stringify({
-          email: emailState,
-          password: password
+      await updatePassword(currentUser, password).then(async (value:any)=>{
+        const res = await fetch(`${process.env.REACT_SERVER_API}/users/email`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': "application/json"
+          },
+          body:JSON.stringify({
+            email: emailState,
+            password: password
+          })
         })
-      })
-      if(!res.ok){
+        if(!res.ok){
+          passwordModalRef?.current?.close();
+          setErrorMessage("Failed To Update Password Server");
+          await waiting(4000);
+          setErrorMessage("");
+          setEmailState(''); setPassword(''); setPassword2('');
+          return;
+        }
+        const emailHash:string = SHA256(emailState).toString();
+        setRedirectHashId(emailHash);
+        // clear state fields
+        setEmailState(''); setPassword(''); setPassword2('');
+        // close modal
         passwordModalRef?.current?.close();
-        setErrorMessage("Failed To Update Password Server");
+        setSuccessMessage("Password Updated: You'll be redirected to login again");
+        await waiting(5000);
+        // move to relogin page
+        router.push(`/relogin?usingEmail=true&hashInfo=${emailHash}`);
+      }).catch(async ()=>{
+        passwordModalRef?.current?.close();
+        setErrorMessage("Failed To Update Password");
+        setEmailState(''); setPassword(''); setPassword2('');
         await waiting(4000);
         setErrorMessage("");
-        setEmailState(''); setPassword(''); setPassword2('');
-        return;
-      }
-      const emailHash:string = SHA256(emailState).toString();
-      setRedirectHashId(emailHash);
-      // clear state fields
-      setEmailState(''); setPassword(''); setPassword2('');
-      // close modal
-      passwordModalRef?.current?.close();
-      setSuccessMessage("Password Updated: You'll be redirected to login again");
-      await waiting(5000);
-      // move to relogin page
-      router.push(`/relogin?usingEmail=true&hashInfo=${emailHash}`);
+      });
+
     }catch{
       passwordModalRef?.current?.close();
       setErrorMessage("Failed To Update Password");
@@ -275,6 +288,85 @@ export default function UserSettingsPage() {
     }
   }
   
+  useEffect(()=>{//For delete input effects
+    try{
+        if(deleteInput === randomText && deletePasswordInput.length >= 1){
+          deleteInputRef.current?.classList.remove("text-gray-900");
+          deleteInputRef.current?.classList.add("text-error");
+          randomTextRef.current?.classList.remove("text-gray-900");
+          randomTextRef.current?.classList.add("text-error");
+          setDeleteButtonDisabled(false);
+        }else{
+          setDeleteButtonDisabled(true);
+          if(!deleteInputRef.current?.classList.contains("text-gray-900")){
+            deleteInputRef.current?.classList.add("text-gray-900");
+          }
+          if(!randomTextRef.current?.classList.contains("text-gray-900")){
+            randomTextRef.current?.classList.add("text-gray-900");
+          }
+        }
+    }catch(e){
+      console.error(e)
+    }
+
+    return ()=>{}
+  },[deleteInput, deletePasswordInput]);
+
+  const handleDeleteAcc = async (e:any) => {
+    e.preventDefault();
+    if(!(deleteInput === randomText)){
+      setErrorMessage("Failed to delete account - !(deleteInput === randomText)");
+      deleteDialogueRef.current?.close();
+      await waiting(4000);
+      setErrorMessage("");
+      setDeleteInput('');
+      return;
+    }
+
+    try{
+      const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`, {method: 'DELETE'});
+      if(!res.ok){
+        setErrorMessage("Failed to delete account - !res.ok");
+        deleteDialogueRef.current?.close();
+        await waiting(4000);
+        setErrorMessage("");
+        setDeleteInput('');
+        return;
+      }
+      const auth = getAuth();
+      const user:any = auth?.currentUser;
+      // @ts-ignore
+      deleteUser(user).then(()=>{
+        (async()=>{
+          setSuccessMessage("You've deleted your account succesfully");
+          deleteDialogueRef.current?.close();
+          await waiting(4000);
+          setSuccessMessage('');
+          setDeleteInput('');
+          router.push("/login");
+          return;
+        })();
+      }).catch(()=>{
+        (async ()=>{
+          setErrorMessage(`You will need to login again to delete account`);
+          setDeleteInput('');
+          deleteDialogueRef.current?.close();
+          await waiting(4000);
+          setErrorMessage("");
+          router.push("/login");
+          logout();
+          return;
+        })();
+      })
+
+    }catch{
+      setErrorMessage("Failed to delete account - try-catch");
+      setDeleteInput('');
+      deleteDialogueRef.current?.close();
+      await waiting(4000);
+      setErrorMessage("");
+    }
+  };
 
   return (
     <>
@@ -411,16 +503,31 @@ export default function UserSettingsPage() {
                       <div className="form-control">
                         {/* Open the modal using document.getElementById('ID').showModal() method */}
                         {/* @ts-ignore */}
-                        <button role='button' className="btn btn-outline btn-error" onClick={(e)=>{e.preventDefault(); document.getElementById('my_modal_1').showModal()}}>Delete Account</button>
-                        <dialog id="my_modal_1" className="modal">
-                          <div className="modal-box">
-                            <h3 className="font-bold text-lg">Hello!</h3>
-                            <p className="py-4">Press ESC key or click the button below to close</p>
-                            <div className="modal-action">
-                              <form method="dialog">
-                                {/* if there is a button in form, it will close the modal */}
-                                <button className="btn">Close</button>
-                              </form>
+                        <button role='button' className="btn btn-outline btn-error" onClick={(e)=>{e.preventDefault(); setRandomText(`${currentUser.email}${generateRandomText(6)}`); document.getElementById('my_modal_2').showModal()}}>Delete Account</button>
+                        <dialog id="my_modal_2" className="modal" ref={deleteDialogueRef}>
+                        <div className="modal-box bg-red-200">
+                            <div className="card">
+                              <div className="card-title flex flex-col justify-center items-center gap-1">
+                                <h3 className="font-bold text-lg text-error">Delete Account</h3>
+                                <p className="text-base text-error">Are you sure you want to delete your account?</p>
+                              </div>
+                              <div className="modal-action w-full">
+                                <form className='card-body w-full flex flex-col justify-center items-stretch gap-2' method="dialog">
+                                  <p className='text-base text-center text-gray-900'>Enter the text to match the pattern below</p>
+                                  <p className='text-base text-center text-gray-900'>pattern: <span className='text-gray-900' ref={randomTextRef}>{randomText}</span></p>
+                                    <div className='flex flex-col gap-3 items-center justify-center'>
+                                      {/*  */}
+                                      <input ref={deleteInputRef} type="text" placeholder="Type here" value={deleteInput} onChange={(e)=>setDeleteInput(e.target.value)} className="input bg-red-100 input-bordered w-full max-w-xs input-error text-gray-900" />
+                                      {/* @ts-ignore */}
+                                      <input ref={deletePasswordRef} type="password" placeholder="Type password here" value={deletePasswordInput} onChange={(e)=>setDeletePasswordInput(e.target.value)} className="input bg-red-100 input-bordered w-full max-w-xs input-error text-gray-900" />
+                                    </div>
+                                    <div className="card-actions flex flex-row items-center justify-center flex-wrap mt-[3%]">
+                                      <button onClick={handleDeleteAcc}  {...(deleteButtonDisabled?{disabled:true}:{disabled:false})} className="btn btn-outline btn-error self-center w-[35%]">Delete</button>
+                                      {/* @ts-ignore */}
+                                      <button onClick={(e)=>{e.preventDefault(); setDeletePasswordInput(""); setDeleteInput(""); document.getElementById('my_modal_2').close()}}  className="btn btn-outline self-center w-[35%]">Cancel</button>
+                                    </div>
+                                </form>
+                              </div>
                             </div>
                           </div>
                         </dialog>

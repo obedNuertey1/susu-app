@@ -8,6 +8,7 @@ import { useQuery } from 'react-query';
 import { useAuth } from '@/app/contexts/AuthContext';
 import {useRouter} from 'next/navigation';
 import waiting from '@/app/funcs/waiting';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 
 async function getData(key:any){
@@ -181,29 +182,48 @@ const Register = () => {
     try{
       setRegisterError('');
       setLoading(true);
-      const res = await fetch(`${process.env.REACT_SERVER_API}/users`, {
-        method: "Post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          name
-        })
-      });
-      if(!res.ok){
-        setRegisterError('Failed to Register');
-        await waiting(3000);
-        setRegisterError('');
-        throw new Error("Failed to Register")
-      }
+      
       await signup(email, password);
-      setLoading(false);
-      router.push("/transactions")
+
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user)=>{
+        if(user){
+          (async ()=>{
+            const res = await fetch(`${process.env.REACT_SERVER_API}/users`, {
+              method: "Post",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                username,
+                email,
+                password,
+                name
+              })
+            });
+            if(!res.ok){
+              setRegisterError('Failed to Register');
+              await waiting(3000);
+              setRegisterError('');
+              throw new Error("Failed to Register")
+            }
+            setLoading(false);
+            router.push("/transactions")
+          })();
+        }else{
+          (async ()=>{
+            setRegisterError("Failed to Register");
+            setUsername(''); setEmail(''); setName(''); setPassword(''), setPassword2(''); setLoading(false);
+            await waiting(4000);
+            setRegisterError('');
+          })();
+        }
+      })
     }catch{
       setRegisterError("Failed to Register");
+      setUsername(''); setEmail(''); setName(''); setPassword(''), setPassword2(''); setLoading(false);
+      await waiting(4000);
+      setRegisterError('');
     }
 
   }
