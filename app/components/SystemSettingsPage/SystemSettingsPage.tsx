@@ -37,30 +37,6 @@ export default function SystemSettingsPage() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
 
-  const [password, setPassword] = useState<string>("");
-  const [passwordWarnText, setPasswordWarnText] = useState<string>("");
-  const [passwordWarnColor, setPasswordWarnColor] = useState<warnColorType>("");
-  const passwordRef = useRef(null);
-
-  const [password2, setPassword2] = useState<string>("");
-  const [password2WarnText, setPassword2WarnText] = useState<string>("");
-  const [password2WarnColor, setPassword2WarnColor] = useState<warnColorType>("");
-  const password2Ref = useRef(null);
-  const passwordModalRef = useRef<HTMLDialogElement>(null);
-
-
-  const [emailState, setEmailState] = useState<string>("");
-
-  const [deleteButtonDisabled, setDeleteButtonDisabled] = useState<boolean>(true);
-  const [randomText, setRandomText] = useState<string>("");
-  const [deleteInput, setDeleteInput] = useState<string>("");
-  const deleteInputRef = useRef<HTMLInputElement>(null);
-  const randomTextRef = useRef<HTMLSpanElement>(null);
-  const deleteDialogueRef = useRef<HTMLDialogElement>(null);
-
-  const [deletePasswordInput, setDeletePasswordInput] = useState<string>("");
-  const deletePasswordRef = useRef(null);
-
 
   useEffect(()=>{
     (async ()=>{
@@ -83,72 +59,6 @@ export default function SystemSettingsPage() {
     return ()=>{}
   },[])
 
-    // @ts-ignore
-    useEffect(()=>{
-      (async ()=>{ // For first password field
-        
-        function passCheckTextAndColor(str:warnColorType, password:warnTextType):void{
-          // @ts-ignore
-          passwordRef.current.showWarn();
-          setPasswordWarnText(checkPasswordStrength(password));
-          setPasswordWarnColor(str);
-        }
-        
-        switch(checkPasswordStrength(password)){
-          case 'Very Weak':
-            // @ts-ignore
-            passCheckTextAndColor('text-red-600', password);
-            break;
-          case 'Weak':
-            // @ts-ignore
-            passCheckTextAndColor('text-red-400', password);
-            break;
-          case 'Moderate':
-            // @ts-ignore
-            passCheckTextAndColor('text-cyan-600', password);
-            break;
-          case 'Strong':
-            // @ts-ignore
-            passCheckTextAndColor('text-yellow-500', password);
-            break;
-          case 'Very Strong':
-            // @ts-ignore
-            passCheckTextAndColor('text-green-500', password);
-            break;
-          default:
-            passCheckTextAndColor("", "");
-        }
-        if(password.length < 1){
-          // @ts-ignore
-          passwordRef?.current?.hideWarn();
-  
-        }
-      })();
-  
-      (async ()=>{ // For password2 field
-    
-        function correctPassTextAndColor(str:warnColorType, word:passwordMatchType):void{
-          // @ts-ignore
-          password2Ref.current.showWarn();
-          setPassword2WarnText(word);
-          setPassword2WarnColor(str);
-        }
-        
-        if(password2.length > 1){
-          if(password2 !== password){
-            correctPassTextAndColor("text-red-600", "Password don't Match");
-          }else if(password2 === password){
-            correctPassTextAndColor("text-green-500", "Password Matches");
-          }else{
-            correctPassTextAndColor("", "");
-          }
-        }else if(password2.length === 0){
-          // @ts-ignore
-          password2Ref.current?.hideWarn();
-        }
-  
-      })();
-    }, [password2, password])
 
   const handleSubmit = async(e:any)=>{
     e.preventDefault();
@@ -165,7 +75,7 @@ export default function SystemSettingsPage() {
       const res1Data = await res1.json();
       console.log("res1Data.userid");
       console.log(res1Data.userid);
-      const res = await fetch(`${process.env.REACT_SERVER_API}/users/${res1Data.userid}`, {
+      const res = await fetch(`${process.env.REACT_SERVER_API}/system_settings/${res1Data.userid}`, {
         method: "PATCH",
         headers: {
           'Content-Type': "application/json"
@@ -200,97 +110,7 @@ export default function SystemSettingsPage() {
     }
   };
 
-  const handleChangePassword = async (e:any)=>{
-    e.preventDefault();
-    if(password !== password2){
-      setPassword(''); setPassword2('');
-      passwordModalRef?.current?.close();
-      setErrorMessage("Passwords don't match");
-      await waiting(5000);
-      setErrorMessage("");
-      return;
-    }
-
-    if(password == "" || password2 == ""){
-      passwordModalRef?.current?.close();
-      return
-    }
-    // ### Algorithm ####
-    try{
-      // store current user email in a emailState
-      setEmailState(currentUser.email);
-      // delete current user from firebase
-      console.log("emailState=",emailState);
-      await updatePassword(currentUser, password).then(async (value:any)=>{
-        const res = await fetch(`${process.env.REACT_SERVER_API}/users/email`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': "application/json"
-          },
-          body:JSON.stringify({
-            email: emailState,
-            password: password
-          })
-        })
-        if(!res.ok){
-          passwordModalRef?.current?.close();
-          setErrorMessage("Failed To Update Password Server");
-          await waiting(4000);
-          setErrorMessage("");
-          setEmailState(''); setPassword(''); setPassword2('');
-          return;
-        }
-        const emailHash:string = SHA256(emailState).toString();
-        setRedirectHashId(emailHash);
-        // clear state fields
-        setEmailState(''); setPassword(''); setPassword2('');
-        // close modal
-        passwordModalRef?.current?.close();
-        setSuccessMessage("Password Updated: You'll be redirected to login again");
-        await waiting(5000);
-        // move to relogin page
-        router.push(`/relogin?usingEmail=true&hashInfo=${emailHash}`);
-      }).catch(async ()=>{
-        passwordModalRef?.current?.close();
-        setErrorMessage("Failed To Update Password");
-        setEmailState(''); setPassword(''); setPassword2('');
-        await waiting(4000);
-        setErrorMessage("");
-      });
-
-    }catch{
-      passwordModalRef?.current?.close();
-      setErrorMessage("Failed To Update Password");
-      setEmailState(''); setPassword(''); setPassword2('');
-      await waiting(4000);
-      setErrorMessage("");
-    }
-  }
-  
-  useEffect(()=>{//For delete input effects
-    try{
-        if(deleteInput === randomText && deletePasswordInput.length >= 1){
-          deleteInputRef.current?.classList.remove("text-gray-900");
-          deleteInputRef.current?.classList.add("text-error");
-          randomTextRef.current?.classList.remove("text-gray-900");
-          randomTextRef.current?.classList.add("text-error");
-          setDeleteButtonDisabled(false);
-        }else{
-          setDeleteButtonDisabled(true);
-          if(!deleteInputRef.current?.classList.contains("text-gray-900")){
-            deleteInputRef.current?.classList.add("text-gray-900");
-          }
-          if(!randomTextRef.current?.classList.contains("text-gray-900")){
-            randomTextRef.current?.classList.add("text-gray-900");
-          }
-        }
-    }catch(e){
-      console.error(e)
-    }
-
-    return ()=>{}
-  },[deleteInput, deletePasswordInput]);
-
+ 
   
   return (
     <>
