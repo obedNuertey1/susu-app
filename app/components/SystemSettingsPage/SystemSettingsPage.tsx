@@ -291,62 +291,7 @@ export default function SystemSettingsPage() {
     return ()=>{}
   },[deleteInput, deletePasswordInput]);
 
-  const handleDeleteAcc = async (e:any) => {
-    e.preventDefault();
-    if(!(deleteInput === randomText)){
-      setErrorMessage("Failed to delete account - !(deleteInput === randomText)");
-      deleteDialogueRef.current?.close();
-      await waiting(4000);
-      setErrorMessage("");
-      setDeleteInput('');
-      return;
-    }
-
-    try{
-      const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`, {method: 'DELETE'});
-      if(!res.ok){
-        setErrorMessage("Failed to delete account - !res.ok");
-        deleteDialogueRef.current?.close();
-        await waiting(4000);
-        setErrorMessage("");
-        setDeleteInput('');
-        return;
-      }
-      const auth = getAuth();
-      const user:any = auth?.currentUser;
-      // @ts-ignore
-      deleteUser(user).then(()=>{
-        (async()=>{
-          setSuccessMessage("You've deleted your account succesfully");
-          deleteDialogueRef.current?.close();
-          await waiting(4000);
-          setSuccessMessage('');
-          setDeleteInput('');
-          router.push("/login");
-          return;
-        })();
-      }).catch(()=>{
-        (async ()=>{
-          setErrorMessage(`You will need to login again to delete account`);
-          setDeleteInput('');
-          deleteDialogueRef.current?.close();
-          await waiting(4000);
-          setErrorMessage("");
-          router.push("/login");
-          logout();
-          return;
-        })();
-      })
-
-    }catch{
-      setErrorMessage("Failed to delete account - try-catch");
-      setDeleteInput('');
-      deleteDialogueRef.current?.close();
-      await waiting(4000);
-      setErrorMessage("");
-    }
-  };
-
+  
   return (
     <>
         {
