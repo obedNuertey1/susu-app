@@ -12,13 +12,12 @@ import waiting from '@/app/funcs/waiting';
 
 async function getData(key:any){
   try{
-    const res = await fetch("https://jsonplaceholder.typicode.com/todos/1", {});
+    const res = await fetch(`${process.env.REACT_SERVER_API}/users/username/${key.queryKey[0]}`);
     if(!res.ok){
       throw new Error("Network response was not ok");
     }
     const resData = await res.json();
-    
-    if(key?.queryKey[0] === resData?.title){
+    if(resData[0] != null){
       // await waiting(20000);
       return {verify: false};
     }else{

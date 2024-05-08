@@ -37,7 +37,7 @@ CREATE TABLE `user` (
 
 export default function UserSettingsPage() {
   const router = useRouter();
-  const {currentUser, signup}:any = useAuth();
+  const {currentUser, signup, logout}:any = useAuth();
   if(!currentUser){ // Go to login page if user has not logged in.
     return router.push("/login");
   }
@@ -217,6 +217,11 @@ export default function UserSettingsPage() {
       setErrorMessage("");
       return;
     }
+
+    if(password == "" || password2 == ""){
+      passwordModalRef?.current?.close();
+      return
+    }
     // ### Algorithm ####
     try{
       // store current user email in a emailState
@@ -251,8 +256,8 @@ export default function UserSettingsPage() {
         setEmailState(''); setPassword(''); setPassword2('');
         return;
       }
-      // recreate a new user on firebase auth
       const emailHash:string = SHA256(emailState).toString();
+      setRedirectHashId(emailHash);
       // clear state fields
       setEmailState(''); setPassword(''); setPassword2('');
       // close modal
@@ -294,7 +299,7 @@ export default function UserSettingsPage() {
       <div className={`navbar hidden ${styles.pushUp}`}></div>
       <div className='navbar lg:hidden xl:block'></div>
       <div className={`relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px] `}>
-          <div className="card py-5  w-full max-w-sm sm:max-w-lg shadow-2xl bg-base-100 sm:scale-90">
+          <div className="card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90">
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>User Settings</h1>
                 <div className='w-30 h-30 rounded-full p-3 shadow-md'>

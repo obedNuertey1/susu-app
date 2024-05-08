@@ -5,7 +5,7 @@ import LoginAvatar from '../../components/LoginAvatar/LoginAvatar'
 import InputField from '../../components/InputField/InputField'
 import { useAuth } from '@/app/contexts/AuthContext';
 import {useRouter} from 'next/navigation';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import waiting from '@/app/funcs/waiting';
 
 const LoginPage = () => {
@@ -22,7 +22,7 @@ const LoginPage = () => {
   
 
 
-  const {login, currentUser}:any = useAuth();
+  const {login, currentUser, setCurrentUser}:any = useAuth();
   const auth = getAuth();
 
   const handleSubmit = async (e:any)=>{
@@ -40,7 +40,7 @@ const LoginPage = () => {
         throw new Error("Failed to log in")
       }
       const data = await res.json();
-      const {email} = data;
+      const {email} = data[0];
       await login(email, password);
       onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -49,17 +49,22 @@ const LoginPage = () => {
           
           setLoading(false);
           redirectToTransactionsPage();
-
+          
           // ...
         } else {
           // User is signed out
-          setPassword("");
-          setUsername("");
-          setLoading(false);
-          return;
+          (async()=>{
+            setPassword("");
+            setUsername("");
+            setRegisterError('Failed to log in');
+            await waiting(4000);
+            setRegisterError('');
+            setLoading(false);
+          })();
           // ...
         }
       });
+      return;
       // await fetch("api_key", {
       //   method: "Post",
       //   headers: {

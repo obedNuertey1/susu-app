@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import LoginAvatar from '../../components/LoginAvatar/LoginAvatar'
 import InputField from '../../components/InputField/InputField'
 import { useAuth } from '@/app/contexts/AuthContext';
@@ -12,17 +12,23 @@ import { useRedirectContext } from '@/app/contexts/RedirectContext';
 
 const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchParams?:{[key: string]:string|string[]|undefined},}) => {
   const router = useRouter();
+  const {login, currentUser, logout}:any = useAuth();
+  useEffect(()=>{
+    logout();
+    return ()=>{}
+  },[])
   const {redirectHashId}:any = useRedirectContext();
   const redirectToTransactionsPage = () => {
     router.push("/transactions")
   };
-  const redirectToLoginPage = (hashId:string, query:any)=>{
-    const {usingEmail, hashInfo} = query;
-    if(hashId !== hashInfo || usingEmail != true){
+
+  const redirectionToLoginPage = ()=>{
+    waiting(4000);
+    if(!(redirectHashId == searchParams?.hashInfo)){
       router.push("/login");
     }
   }
-  redirectToLoginPage(redirectHashId, searchParams);
+  redirectionToLoginPage();
   // Generate a v4 UUID
   // ?usingEmail=true&hashInfo=${emailHash}
 
@@ -34,9 +40,6 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
   const [loading, setLoading] = useState<boolean>(false);
   const [registerError, setRegisterError] = useState<string>("");
   
-
-
-  const {login, currentUser}:any = useAuth();
   const auth = getAuth();
 
   const handleSubmit = async (e:any)=>{
@@ -54,7 +57,7 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
         throw new Error("Failed to log in")
       }
       const data = await res.json();
-      const {email} = data;
+      const {email} = data[0];
       await login(email, password);
       onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -67,23 +70,23 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
           // ...
         } else {
           // User is signed out
-          setPassword("");
-          setUsername("");
-          setLoading(false);
+          (async()=>{
+            setPassword("");
+            setUsername("");
+            setRegisterError('Failed to log in');
+            await waiting(4000);
+            setRegisterError('');
+            setLoading(false);
+          })();
           return;
           // ...
         }
       });
-      // await fetch("api_key", {
-      //   method: "Post",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     body: JSON.stringify({})
-      //   }
-      // }); 
 
     }catch{
       setRegisterError("Failed to Login");
+      await waiting(4000);
+      setRegisterError('');
     }
 
   }
