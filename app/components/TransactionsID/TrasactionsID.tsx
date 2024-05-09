@@ -120,14 +120,16 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
       </div>
       <div className='navbar'></div>
       {/* <div className='navbar sm:hidden'></div> */}
-      <div className={`flex flex-col justify-center items-center w-full h-[120%] sm:h-fit sm:-mb-[5%] md:mb-[0%] ${styles.scaleDown}`}>
+      {/* <div className={`flex flex-col justify-center items-center w-full h-[120%] sm:h-fit sm:-mb-[5%] md:mb-[0%] ${styles.scaleDown}`}> */}
+      <div className='relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px]'>
           <div className='flex flex-col gap-1 justify-center items-center'>
             <h1 className='block text-3xl font-extrabold'>Make A Transaction</h1>
             <div className='w-30 h-30 rounded-full'>
               <Image className='object-cover' src={businessIcon} alt='business image' />
             </div>
           </div>
-          <div className="card  w-full max-w-sm shadow-2xl bg-base-100 sm:scale-90">
+          {/* <div className="card  w-full max-w-sm shadow-2xl bg-base-100 sm:scale-90"> */}
+          <div className='card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90'>
                 <form className="card-body" onSubmit={handleSubmit}>
                   <div className="form-control">
                     <label className="label" htmlFor='account-num'>
