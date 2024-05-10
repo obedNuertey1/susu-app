@@ -9,28 +9,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 import waiting from '@/app/funcs/waiting';
-import { timeStamp } from 'console';
-// import { getAuth} from 'firebase/auth';
-// import { useRedirectContext } from '@/app/contexts/RedirectContext';
-
-/*
- sysid       Int    @id @default(autoincrement())
-  title       String @db.VarChar(200)
-  name        String @db.VarChar(200)
-  footer      String @db.Text
-  abb         String @db.VarChar(200)
-  fax         String @db.Text
-  currency    String @db.Text
-  website     String @db.Text
-  mobile      String @db.Text
-  image       String @db.VarChar(200)
-  address     String @db.Text
-  email       String @db.Text
-  map         String @db.Text
-  stamp       String @db.VarChar(350)
-  timezone    String @db.Text
-  sms_charges String @db.VarChar(200)
-*/
+import { imageRepo, imagesRef } from '@/app/firebase/firebase.config';
+import { StorageReference, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
+import { useImagesContext } from '@/app/contexts/ImagesContext';
 
 export default function SystemSettingsPage() {
   const router = useRouter();
@@ -39,6 +20,8 @@ export default function SystemSettingsPage() {
     return router.push("/login");
   }
 
+  // const {systemImageUrl,uploadFile}:any = useImagesContext();
+
   const [sysid, setSysid] = useState<string>("");
   const [title, setTitle] = useState<string>(""); //<-system-info
   const [name, setName] = useState<string>(""); //<-system-info
@@ -46,7 +29,7 @@ export default function SystemSettingsPage() {
   const [abb, setAbb] = useState<string>(""); //<-system-info
   const [currency, setCurrency] = useState<string>(""); //<-system-info
   const [image, setImage] = useState<string>(""); //<-system-info
-  const [addImage, setAddImage] = useState(null);
+  const [addImage, setAddImage] = useState<Blob | Uint8Array | ArrayBuffer>();
   const [sms_charges, setSms_charges] = useState<string>("");//<-system-info
   const [fax, setFax] = useState<string>("");  //<- Contact
   const [website, setWebsite] = useState<string>("");  //<- Contact
@@ -58,10 +41,13 @@ export default function SystemSettingsPage() {
   const [timezone, setTimezone] = useState<string>(""); //<- Time
 
 
+
+  const [imageUrl, setImageUrl] = useState<string>("");
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
-
+  const {uploadFile/*, systemImageRef*/, systemImageUrl, systemImageRef}:any = useImagesContext();
 
   useEffect(()=>{
     (async ()=>{
@@ -70,6 +56,7 @@ export default function SystemSettingsPage() {
         if(!res.ok){throw new Error("Couldn't get user data")}
         const data:any = await res.json();
         setSysid(data.sysid);
+        await waiting(4000);
         setTitle(data.title);
         setName(data.name);
         setFooter(data.footer);
@@ -85,19 +72,58 @@ export default function SystemSettingsPage() {
         setStamp(data.stamp);
         setTimezone(data.timezone);
         setImage(data.image);
+
       }catch(e){
         console.log(e);
       }
     })();
-
+    
     return ()=>{}
   },[])
 
-
+  // const fileName = `${sysid}.jpg`;
+  // let systemImageRef:StorageReference;
+  // console.log("_______image__________");
+  // console.log(image);
+  // if(image){
+  //   try{
+  //     const systemSettingsImageRef = ref(imagesRef, 'systemSettings');
+  //     systemImageRef = ref(systemSettingsImageRef, fileName);
+  //     getDownloadURL(systemImageRef).then((url)=>{
+  //       console.log("______firestore url______");
+  //       // console.log(url);
+  //       setImageUrl(`${url}`);
+  //       console.log(imageUrl);
+  //     })
+  //   }catch(e){
+  //     console.log(e);
+  //   }
+  // }
+  
+  
+  
+  
   const handleSubmit = async(e:any)=>{
     e.preventDefault();
     setIsLoading(true);
     try{
+      // @ts-ignore
+      if(addImage){
+        await uploadFile(systemImageRef, addImage).then(async(snapshot:any) => {
+          setImage(`${sysid}.jpg`);
+          console.log('Uploaded a blob or file!');
+          console.log(snapshot);
+        }).catch((e:any)=>{
+          (async ()=>{
+            setErrorMessage(`Failed to update info else block ${e}`)
+            await waiting(4000);
+            setErrorMessage('');
+            setIsLoading(false);
+            throw new Error("Failed to send image");
+          })();
+        });
+      }
+
       const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings/1`, {
         method: "PATCH",
         headers: {
@@ -155,8 +181,10 @@ export default function SystemSettingsPage() {
           <div className="card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90">
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>System Settings</h1>
-                <div className='w-30 h-30 rounded-full p-3 shadow-md'>
-                  <FontAwesomeIcon className='object-cover text-inherit w-14 h-14' icon={faGears} />
+                <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
+                  {systemImageUrl && <Image src={`${systemImageUrl}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
+                  {/* {image && <img src={`${imageUrl}`} alt="logo" className='object-cover text-inherit w-44 h-44' />} */}
+                  {!systemImageUrl && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />}
                 </div>
               </div>
                 <form className="card-body">
@@ -213,9 +241,13 @@ export default function SystemSettingsPage() {
                         <span className="label-text">Image:</span>
                       </label>
                       {/* @ts-ignore */}
-                      <input type="text" id='image' name='image' value={image} onChange={(e)=>{
+                      <input type="file" name='image' id='image' onChange={(e)=>{
+                        // @ts-ignore
+                        setAddImage(e.target.files[0])
+                      }} className="file-input file-input-bordered w-full max-w-full" />
+                      {/* <input type="text" id='image' name='image' value={image} onChange={(e)=>{
                         setImage(e.target.value)
-                      }} placeholder="Currency" className="input input-bordered"  />
+                      }} placeholder="Currency" className="input input-bordered"  /> */}
                     </div>
                     {/* Image Image Image Image Image */}
                     <div className="form-control">

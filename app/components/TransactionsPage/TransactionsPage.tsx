@@ -42,6 +42,9 @@ export default function TransactionsPage() {
   }
   const [accountNum, setAccountNum] = useState("");
   const {status, data} = useQuery([accountNum], getData);
+
+  const [sysid, setSysid] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
  
   const scaleDown = {
     transformOrigin: "50% 50%",
@@ -59,6 +62,34 @@ export default function TransactionsPage() {
     opacity: 0
   }
 
+
+  // useEffect(()=>{
+  //   (async ()=>{
+  //     try{
+  //       const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+  //       if(!res.ok){throw new Error("Couldn't get user data")}
+  //       const data:any = await res.json();
+  //       setSysid(data.sysid);
+  //     }catch(e){
+  //       console.log(e);
+  //     }
+  //   })();
+    
+  //   return ()=>{}
+  // },[])
+
+  // const fileName = `${sysid}.jpg`;
+  // let systemImageRef:any;
+  // if(sysid){
+  //   const systemSettingsImageRef = ref(imagesRef, 'systemSettings');
+  //   systemImageRef = ref(systemSettingsImageRef, fileName);
+  //   getDownloadURL(systemImageRef).then((url)=>{
+  //     console.log("______firestore url______");
+  //     // console.log(url);
+  //     setImageUrl(`${url}`);
+  //     console.log(imageUrl);
+  //   })
+  // }
 
 
   const buttons = [

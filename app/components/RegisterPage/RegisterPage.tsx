@@ -212,8 +212,8 @@ const Register = () => {
           })();
         }else{
           (async ()=>{
-            setRegisterError("Failed to Register");
-            setUsername(''); setEmail(''); setName(''); setPassword(''), setPassword2(''); setLoading(false);
+            setRegisterError("Failed to Register - Password too short");
+            setLoading(false);
             await waiting(4000);
             setRegisterError('');
           })();

@@ -7,7 +7,15 @@ const nextConfig = {
     REACT_FIREBASE_MESSAGINGSENDERID:"143378439351",
     REACT_FIREBASE_APPID:"1:143378439351:web:4e39ecc3449cdd2d738132",
     REACT_SERVER_API:"http://localhost:4000/api/v1"
-}
+},
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'firebasestorage.googleapis.com'
+            }
+        ]
+    }
 }
 
 module.exports = nextConfig

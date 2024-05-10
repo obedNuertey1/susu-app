@@ -5,6 +5,7 @@ import SusuNavBar from './components/SusuNavBar/SusuNavBar'
 import SusuFooter from './components/SusuFooter/SusuFooter'
 import { AuthProvider } from './contexts/AuthContext'
 import { RedirectContextProvider } from './contexts/RedirectContext'
+import { ImageContextProvider } from './contexts/ImagesContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,10 +23,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <RedirectContextProvider>
-          <SusuNavBar />
-            {children}
-          </RedirectContextProvider>
+          <ImageContextProvider>
+            <RedirectContextProvider>
+            <SusuNavBar />
+              {children}
+            </RedirectContextProvider>
+          </ImageContextProvider>
         </AuthProvider>
       <SusuFooter />
         </body>

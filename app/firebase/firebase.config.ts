@@ -1,5 +1,6 @@
 import {initializeApp} from "firebase/app";
 import {getAuth} from "firebase/auth";
+import {getStorage, ref} from "firebase/storage";
 
 const app = initializeApp({
     apiKey: process.env.REACT_FIREBASE_APIKEY,
@@ -12,4 +13,6 @@ const app = initializeApp({
 
 // @ts-ignore
 export const auth = getAuth(app);
+export const imageRepo = getStorage(app);
+export const imagesRef = ref(imageRepo, 'images');
 export default app;

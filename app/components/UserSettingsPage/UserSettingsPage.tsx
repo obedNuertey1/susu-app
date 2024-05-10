@@ -223,6 +223,8 @@ export default function UserSettingsPage() {
 
   const handleChangePassword = async (e:any)=>{
     e.preventDefault();
+
+    
     if(password !== password2){
       setPassword(''); setPassword2('');
       passwordModalRef?.current?.close();
@@ -231,10 +233,18 @@ export default function UserSettingsPage() {
       setErrorMessage("");
       return;
     }
-
+    
     if(password == "" || password2 == ""){
       passwordModalRef?.current?.close();
       return
+    }
+    if(password.length < 5 || password2.length < 5){
+      setPassword(''); setPassword2('');
+      passwordModalRef?.current?.close();
+      setErrorMessage("Password is too short");
+      await waiting(5000);
+      setErrorMessage("");
+      return;
     }
     // ### Algorithm ####
     try{
@@ -273,10 +283,12 @@ export default function UserSettingsPage() {
         router.push(`/relogin?usingEmail=true&hashInfo=${emailHash}`);
       }).catch(async ()=>{
         passwordModalRef?.current?.close();
-        setErrorMessage("Failed To Update Password");
+        setErrorMessage("Failed To Update Password - you need to login again to update password");
         setEmailState(''); setPassword(''); setPassword2('');
-        await waiting(4000);
+        await waiting(5000);
         setErrorMessage("");
+        await waiting(500);
+        logout();
       });
 
     }catch{
