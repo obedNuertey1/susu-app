@@ -16,6 +16,7 @@ import {deleteUser, getAuth, updatePassword, reauthenticateWithCredential, AuthC
 import { useRedirectContext } from '@/app/contexts/RedirectContext';
 import {SHA256} from 'crypto-js';
 import generateRandomText from '@/app/funcs/generateRandomText';
+import { useImagesContext } from '@/app/contexts/ImagesContext';
 
 /*
 CREATE TABLE `user` (
@@ -81,6 +82,9 @@ export default function UserSettingsPage() {
 
   const [deletePasswordInput, setDeletePasswordInput] = useState<string>("");
   const deletePasswordRef = useRef(null);
+
+    // @ts-ignore
+    const {uploadFile, }:IimageContext = useImagesContext();
 
 
   useEffect(()=>{
@@ -406,8 +410,10 @@ export default function UserSettingsPage() {
           <div className="card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90">
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>User Settings</h1>
-                <div className='w-30 h-30 rounded-full p-3 shadow-md'>
-                  <FontAwesomeIcon className='object-cover text-inherit w-14 h-14' icon={faUserGear} />
+                <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
+                  {"" && <Image src={``} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
+                  {/* {image && <img src={`${imageUrl}`} alt="logo" className='object-cover text-inherit w-44 h-44' />} */}
+                  {"userImage" && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faUserGear} />}
                 </div>
               </div>
                 <form className="card-body">
@@ -433,6 +439,17 @@ export default function UserSettingsPage() {
                         <span className="label-text">Address2:</span>
                       </label>
                       <input type="tel" id='address2' name='address2' value={address2} onChange={(e)=>{setAddress2(e.target.value)}} title='Please Enter Second address' pattern='^[0|\+233](2[0|3|4|5|6|7|8]|5[0|3|4|5|7|9])\d{7}$' placeholder="Enter Phone Number" className="input input-bordered"  />
+                    </div>
+                    <div className="divider">Add Photo</div>
+                    <div className="form-control">
+                      <label className="label" htmlFor='image'>
+                        <span className="label-text">Image:</span>
+                      </label>
+                      {/* @ts-ignore */}
+                      <input type="file" name='image' id='image' onChange={(e)=>{
+                        // @ts-ignore
+                        // setAddImage(e.target.files[0])
+                      }} className="file-input file-input-bordered w-full max-w-full" />
                     </div>
                     {/* Contact & Address */}
                   <div className="divider">Country Info</div>

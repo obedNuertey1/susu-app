@@ -12,6 +12,7 @@ import {useQuery} from 'react-query';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 import waiting from '@/app/funcs/waiting';
+import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
 
 async function getData(key:any){
   try{
@@ -43,8 +44,8 @@ export default function TransactionsPage() {
   const [accountNum, setAccountNum] = useState("");
   const {status, data} = useQuery([accountNum], getData);
 
-  const [sysid, setSysid] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  // @ts-ignore
+  const {systemName, systemImageUrl}:IimageContext = useImagesContext();
  
   const scaleDown = {
     transformOrigin: "50% 50%",
@@ -132,12 +133,14 @@ export default function TransactionsPage() {
               <div className={`text-center lg:text-left`} style={{...scaleDown, ...showUpAnime}}>
                 <div id='organisation-logo-name' className='w-full flex flex-col gap-0.5 justify-center items-center'>
                     <div id='organisation-logo'>
-                      <div className="block avatar w-20 h-20 rounded-full m-auto bg-base-100 border-project-blue border">
-                        <FontAwesomeIcon icon={faPeopleGroup} className='w-20 h-20 text-lg text-color text-project-blue' />
+                      <div className="block avatar w-24 h-24 rounded-full m-auto bg-base-100 border-project-blue border overflow-clip">
+                        {!systemImageUrl && <FontAwesomeIcon icon={faPeopleGroup} className='w-full h-full text-lg text-color text-project-blue' />}
+                        {systemImageUrl && <Image src={`${systemImageUrl}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
                       </div>
                     </div>
                     <div id='organisation-name' className='w-fit'>
-                      Organization Name
+                      {systemName && <>{systemName}</>}
+                      {!systemName && <>Organization Name</>}
                     </div>
                 </div>
                 <h1 className="text-4xl font-bold sm:text-5xl">Transaction</h1>

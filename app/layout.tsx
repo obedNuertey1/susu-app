@@ -28,9 +28,9 @@ export default function RootLayout({
             <SusuNavBar />
               {children}
             </RedirectContextProvider>
-          </ImageContextProvider>
-        </AuthProvider>
-      <SusuFooter />
+            <SusuFooter />
+        </ImageContextProvider>
+      </AuthProvider>
         </body>
     </html>
   )

@@ -11,7 +11,7 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import waiting from '@/app/funcs/waiting';
 import { imageRepo, imagesRef } from '@/app/firebase/firebase.config';
 import { StorageReference, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
-import { useImagesContext } from '@/app/contexts/ImagesContext';
+import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
 
 export default function SystemSettingsPage() {
   const router = useRouter();
@@ -47,7 +47,9 @@ export default function SystemSettingsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
-  const {uploadFile/*, systemImageRef*/, systemImageUrl, systemImageRef}:any = useImagesContext();
+  
+  // @ts-ignore
+  const {uploadFile, systemImageUrl, systemImageRef}:any = useImagesContext();
 
   useEffect(()=>{
     (async ()=>{
@@ -245,9 +247,6 @@ export default function SystemSettingsPage() {
                         // @ts-ignore
                         setAddImage(e.target.files[0])
                       }} className="file-input file-input-bordered w-full max-w-full" />
-                      {/* <input type="text" id='image' name='image' value={image} onChange={(e)=>{
-                        setImage(e.target.value)
-                      }} placeholder="Currency" className="input input-bordered"  /> */}
                     </div>
                     {/* Image Image Image Image Image */}
                     <div className="form-control">

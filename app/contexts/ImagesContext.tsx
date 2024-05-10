@@ -3,6 +3,7 @@ import React, {useContext, useState, createContext, useEffect} from "react";
 import { StorageReference, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { imagesRef } from '@/app/firebase/firebase.config';
 import { useAuth } from "./AuthContext";
+import waiting from "../funcs/waiting";
 
 const ImagesContext = createContext(null);
 
@@ -25,6 +26,30 @@ export function useImagesContext(){
   //   return ()=>{}
   // },[])
 
+  export interface IimageContext{
+    systemImageUrl?: string;
+    uploadFile?: (refArg:StorageReference, imageValFromInput:Blob | Uint8Array | ArrayBuffer)=>void;
+    systemImageRef?: StorageReference;
+    systemfileName?: string;
+    setSystemFileName?: (val:string)=> void
+    title?: string;
+    systemName?: string;
+    footer?: string;
+    abb?: string;
+    currency?: string;
+    sms_charges?: string;
+    fax?: string;
+    website?: string;
+    mobile?: string;
+    email?: string;
+    address?: string;
+    map?: string;
+    stamp?: string;
+    timezone?: string;
+    systemImage?: string;
+    userImageUrl?: string;
+  }
+
 export function ImageContextProvider({children}:any){
 
     const [systemImageUrl, setSystemImageUrl] = useState<string>("");
@@ -32,15 +57,35 @@ export function ImageContextProvider({children}:any){
     // const [image, setImage] = useState<string>(""); //<-system-info
     // const [addImage, setAddImage] = useState<Blob | Uint8Array | ArrayBuffer>();
     const [sysid, setSysid] = useState("");
-    const [systemImage, setSystemImage] = useState<string>("");
     const [userImage, setUserImage] = useState<string>("");
     const [userid, setUserid] = useState("");
     const {currentUser}:any = useAuth();
     const [systemfileName, setSystemFileName] = useState<string>("");
     const [systemImageRef, setSystemImageRef] = useState<StorageReference>();
+    const [userFileName, setUserFileName] = useState<string>("");
+    const [userImageRef, setUserImageRef] = useState<string>("");
+
+    
+    
+    // For System
+    const [title, setTitle] = useState<string>("");
+    const [systemName, setSystemName] = useState<string>("");
+    const [footer, setFooter] = useState<string>("");
+    const [abb, setAbb] = useState<string>("");
+    const [currency, setCurrency] = useState<string>("");
+    const [sms_charges, setSms_charges] = useState<string>("");
+    const [fax, setFax] = useState<string>("");
+    const [website, setWebsite] = useState<string>("");
+    const [mobile, setMobile] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
+    const [address, setAddress] = useState<string>("");
+    const [map, setMap] = useState<string>("");
+    const [stamp, setStamp] = useState<string>("");
+    const [timezone, setTimezone] = useState<string>("");
+    const [systemImage, setSystemImage] = useState<string>("");
 
     useEffect(()=>{
-        (async ()=>{
+        (async ()=>{ // For system
             try{
               const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
               if(!res.ok){throw new Error("Couldn't get user data")}
@@ -48,9 +93,26 @@ export function ImageContextProvider({children}:any){
               const systemSettingsImageRef = ref(imagesRef, 'systemSettings');
               setSystemImageRef(ref(systemSettingsImageRef, `${data.sysid}.jpg`));
             // @ts-ignore
+              
               getDownloadURL(systemImageRef).then((url)=>{
               setSystemImageUrl(`${url}`);
-              
+              setSysid(data.sysid);
+              setTitle(data.title);
+              setSystemName(data.name);
+              setFooter(data.footer);
+              setAbb(data.abb);
+              setCurrency(data.currency);
+              setSms_charges(data.sms_charges);
+              setFax(data.fax);
+              setWebsite(data.website);
+              setMobile(data.mobile);
+              setEmail(data.email);
+              setAddress(data.address);
+              setMap(data.map);
+              setStamp(data.stamp);
+              setTimezone(data.timezone);
+              setSystemImage(data.image);
+
             })
             }catch(e){
               console.log(e);
@@ -111,18 +173,36 @@ export function ImageContextProvider({children}:any){
         return uploadBytes(refArg, imageValFromInput);
     }
 
-    const value:any = {
+    const value:IimageContext = {
+      // ############# For System ##################
         systemImageUrl,
-        userImageUrl,
         uploadFile,
         systemImageRef,
-        // userImageRef,
         systemfileName,
         setSystemFileName,
+        title,
+        systemName,
+        footer,
+        abb,
+        currency,
+        sms_charges,
+        fax,
+        website,
+        mobile,
+        email,
+        address,
+        map,
+        stamp,
+        timezone,
+        systemImage,
+        userImageUrl,
+        // ############### For User ####################
+        // userImageRef,
         // userFileName
     }
 
     return (
+      // @ts-ignore
         <ImagesContext.Provider value={value}>
             {children}
         </ImagesContext.Provider>
