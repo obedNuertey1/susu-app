@@ -57,13 +57,13 @@ export function ImageContextProvider({children}:any){
     // const [image, setImage] = useState<string>(""); //<-system-info
     // const [addImage, setAddImage] = useState<Blob | Uint8Array | ArrayBuffer>();
     const [sysid, setSysid] = useState("");
-    const [userImage, setUserImage] = useState<string>("");
     const [userid, setUserid] = useState("");
     const {currentUser}:any = useAuth();
     const [systemfileName, setSystemFileName] = useState<string>("");
     const [systemImageRef, setSystemImageRef] = useState<StorageReference>();
+    const [userImage, setUserImage] = useState<string>("");
     const [userFileName, setUserFileName] = useState<string>("");
-    const [userImageRef, setUserImageRef] = useState<string>("");
+    const [userImageRef, setUserImageRef] = useState<StorageReference>();
 
     
     
@@ -83,6 +83,15 @@ export function ImageContextProvider({children}:any){
     const [stamp, setStamp] = useState<string>("");
     const [timezone, setTimezone] = useState<string>("");
     const [systemImage, setSystemImage] = useState<string>("");
+
+    // For User
+    const [userPhone, setUserPhone] = useState<string>("");
+    const [userAddress1, setUserAddress1] = useState<string>("");
+    const [userAddress2, setUserAddress2] = useState<string>("");
+    const [userCountry, setUserCountry] = useState<string>("");
+    const [userState, setUserState] = useState<string>("");
+    const [userZip, setUserZip] = useState<string>("");
+    const [userCity, setUserCity] = useState<string>("");
 
     useEffect(()=>{
         (async ()=>{ // For system
@@ -124,7 +133,22 @@ export function ImageContextProvider({children}:any){
                 const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`);
                 if(!res.ok){throw new Error("Couldn't get user data")}
                 const data:any = await res.json();
+                const userSettingsImageRef = ref(imagesRef, 'userSettings');
+                setUserImageRef(ref(userSettingsImageRef, `${data.userid}.jpg`));
+              // @ts-ignore
+                
+                getDownloadURL(systemImageRef).then((url)=>{
+                  setUserImageUrl(`${url}`)
+                })
                 setUserid(data.userid);
+                setUserImage(data.image);
+                setUserPhone(data.phone);
+                setUserAddress1(data.address1);
+                setUserAddress2(data.address2);
+                setUserCountry(data.countr);
+                setUserState(data.state);
+                setUserZip(data.zip);
+                setUserCity(data.city);
                 setUserImage(data.image);
               }catch(e){
                 console.log(e);
