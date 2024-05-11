@@ -32,6 +32,11 @@ export default function UserSettingsPage() {
 
   const {setRedirectHashId, redirectHashId}:any = useRedirectContext();
 
+  const promptForCredential = (userEmail:string, userPassword:string) =>{
+    const credential = EmailAuthProvider.credential(userEmail, userPassword);
+    return credential;
+  }
+
   const [userid, setUserId] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [address1, setAddress1] = useState<string>("");
@@ -55,8 +60,13 @@ export default function UserSettingsPage() {
   const [password2WarnColor, setPassword2WarnColor] = useState<warnColorType>("");
   const password2Ref = useRef(null);
   const passwordModalRef = useRef<HTMLDialogElement>(null);
+  
+  const oldPasswordRef = useRef(null);
+  const [oldPassword, setOldPassword] = useState<string>("");
 
 
+
+  
   const [emailState, setEmailState] = useState<string>("");
 
   const [deleteButtonDisabled, setDeleteButtonDisabled] = useState<boolean>(true);
@@ -65,6 +75,8 @@ export default function UserSettingsPage() {
   const deleteInputRef = useRef<HTMLInputElement>(null);
   const randomTextRef = useRef<HTMLSpanElement>(null);
   const deleteDialogueRef = useRef<HTMLDialogElement>(null);
+
+  const [changeButtonDisabled, setChangeButtonDisabled] = useState<boolean>(false);
 
   const [addImage, setAddImage] = useState<Blob | Uint8Array | ArrayBuffer>();
 
@@ -242,7 +254,7 @@ export default function UserSettingsPage() {
 
     
     if(password !== password2){
-      setPassword(''); setPassword2('');
+      setPassword(''); setPassword2(''); setOldPassword('');
       passwordModalRef?.current?.close();
       setErrorMessage("Passwords don't match");
       await waiting(5000);
@@ -255,9 +267,18 @@ export default function UserSettingsPage() {
       return
     }
     if(password.length < 5 || password2.length < 5){
-      setPassword(''); setPassword2('');
+      setPassword(''); setPassword2(''); setOldPassword('');
       passwordModalRef?.current?.close();
       setErrorMessage("Password is too short");
+      await waiting(5000);
+      setErrorMessage("");
+      return;
+    }
+
+    if(oldPassword.length === 0){
+      setPassword(''); setPassword2('');
+      passwordModalRef?.current?.close();
+      setErrorMessage("Enter your old password");
       await waiting(5000);
       setErrorMessage("");
       return;
@@ -265,55 +286,60 @@ export default function UserSettingsPage() {
     // ### Algorithm ####
     try{
       // store current user email in a emailState
+      setChangeButtonDisabled(true);
       setEmailState(currentUser.email);
-      // delete current user from firebase
-      console.log("emailState=",emailState);
-      await updatePassword(currentUser, password).then(async (value:any)=>{
-        const res = await fetch(`${process.env.REACT_SERVER_API}/users/email`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': "application/json"
-          },
-          body:JSON.stringify({
-            email: emailState,
-            password: password
-          })
-        })
-        if(!res.ok){
-          passwordModalRef?.current?.close();
-          setErrorMessage("Failed To Update Password Server");
-          await waiting(4000);
-          setErrorMessage("");
-          setEmailState(''); setPassword(''); setPassword2('');
-          return;
-        }
-        const emailHash:string = SHA256(emailState).toString();
-        setRedirectHashId(emailHash);
-        // clear state fields
-        setEmailState(''); setPassword(''); setPassword2('');
-        // close modal
-        passwordModalRef?.current?.close();
-        setSuccessMessage("Password Updated: You'll be redirected to login again");
-        await waiting(5000);
-        // move to relogin page
-        router.push(`/relogin?usingEmail=true&hashInfo=${emailHash}`);
-      }).catch(async ()=>{
-        passwordModalRef?.current?.close();
-        setErrorMessage("Failed To Update Password - you need to login again to update password");
-        setEmailState(''); setPassword(''); setPassword2('');
-        await waiting(5000);
-        setErrorMessage("");
-        await waiting(500);
-        await onloggedOut();
-        await logout();
-      });
+      await reauthenticateWithCredential(currentUser, promptForCredential(currentUser.email, oldPassword)).then(async ()=>{
 
+        // delete current user from firebase
+        console.log("emailState=",emailState);
+        await updatePassword(currentUser, password).then(async (value:any)=>{
+          const res = await fetch(`${process.env.REACT_SERVER_API}/users/email`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body:JSON.stringify({
+              email: emailState,
+              password: password
+            })
+          })
+          if(!res.ok){
+            passwordModalRef?.current?.close();
+            setErrorMessage("Failed To Update Password Server");
+            await waiting(4000);
+            setErrorMessage("");
+            setEmailState(''); setPassword(''); setPassword2('');
+            return;
+          }
+          const emailHash:string = SHA256(emailState).toString();
+          setRedirectHashId(emailHash);
+          // clear state fields
+          setEmailState(''); setPassword(''); setPassword2('');
+          // close modal
+          passwordModalRef?.current?.close();
+          setSuccessMessage("Password Updated: You'll be redirected to login again");
+          await waiting(5000);
+          // move to relogin page
+          router.push(`/relogin?usingEmail=true&hashInfo=${emailHash}`);
+        }).catch(async ()=>{
+          passwordModalRef?.current?.close();
+          setErrorMessage("Failed To Update Password - you need to login again to update password");
+          setEmailState(''); setPassword(''); setPassword2('');
+          await waiting(5000);
+          setErrorMessage("");
+          await waiting(500);
+          await onloggedOut();
+          await logout();
+        });
+      })
+      setChangeButtonDisabled(false);
     }catch{
       passwordModalRef?.current?.close();
       setErrorMessage("Failed To Update Password");
       setEmailState(''); setPassword(''); setPassword2('');
       await waiting(4000);
       setErrorMessage("");
+      setChangeButtonDisabled(false);
     }
   }
   
@@ -341,10 +367,6 @@ export default function UserSettingsPage() {
     return ()=>{}
   },[deleteInput, deletePasswordInput]);
 
-  const promptForCredential = (userEmail:string, userPassword:string) =>{
-    const credential = EmailAuthProvider.credential(userEmail, userPassword);
-    return credential;
-  }
   const handleDeleteAcc = async (e:any) => {
     e.preventDefault();
     if(!(deleteInput === randomText)){
@@ -357,49 +379,53 @@ export default function UserSettingsPage() {
     }
 
     try{
-      
-      const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`, {method: 'DELETE'});
-      if(!res.ok){
-        setErrorMessage("Failed to delete account - !res.ok");
-        deleteDialogueRef.current?.close();
-        await waiting(4000);
-        setErrorMessage("");
-        setDeleteInput('');
-        return;
-      }
-      const auth = getAuth();
-      const user:any = auth?.currentUser;
-      // @ts-ignore
-      deleteUser(user).then(()=>{
-        (async()=>{
-          setSuccessMessage("You've deleted your account succesfully");
-          deleteDialogueRef.current?.close();
-          await waiting(4000);
-          setSuccessMessage('');
-          setDeleteInput('');
-          router.push("/login");
-          return;
-        })();
-      }).catch(()=>{
-        (async ()=>{
-          setErrorMessage(`You will need to login again to delete account`);
-          setDeleteInput('');
+      setDeleteButtonDisabled(true);
+      await reauthenticateWithCredential(currentUser, promptForCredential(currentUser.email, deletePasswordInput)).then(async ()=>{
+
+        const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`, {method: 'DELETE'});
+        if(!res.ok){
+          setErrorMessage("Failed to delete account - !res.ok");
           deleteDialogueRef.current?.close();
           await waiting(4000);
           setErrorMessage("");
-          await onloggedOut();
-          await logout();
-          router.push("/login");
+          setDeleteInput('');
           return;
-        })();
+        }
+        const auth = getAuth();
+        const user:any = auth?.currentUser;
+        // @ts-ignore
+        deleteUser(user).then(()=>{
+          (async()=>{
+            setSuccessMessage("You've deleted your account succesfully");
+            deleteDialogueRef.current?.close();
+            await waiting(4000);
+            setSuccessMessage('');
+            setDeleteInput('');
+            router.push("/login");
+            return;
+          })();
+        }).catch(()=>{
+          (async ()=>{
+            setErrorMessage(`You will need to login again to delete account`);
+            setDeleteInput('');
+            deleteDialogueRef.current?.close();
+            await waiting(4000);
+            setErrorMessage("");
+            await onloggedOut();
+            await logout();
+            router.push("/login");
+            return;
+          })();
+        })
       })
-
+      setDeleteButtonDisabled(false);
     }catch{
-      setErrorMessage("Failed to delete account - try-catch");
+      setErrorMessage("Failed to delete account");
       setDeleteInput('');
       deleteDialogueRef.current?.close();
       await waiting(4000);
       setErrorMessage("");
+      setDeleteButtonDisabled(false);
     }
   };
 
@@ -522,7 +548,11 @@ export default function UserSettingsPage() {
                               <div className="modal-action w-full">
                                 <form className='card-body w-full flex flex-col justify-center items-stretch gap-2' method="dialog">
                                   {/* if there is a button in form, it will close the modal */}
-                                  <InputField isRequired={true} placeholder='Enter your password' ref={passwordRef} inputText={setPassword} inputTextValue={password} inputTypeValue='password' labelText='Password:'
+                                  <InputField isRequired={true} placeholder='Enter your old password' ref={oldPasswordRef} inputText={setOldPassword} inputTextValue={oldPassword} inputTypeValue='password' labelText='Old Password:'
+                                  // @ts-ignore  
+                                  // @ts-ignore
+                                  showPassword={true} />
+                                  <InputField isRequired={true} placeholder='Enter your new password' ref={passwordRef} inputText={setPassword} inputTextValue={password} inputTypeValue='password' labelText='New Password:'
                                   // @ts-ignore 
                                   warningText={passwordWarnText} 
                                   // @ts-ignore
@@ -540,7 +570,7 @@ export default function UserSettingsPage() {
                                       warnColor={password2WarnColor}
                                       // queryStatus={status}
                                       />
-                                    <button onClick={handleChangePassword} className="btn btn-wide btn-outline btn-warning self-center mt-[3%]">Change</button>
+                                    <button onClick={handleChangePassword} className="btn btn-wide btn-outline btn-warning self-center mt-[3%]" {...(changeButtonDisabled?{disabled: true}: {disabled:false})} >Change</button>
                                 </form>
                               </div>
                             </div>
