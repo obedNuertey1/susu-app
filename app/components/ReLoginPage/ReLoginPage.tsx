@@ -8,6 +8,7 @@ import {useRouter} from 'next/navigation';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import waiting from '@/app/funcs/waiting';
 import { useRedirectContext } from '@/app/contexts/RedirectContext';
+import { useImagesContext } from '@/app/contexts/ImagesContext';
 
 
 const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchParams?:{[key: string]:string|string[]|undefined},}) => {
@@ -39,6 +40,8 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [registerError, setRegisterError] = useState<string>("");
+
+  const {onloggedIn}:any = useImagesContext();
   
   const auth = getAuth();
 
@@ -59,11 +62,12 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
       const data = await res.json();
       const {email} = data[0];
       await login(email, password);
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, async (user) => {
         if (user) {
           // User is signed in, see docs for a list of available properties
           // https://firebase.google.com/docs/reference/js/auth.user
           
+          await onloggedIn();
           setLoading(false);
           redirectToTransactionsPage();
 

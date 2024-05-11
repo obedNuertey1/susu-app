@@ -7,9 +7,11 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import {useRouter} from 'next/navigation';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import waiting from '@/app/funcs/waiting';
+import { useImagesContext } from '@/app/contexts/ImagesContext';
 
 const LoginPage = () => {
   const router = useRouter();
+  const {onloggedIn}:any = useImagesContext();
   const redirectToTransactionsPage = () => {
     router.push("/transactions")
   };
@@ -42,11 +44,11 @@ const LoginPage = () => {
       const data = await res.json();
       const {email} = data[0];
       await login(email, password);
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, async (user) => {
         if (user) {
           // User is signed in, see docs for a list of available properties
           // https://firebase.google.com/docs/reference/js/auth.user
-          
+          await onloggedIn();
           setLoading(false);
           redirectToTransactionsPage();
           

@@ -43,9 +43,13 @@ export default function TransactionsPage() {
   }
   const [accountNum, setAccountNum] = useState("");
   const {status, data} = useQuery([accountNum], getData);
+  const {onloggedIn, getUser, getSystem}:any = useImagesContext();
 
+  useEffect(()=>{
+    onloggedIn();
+  }, []);
   // @ts-ignore
-  const {systemName, systemImageUrl}:IimageContext = useImagesContext();
+  const {systemName, systemImageUrl, userRole}:any = useImagesContext();
  
   const scaleDown = {
     transformOrigin: "50% 50%",
@@ -64,44 +68,24 @@ export default function TransactionsPage() {
   }
 
 
-  // useEffect(()=>{
-  //   (async ()=>{
-  //     try{
-  //       const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
-  //       if(!res.ok){throw new Error("Couldn't get user data")}
-  //       const data:any = await res.json();
-  //       setSysid(data.sysid);
-  //     }catch(e){
-  //       console.log(e);
-  //     }
-  //   })();
-    
-  //   return ()=>{}
-  // },[])
-
-  // const fileName = `${sysid}.jpg`;
-  // let systemImageRef:any;
-  // if(sysid){
-  //   const systemSettingsImageRef = ref(imagesRef, 'systemSettings');
-  //   systemImageRef = ref(systemSettingsImageRef, fileName);
-  //   getDownloadURL(systemImageRef).then((url)=>{
-  //     console.log("______firestore url______");
-  //     // console.log(url);
-  //     setImageUrl(`${url}`);
-  //     console.log(imageUrl);
-  //   })
-  // }
-
+  const isAdmin = userRole?.toLowerCase() == 'admin';
 
   const buttons = [
-    <div className='tooltip tooltip-bottom' data-tip="system settings page">
+    <>
+    {
+      isAdmin
+      &&
+      <div className='tooltip tooltip-bottom' data-tip="system settings page">
       <Link href="/transactions/system-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
         <div className='flex flex-col justify-center items-center origin-center scale-90'>
           <FontAwesomeIcon icon={faGears} className='w-7 h-7' />
           <span className={`${styles.smallText} font-semibold text-wrap line`}>System Settings</span>
         </div>
       </Link>
-    </div>,
+    </div>
+    }
+    </>
+    ,
     <div className='tooltip tooltip-bottom' data-tip="user settings page" >
     <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
       <div className='flex flex-col justify-center items-center origin-center scale-90'>
@@ -133,7 +117,7 @@ export default function TransactionsPage() {
               <div className={`text-center lg:text-left`} style={{...scaleDown, ...showUpAnime}}>
                 <div id='organisation-logo-name' className='w-full flex flex-col gap-0.5 justify-center items-center'>
                     <div id='organisation-logo'>
-                      <div className="block avatar w-24 h-24 rounded-full m-auto bg-base-100 border-project-blue border overflow-clip">
+                      <div className="block avatar w-24 h-24 rounded-full m-auto bg-base-100 border-base-100 border overflow-clip">
                         {!systemImageUrl && <FontAwesomeIcon icon={faPeopleGroup} className='w-full h-full text-lg text-color text-project-blue' />}
                         {systemImageUrl && <Image src={`${systemImageUrl}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
                       </div>

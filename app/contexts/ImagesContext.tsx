@@ -27,11 +27,12 @@ export function useImagesContext(){
   // },[])
 
   export interface IimageContext{
+    uploadFile?: (refArg:StorageReference, imageValFromInput:Blob | Uint8Array | ArrayBuffer)=>Promise<any>;
+    // For system
     systemImageUrl?: string;
-    uploadFile?: (refArg:StorageReference, imageValFromInput:Blob | Uint8Array | ArrayBuffer)=>void;
     systemImageRef?: StorageReference;
     systemfileName?: string;
-    setSystemFileName?: (val:string)=> void
+    setSystemFileName?: React.Dispatch<React.SetStateAction<string>>;
     title?: string;
     systemName?: string;
     footer?: string;
@@ -47,7 +48,29 @@ export function useImagesContext(){
     stamp?: string;
     timezone?: string;
     systemImage?: string;
+    // For User
     userImageUrl?: string;
+    userid?: string;
+    userImage?: string;
+    userPhone?: string;
+    userAddress1?: string;
+    userAddress2?: string;
+    userCountry?: string;
+    userState?: string;
+    userZip?: string;
+    userCity?: string;
+    setUserFileName?: React.Dispatch<React.SetStateAction<string>>;
+    userImageRef?: StorageReference | undefined;
+    userFileName?: string;
+    userFullName?: string;
+    userRole?: string;
+    setUserImageUrl?: React.Dispatch<React.SetStateAction<string>>;
+    setUserImageRef?: React.Dispatch<React.SetStateAction<StorageReference>>;
+    setLoggedIn?: React.Dispatch<React.SetStateAction<boolean>>;
+    onloggedIn?: ()=>Promise<void>;
+    onloggedOut?: ()=>Promise<void>;
+    getUser?: ()=>Promise<void>;
+    getSystem?: ()=>Promise<void>;
   }
 
 export function ImageContextProvider({children}:any){
@@ -59,7 +82,8 @@ export function ImageContextProvider({children}:any){
     const [sysid, setSysid] = useState("");
     const [userid, setUserid] = useState("");
     const {currentUser}:any = useAuth();
-    const [systemfileName, setSystemFileName] = useState<string>("");
+    const isAuthenticated:boolean = Boolean(currentUser);
+    const [systemfileName, setSystemFileName] = useState<string>("jk");
     const [systemImageRef, setSystemImageRef] = useState<StorageReference>();
     const [userImage, setUserImage] = useState<string>("");
     const [userFileName, setUserFileName] = useState<string>("");
@@ -92,110 +116,141 @@ export function ImageContextProvider({children}:any){
     const [userState, setUserState] = useState<string>("");
     const [userZip, setUserZip] = useState<string>("");
     const [userCity, setUserCity] = useState<string>("");
+    const [userFullName, setUserFullName] = useState<string>("");
+    const [userRole, setUserRole] = useState<string>("");
+
+    const [loggedIn, setLoggedIn] = useState<boolean>(true);
 
     useEffect(()=>{
-        (async ()=>{ // For system
-            try{
-              const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+          
+          return ()=>{};
+        }, []);
+        
+        const getUser = async ()=>{
+          try{ // user
+              const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`);
               if(!res.ok){throw new Error("Couldn't get user data")}
               const data:any = await res.json();
-              const systemSettingsImageRef = ref(imagesRef, 'systemSettings');
-              setSystemImageRef(ref(systemSettingsImageRef, `${data.sysid}.jpg`));
-            // @ts-ignore
+              const userSettingsImageRef = ref(imagesRef, 'userSettings');
+              setUserImageRef(ref(userSettingsImageRef, `${data.userid}.jpg`));
+              setUserid(data.userid);
+              setUserImage(data.image);
+              setUserPhone(data.phone);
+              setUserAddress1(data.address1);
+              setUserAddress2(data.address2);
+              setUserCountry(data.country);
+              setUserState(data.state);
+              setUserZip(data.zip);
+              setUserCity(data.city);
+              setUserImageUrl(data.image);
+              setUserFullName(data.name);
+              setUserRole(data.role);
               
-              getDownloadURL(systemImageRef).then((url)=>{
-              setSystemImageUrl(`${url}`);
-              setSysid(data.sysid);
-              setTitle(data.title);
-              setSystemName(data.name);
-              setFooter(data.footer);
-              setAbb(data.abb);
-              setCurrency(data.currency);
-              setSms_charges(data.sms_charges);
-              setFax(data.fax);
-              setWebsite(data.website);
-              setMobile(data.mobile);
-              setEmail(data.email);
-              setAddress(data.address);
-              setMap(data.map);
-              setStamp(data.stamp);
-              setTimezone(data.timezone);
-              setSystemImage(data.image);
-
-            })
             }catch(e){
               console.log(e);
             }
-          })();
+        }
 
-          (async ()=>{
-            try{
-                const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`);
-                if(!res.ok){throw new Error("Couldn't get user data")}
-                const data:any = await res.json();
-                const userSettingsImageRef = ref(imagesRef, 'userSettings');
-                setUserImageRef(ref(userSettingsImageRef, `${data.userid}.jpg`));
-              // @ts-ignore
-                
-                getDownloadURL(systemImageRef).then((url)=>{
-                  setUserImageUrl(`${url}`)
-                })
-                setUserid(data.userid);
-                setUserImage(data.image);
-                setUserPhone(data.phone);
-                setUserAddress1(data.address1);
-                setUserAddress2(data.address2);
-                setUserCountry(data.countr);
-                setUserState(data.state);
-                setUserZip(data.zip);
-                setUserCity(data.city);
-                setUserImage(data.image);
-              }catch(e){
-                console.log(e);
-              }
-          })();
-    }, [userid, userImage]);
+        const clearUser = async ()=>{
+          try{
+            // @ts-ignore
+            setUserImageRef();
+            setUserid("");
+            setUserImage("");
+            setUserPhone("");
+            setUserAddress1("");
+            setUserAddress2("");
+            setUserCountry("");
+            setUserState("");
+            setUserZip("");
+            setUserCity("");
+            setUserImageUrl("");
+            setUserFullName("");
+            setUserRole("");
+            setLoggedIn(false);
+          }catch(e){
+            console.log(e)
+          }
+        }
 
-    console.log("_____________systemImageUrl______________");
-    console.log(systemImageUrl);
-    // let systemImageRef:any;
-    // useEffect(()=>{
-    //   try{
-    //     if(Boolean(sysid) && systemImage.endsWith(systemfileName)){
-    //         const systemSettingsImageRef = ref(imagesRef.root, 'images/systemSettings');
-    //         setSystemImageRef(ref(systemSettingsImageRef, systemfileName));
-    //         // @ts-ignore
-    //         getDownloadURL(systemImageRef).then((url)=>{
-    //         setSystemImageUrl(`${url}`);
-    //         })
-    //     }
+        const getSystem = async ()=>{ // For system
+          try{
+            const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+            if(!res.ok){throw new Error("Couldn't get user data")}
+            const data:any = await res.json();
+            const systemSettingsImageRef = ref(imagesRef, 'systemSettings');
+            setSystemImageRef(ref(systemSettingsImageRef, `${data.sysid}.jpg`));
+            setSysid(data.sysid);
+            setTitle(data.title);
+            setSystemName(data.name);
+            setFooter(data.footer);
+            setAbb(data.abb);
+            setCurrency(data.currency);
+            setSms_charges(data.sms_charges);
+            setFax(data.fax);
+            setWebsite(data.website);
+            setMobile(data.mobile);
+            setEmail(data.email);
+            setAddress(data.address);
+            setMap(data.map);
+            setStamp(data.stamp);
+            setTimezone(data.timezone);
+            setSystemImage(data.image);
+            setSystemImageUrl(data.image);
+          }catch(e){
+            console.log(e);
+          }
+        }
+
+        const clearSystem = async ()=>{
+          try{
+            // @ts-ignore
+            setSystemImageRef();
+            setSysid('');
+            setTitle('');
+            setSystemName('');
+            setFooter('');
+            setAbb('');
+            setCurrency('');
+            setSms_charges('');
+            setFax('');
+            setWebsite('');
+            setMobile('');
+            setEmail('');
+            setAddress('');
+            setMap('');
+            setStamp('');
+            setTimezone('');
+            setSystemImage('');
+            setSystemImageUrl('');
+          }catch(e){
+            console.log(e);
+          }
+        }
+
+        useEffect(()=>{
+          getUser();
+          getSystem();
+          return ()=>{}
+        }, []);
         
-    //   }catch(e){
-    //     console.log(e);
-    //   }
+        console.log("userFullName=",userFullName);
+      
+        const onloggedIn = async ()=>{
+          getUser();
+          getSystem();
+        }
 
-    //   return ()=>{}
-    // },[systemImageUrl, systemImageRef])
-
-    // console.log("____userImage____");
-    // console.log(userImage)
-    // const userFileName = `${userid}.jpg`;
-    // let userImageRef:any;
-    // try{
-    //   if(userid && userImage.endsWith(userFileName)){
-    //       const userSettingsImageRef = ref(imagesRef.root, 'images/userSettings');
-    //       userImageRef = ref(userSettingsImageRef, userFileName);
-    //       getDownloadURL(userImageRef).then((url)=>{
-    //           setUserImageUrl(`${url}`);
-    //       });
-    //   }
-    // }catch(e){
-    //   console.log(e)
-    // }
+        const onloggedOut = async ()=>{
+          clearUser();
+          clearSystem();
+        }
 
     async function uploadFile(refArg:StorageReference, imageValFromInput:Blob | Uint8Array | ArrayBuffer){
         return uploadBytes(refArg, imageValFromInput);
     }
+
+
 
     const value:IimageContext = {
       // ############# For System ##################
@@ -219,10 +274,31 @@ export function ImageContextProvider({children}:any){
         stamp,
         timezone,
         systemImage,
-        userImageUrl,
         // ############### For User ####################
-        // userImageRef,
-        // userFileName
+        userImageUrl,
+        userid,
+        userImage,
+        userPhone,
+        userAddress1,
+        userAddress2,
+        userCountry,
+        userState,
+        userZip,
+        userCity,
+        setUserFileName,
+        userImageRef,
+        userFileName,
+        userFullName,
+        userRole,
+        setUserImageUrl,
+        // @ts-ignore
+        setUserImageRef,
+
+        setLoggedIn,
+        onloggedIn,
+        onloggedOut,
+        getUser,
+        getSystem
     }
 
     return (

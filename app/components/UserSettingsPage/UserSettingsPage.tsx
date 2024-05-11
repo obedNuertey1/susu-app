@@ -17,25 +17,9 @@ import { useRedirectContext } from '@/app/contexts/RedirectContext';
 import {SHA256} from 'crypto-js';
 import generateRandomText from '@/app/funcs/generateRandomText';
 import { useImagesContext } from '@/app/contexts/ImagesContext';
+import { getDownloadURL } from 'firebase/storage';
+import { EmailAuthProvider } from 'firebase/auth';
 
-/*
-CREATE TABLE `user` (
-  `userid` int(11) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  `email` varchar(200) NOT NULL,
-  `phone` varchar(200) NOT NULL, <- Contact & Address ->
-  `addr1` text NOT NULL, <- Contact & Address ->
-  `addr2` text NOT NULL, <- Contact & Address ->
-  `city` varchar(200) NOT NULL, <- Country Info ->
-  `state` varchar(200) NOT NULL, <- Country Info ->
-  `zip` varchar(200) NOT NULL, <- Country Info ->
-  `country` varchar(200) NOT NULL, <- Country Info ->
-  `comment` varchar(200) NOT NULL, 
-  `username` varchar(200) NOT NULL,
-  `password` varchar(200) NOT NULL, <- Personal Info
-  `id` varchar(200) NOT NULL,
-  `image` text NOT NULL, <- optional
-*/
 
 export default function UserSettingsPage() {
   const router = useRouter();
@@ -48,6 +32,7 @@ export default function UserSettingsPage() {
 
   const {setRedirectHashId, redirectHashId}:any = useRedirectContext();
 
+  const [userid, setUserId] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [address1, setAddress1] = useState<string>("");
   const [address2, setAddress2] = useState<string>("");
@@ -55,6 +40,7 @@ export default function UserSettingsPage() {
   const [state, setState] = useState<string>("");
   const [zip, setZip] = useState<string>("");
   const [city, setCity] = useState<string>("");
+  const [image, setImage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
@@ -80,11 +66,14 @@ export default function UserSettingsPage() {
   const randomTextRef = useRef<HTMLSpanElement>(null);
   const deleteDialogueRef = useRef<HTMLDialogElement>(null);
 
+  const [addImage, setAddImage] = useState<Blob | Uint8Array | ArrayBuffer>();
+
   const [deletePasswordInput, setDeletePasswordInput] = useState<string>("");
   const deletePasswordRef = useRef(null);
 
     // @ts-ignore
-    const {uploadFile, }:IimageContext = useImagesContext();
+    const {uploadFile, userImageUrl, userImageRef}:any = useImagesContext();
+    const {onloggedOut}:any = useImagesContext();
 
 
   useEffect(()=>{
@@ -100,6 +89,8 @@ export default function UserSettingsPage() {
         setState(data.state);
         setZip(data.zip);
         setCity(data.city);
+        setUserId(data.userid);
+        setImage(data.image);
       }catch(e){
         console.log(e);
       }
@@ -179,44 +170,65 @@ export default function UserSettingsPage() {
     e.preventDefault();
     setIsLoading(true);
     try{
-      const res1 = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`)
-      if(!res1.ok){
-        setErrorMessage("Failed to update");
-        await waiting(4000);
-        setErrorMessage("");
-        setIsLoading(false);
-        return;
-      }
-      const res1Data = await res1.json();
-      console.log("res1Data.userid");
-      console.log(res1Data.userid);
-      const res = await fetch(`${process.env.REACT_SERVER_API}/users/${res1Data.userid}`, {
-        method: "PATCH",
-        headers: {
-          'Content-Type': "application/json"
-        },
-        body:JSON.stringify({
-          phone,
-          addr1: address1,
-          addr2: address2,
-          country,
-          state,
-          zip,
-          city
+      // @ts-ignore
+      if(addImage){
+        await uploadFile(userImageRef, addImage).then(async(snapshot:any)=>{
+          console.log('Uploaded a blob or file!');
+          console.log(snapshot);
+        }).catch((e:any)=>{
+          (async ()=>{
+            setErrorMessage(`Failed to update info else block ${e}`)
+            await waiting(4000);
+            setErrorMessage('');
+            setIsLoading(false);
+            throw new Error("Failed to send image");
+          })();
         })
-      });
-      if(!res.ok){
-        setErrorMessage("Failed to update");
-        await waiting(4000);
-        setErrorMessage("");
-        setIsLoading(false);
-        return;
       }
-      setSuccessMessage("Updated Successfully");
-      await waiting(3000);
-      setIsLoading(false);
-      setSuccessMessage("");
-      router.push("/transactions");
+
+      await getDownloadURL(userImageRef).then(async (url)=>{
+
+        const res1 = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`)
+        if(!res1.ok){
+          setErrorMessage("Failed to update");
+          await waiting(4000);
+          setErrorMessage("");
+          setIsLoading(false);
+          return;
+        }
+        const res1Data = await res1.json();
+        console.log("res1Data.userid");
+        console.log(res1Data.userid);
+        const res = await fetch(`${process.env.REACT_SERVER_API}/users/${res1Data.userid}`, {
+          method: "PATCH",
+          headers: {
+            'Content-Type': "application/json"
+          },
+          body:JSON.stringify({
+            phone,
+            addr1: address1,
+            addr2: address2,
+            country: country,
+            state: state,
+            zip: zip,
+            city: city,
+            image: url.toString()
+          })
+        });
+        if(!res.ok){
+          setErrorMessage("Failed to update");
+          await waiting(4000);
+          setErrorMessage("");
+          setIsLoading(false);
+          return;
+        }
+        setSuccessMessage("Updated Successfully");
+        await waiting(3000);
+        setIsLoading(false);
+        setSuccessMessage("");
+        router.push("/transactions");
+      })
+
     }catch(e){
       setErrorMessage('Failed to update info')
       await waiting(4000);
@@ -292,7 +304,8 @@ export default function UserSettingsPage() {
         await waiting(5000);
         setErrorMessage("");
         await waiting(500);
-        logout();
+        await onloggedOut();
+        await logout();
       });
 
     }catch{
@@ -328,6 +341,10 @@ export default function UserSettingsPage() {
     return ()=>{}
   },[deleteInput, deletePasswordInput]);
 
+  const promptForCredential = (userEmail:string, userPassword:string) =>{
+    const credential = EmailAuthProvider.credential(userEmail, userPassword);
+    return credential;
+  }
   const handleDeleteAcc = async (e:any) => {
     e.preventDefault();
     if(!(deleteInput === randomText)){
@@ -340,6 +357,7 @@ export default function UserSettingsPage() {
     }
 
     try{
+      
       const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`, {method: 'DELETE'});
       if(!res.ok){
         setErrorMessage("Failed to delete account - !res.ok");
@@ -369,8 +387,9 @@ export default function UserSettingsPage() {
           deleteDialogueRef.current?.close();
           await waiting(4000);
           setErrorMessage("");
+          await onloggedOut();
+          await logout();
           router.push("/login");
-          logout();
           return;
         })();
       })
@@ -411,9 +430,8 @@ export default function UserSettingsPage() {
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>User Settings</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
-                  {"" && <Image src={``} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
-                  {/* {image && <img src={`${imageUrl}`} alt="logo" className='object-cover text-inherit w-44 h-44' />} */}
-                  {"userImage" && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faUserGear} />}
+                  {(userImageUrl.length > 40) && <Image src={`${userImageUrl}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
+                  {!(userImageUrl.length > 40) && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faUserGear} />}
                 </div>
               </div>
                 <form className="card-body">
@@ -448,7 +466,7 @@ export default function UserSettingsPage() {
                       {/* @ts-ignore */}
                       <input type="file" name='image' id='image' onChange={(e)=>{
                         // @ts-ignore
-                        // setAddImage(e.target.files[0])
+                        setAddImage(e.target.files[0])
                       }} className="file-input file-input-bordered w-full max-w-full" />
                     </div>
                     {/* Contact & Address */}

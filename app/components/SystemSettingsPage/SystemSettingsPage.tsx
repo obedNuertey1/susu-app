@@ -16,6 +16,10 @@ import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
 export default function SystemSettingsPage() {
   const router = useRouter();
   const {currentUser, signup, logout}:any = useAuth();
+  const {userRole}:any = useImagesContext();
+  if(userRole?.toLowerCase() != 'admin'){
+    return router.push("/page-not-found");
+  }
   if(!currentUser){ // Go to login page if user has not logged in.
     return router.push("/login");
   }
@@ -41,15 +45,12 @@ export default function SystemSettingsPage() {
   const [timezone, setTimezone] = useState<string>(""); //<- Time
 
 
-
-  const [imageUrl, setImageUrl] = useState<string>("");
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
   
   // @ts-ignore
-  const {uploadFile, systemImageUrl, systemImageRef}:any = useImagesContext();
+  const {uploadFile, systemImageRef}:any = useImagesContext();
 
   useEffect(()=>{
     (async ()=>{
@@ -81,27 +82,8 @@ export default function SystemSettingsPage() {
     })();
     
     return ()=>{}
-  },[])
+  },[image]);
 
-  // const fileName = `${sysid}.jpg`;
-  // let systemImageRef:StorageReference;
-  // console.log("_______image__________");
-  // console.log(image);
-  // if(image){
-  //   try{
-  //     const systemSettingsImageRef = ref(imagesRef, 'systemSettings');
-  //     systemImageRef = ref(systemSettingsImageRef, fileName);
-  //     getDownloadURL(systemImageRef).then((url)=>{
-  //       console.log("______firestore url______");
-  //       // console.log(url);
-  //       setImageUrl(`${url}`);
-  //       console.log(imageUrl);
-  //     })
-  //   }catch(e){
-  //     console.log(e);
-  //   }
-  // }
-  
   
   
   
@@ -112,7 +94,6 @@ export default function SystemSettingsPage() {
       // @ts-ignore
       if(addImage){
         await uploadFile(systemImageRef, addImage).then(async(snapshot:any) => {
-          setImage(`${sysid}.jpg`);
           console.log('Uploaded a blob or file!');
           console.log(snapshot);
         }).catch((e:any)=>{
@@ -125,28 +106,43 @@ export default function SystemSettingsPage() {
           })();
         });
       }
-
-      const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings/1`, {
-        method: "PATCH",
-        headers: {
-          'Content-Type': "application/json"
-        },
-        body:JSON.stringify({
-          title, name, footer, abb, currency, sms_charges, fax, website, mobile, email, address, map, stamp, timezone, image
-        })
-      });
-      if(!res.ok){
-        setErrorMessage("Failed to update");
-        await waiting(4000);
-        setErrorMessage("");
+      await getDownloadURL(systemImageRef).then(async (url)=>{
+        const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings/1`, {
+          method: "PATCH",
+          headers: {
+            'Content-Type': "application/json"
+          },
+          body:JSON.stringify({
+            title:title,
+            name:title, 
+            footer:footer, 
+            abb:abb, 
+            currency:currency, 
+            sms_charges:sms_charges, 
+            fax:fax, website:website, 
+            mobile:mobile, 
+            email:email, 
+            address:address, 
+            map:map, 
+            stamp:stamp, 
+            timezone:timezone,
+            image: url.toString()
+          })
+        });
+        if(!res.ok){
+          setErrorMessage("Failed to update");
+          await waiting(4000);
+          setErrorMessage("");
+          setIsLoading(false);
+          return;
+        }
+        setSuccessMessage("Updated Successfully");
+        await waiting(3000);
         setIsLoading(false);
-        return;
-      }
-      setSuccessMessage("Updated Successfully");
-      await waiting(3000);
-      setIsLoading(false);
-      setSuccessMessage("");
-      router.push("/transactions");
+        setSuccessMessage("");
+        router.push("/transactions");
+      })
+
     }catch(e){
       setErrorMessage(`Failed to update info ${e}`)
       await waiting(4000);
@@ -184,9 +180,9 @@ export default function SystemSettingsPage() {
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>System Settings</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
-                  {systemImageUrl && <Image src={`${systemImageUrl}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
+                  {image && <Image src={`${image}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
                   {/* {image && <img src={`${imageUrl}`} alt="logo" className='object-cover text-inherit w-44 h-44' />} */}
-                  {!systemImageUrl && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />}
+                  {!image && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />}
                 </div>
               </div>
                 <form className="card-body">

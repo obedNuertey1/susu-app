@@ -9,6 +9,7 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import {useRouter} from 'next/navigation';
 import waiting from '@/app/funcs/waiting';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
 
 
 async function getData(key:any){
@@ -45,6 +46,7 @@ const Register = () => {
   const [password2WarnText, setPassword2WarnText] = useState("");
   const [password2WarnColor, setPassword2WarnColor] = useState("");
   const [registerError, setRegisterError] = useState("");
+  const [adminPass, setAdminPass] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
@@ -59,6 +61,7 @@ const Register = () => {
   
 
   const {signup, currentUser}:any = useAuth(); // authentication
+  const {onloggedIn}:any = useImagesContext();
   
   console.log(JSON.stringify(currentUser));
   // @ts-ignore
@@ -172,6 +175,13 @@ const Register = () => {
   const handleSubmit = async (e:any)=>{
     e.preventDefault();
 
+    if(password.length < 5 || password2.length < 5){
+      setRegisterError("Password is too short - 8 entries should do");
+      await waiting(3000);
+      setRegisterError('');
+      return;
+    }
+
     if(password !== password2){
       setRegisterError("Passwords do not match");
       await waiting(3000);
@@ -189,7 +199,7 @@ const Register = () => {
       onAuthStateChanged(auth, (user)=>{
         if(user){
           (async ()=>{
-            const res = await fetch(`${process.env.REACT_SERVER_API}/users`, {
+            const res = await fetch(`${process.env.REACT_SERVER_API}/users?makeAdmin=${adminPass}`, {
               method: "Post",
               headers: {
                 "Content-Type": "application/json",
@@ -207,12 +217,13 @@ const Register = () => {
               setRegisterError('');
               throw new Error("Failed to Register")
             }
+            await onloggedIn();
             setLoading(false);
             router.push("/transactions")
           })();
         }else{
           (async ()=>{
-            setRegisterError("Failed to Register - Password too short");
+            setRegisterError("Failed to Register - Network Error");
             setLoading(false);
             await waiting(4000);
             setRegisterError('');
@@ -292,6 +303,7 @@ const Register = () => {
               warnColor={password2WarnColor}
               queryStatus={status}
               />
+              <InputField isRequired={false} placeholder='Enter admin passkey from authorities' inputText={setAdminPass} inputTextValue={adminPass} inputTypeValue='text' showPassword={true} labelText='Become An Admin:' />
               <button type='submit' {...(data?.verify === false || loading === true)?{disabled: true}:{disabled: false}} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
             </form>
             <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/login"}>Login instead?</Link></span></p>

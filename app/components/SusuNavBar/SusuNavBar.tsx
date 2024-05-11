@@ -1,27 +1,42 @@
 "use client";
 import Link from 'next/link'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import {useAuth} from "../../contexts/AuthContext";
 import { useRouter } from 'next/navigation';
 import waiting from '@/app/funcs/waiting';
 import styles from "./SusuNavBar.module.css";
 import "./SusuNavBar.css";
+import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
+import Image from 'next/image';
 
 const SusuNavBar = () => {
     const router = useRouter();
     const {currentUser, logout}:any = useAuth();
+    const {userImageUrl, userFullName, userRole, setLoggedIn, onloggedOut}:any = useImagesContext();
     const [logoutMessage, setLogoutMessage] = useState<string>('');
     const [failedMessage, setFailedMessage] = useState<string>('');
     const isAuthenticated:string = currentUser;
     console.log("isAuthenticated=",Boolean(isAuthenticated));
     const errorRef = useRef(null);
     const successRef = useRef(null);
+    
+    const userInitials = userFullName.split(/\s/g).slice(0, 2).reduce((accum:string, elem:string)=>{
+        try{
+            return accum + elem[0].toUpperCase(); 
+        }catch(e){
+            console.log(e);
+        }
+     }, [""])
+
+
     const handleLogout = async ()=>{
         
         try{
+            await onloggedOut();
             await logout();
             // @ts-ignore
             // successRef.current?.classList.add("scrollDown");
+            setLoggedIn(false);
             router.push("/login");
             // @ts-ignore
             // successRef.current?.classList.remove("scrollDown");
@@ -81,24 +96,53 @@ const SusuNavBar = () => {
                 {isAuthenticated && <Link href="/transactions" className="btn hidden sm:flex mr-[80%] btn-ghost sm:btm-nav-sm">Home</Link>} 
             </div>
                 <div className='navbar-center'>
-                    <h1 className="btn bg-transparent border-none shadow-none text-lg hover:bg-transparent active:scale-100 hover:cursor-default min-w-fit text-nowrap sm:text-sm">MSys Consult</h1>
+                    {isAuthenticated && 
+                        <>
+                            {
+                                userRole &&
+                                <h1 className="btn bg-transparent border-none shadow-none text-lg hover:bg-transparent active:scale-100 hover:cursor-default min-w-fit text-nowrap sm:text-sm">{ (userRole.toLowerCase() == 'admin')?<>ADMIN</>:<>USER</>}</h1>
+                            }
+                        </>
+                    }
                 </div>
-            <div className="navbar-end">
+            <div className="navbar-end flex flex-row items-center justify-end gap-2">
 
                 {/* Logout button */}
-                {isAuthenticated && <button className="btn btn-ghost sm:btm-nav-sm" onClick={handleLogout}>Logout</button>}
-            <label className="swap swap-rotate">
-                
-                {/* this hidden checkbox controls the state */}
-                <input type="checkbox" className="theme-controller" value="dark" />
-                
-                {/* sun icon */}
-                <svg className="swap-off fill-current w-10 h-10 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
-                
-                {/* moon icon */}
-                <svg className="swap-on fill-current w-10 h-10 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
-                
-            </label>
+                {isAuthenticated && <button className="btn btn-ghost sm:btm-nav-xs hidden sm:flex" onClick={handleLogout}>Logout</button>}
+                <label className="swap swap-rotate">
+                    
+                    {/* this hidden checkbox controls the state */}
+                    <input type="checkbox" className="theme-controller" value="dark" />
+                    
+                    {/* sun icon */}
+                    <svg className="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
+                    
+                    {/* moon icon */}
+                    <svg className="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
+                    
+                </label>
+            {/* Initials */}
+            {
+            isAuthenticated 
+            && 
+            <>
+                {(userImageUrl.length < 30) &&
+                <div className="avatar placeholder">
+                    <div className="bg-neutral text-neutral-content rounded-full w-12">
+                        <span>{userInitials}</span>
+                    </div>
+                </div>  
+                }
+                {/* Avatar */}
+                {(userImageUrl.length > 30) && 
+                    <div className="avatar">
+                        <div className="w-12 rounded-full ring ring-base-100 ring-offset-base-100 ring-offset-1">
+                        <Image src={`${userImageUrl}`} alt={`${userFullName}'s image`} width={50} height={50} unoptimized />
+                        </div>
+                    </div>
+                }
+            </>
+            }
             </div>
         </div>
         {/* <div className='fixed z-30 w-full flex flex-col items-center justify-center'>
