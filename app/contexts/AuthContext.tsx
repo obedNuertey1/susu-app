@@ -1,13 +1,14 @@
 "use client"
 import React, {useContext, useState, createContext, useEffect} from "react";
 import { auth } from "../firebase/firebase.config";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "firebase/auth";
 
 const AuthContext = createContext(null);
 
 export function useAuth(){
     return useContext(AuthContext);
 }
+
 
 export function AuthProvider({children}:any){
     const [currentUser, setCurrentUser] = useState();

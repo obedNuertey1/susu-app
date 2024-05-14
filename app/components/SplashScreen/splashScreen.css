@@ -1,0 +1,27 @@
+.image-loading{
+    transform: scale(1);
+    opacity: 1;
+    transform-origin: 50% 50%;
+    animation: imageLoad 0.7s ease-in-out 0s infinite alternate;
+}
+
+.invisible{
+    display: hidden;
+}
+
+.loadme{
+    display: hidden;
+}
+
+@keyframes imageLoad {
+    0%{
+        transform-origin: 50% 50%;
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    100%{
+        transform-origin: 50% 50%;
+        transform: scale(1);
+        opacity: 1;
+    }
+}

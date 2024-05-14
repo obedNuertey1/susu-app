@@ -1,6 +1,20 @@
+import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
 import React from 'react'
 
-export default function SusuFooter() {
+export default async function SusuFooter() {
+    let systemImageUrl:string="";
+    try{
+        const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+        if(!res.ok){
+            console.log("Error fetching footer info");
+        }
+        const data = await res.json();
+        systemImageUrl = data.image;
+    }catch(e:any){
+        console.log(e.message);
+    }
 
     const currentDate:string = new Date().toDateString();
     const dateRegex:RegExp = /.*(\d{4})$/;
@@ -11,7 +25,11 @@ export default function SusuFooter() {
   return (
     <>
         <footer className="footer items-center p-4 bg-neutral text-neutral-content">
-            <aside className="items-center grid-flow-col">
+            <aside className="items-center grid-flow-col gap-0">
+                <div className="block w-12 h-12 rounded-full m-auto bg-transparent overflow-clip">
+                    {!systemImageUrl && <FontAwesomeIcon icon={faPeopleGroup} fillRule="evenodd" clipRule="evenodd" className='w-full h-full text-lg text-color text-project-blue fill-current' />}
+                    {systemImageUrl && <div className="w-full h-[100%] flex flex-col itmes-center justify-center"><Image src={`${systemImageUrl}`} alt="System Settings image" width="50" height="50" className='block m-auto w-2/3 h-2/3 ' unoptimized /></div>}
+                </div>
                 <p>MSys Mobile | All rights reserved. {year} ©</p>
             </aside> 
             <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">

@@ -117,9 +117,9 @@ export default function TransactionsPage() {
               <div className={`text-center lg:text-left`} style={{...scaleDown, ...showUpAnime}}>
                 <div id='organisation-logo-name' className='w-full flex flex-col gap-0.5 justify-center items-center'>
                     <div id='organisation-logo'>
-                      <div className="block avatar w-24 h-24 rounded-full m-auto bg-base-100 border-base-100 border overflow-clip">
-                        {!systemImageUrl && <FontAwesomeIcon icon={faPeopleGroup} className='w-full h-full text-lg text-color text-project-blue' />}
-                        {systemImageUrl && <Image src={`${systemImageUrl}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
+                      <div className="block w-24 h-24 rounded-full m-auto bg-transparent border-transparent border overflow-clip">
+                        {!systemImageUrl && <FontAwesomeIcon icon={faPeopleGroup} className='w-1/2 h-1/2 text-lg text-color text-project-blue' />}
+                          {systemImageUrl && <div className="w-full h-[100%] flex flex-col itmes-center justify-center"><Image src={`${systemImageUrl}`} alt="System Settings image" width="50" height="50" className='block m-auto w-2/3 h-2/3 ' unoptimized /></div>}
                       </div>
                     </div>
                     <div id='organisation-name' className='w-fit'>

@@ -106,7 +106,10 @@ const LoginPage = () => {
               <InputField passwordMatchText="Password don't Match" isRequired={true} placeholder='Enter your password' ref={warnRef} inputText={setPassword} inputTextValue={password} inputTypeValue='password' labelText='Password:' showPassword={true} />
               <button type='submit' {...(loading?({disabled:true}):({disabled:false}))} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
             </form>
-            <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/register"}>Register instead?</Link></span></p>
+            <div className='flex flex-col sm:flex-row justify-center gap-0 sm:gap-3 px-1 items-center'>
+              <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700 text-wrap' href={"/register"}>Register instead?</Link></span></p>
+              <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700 text-wrap' href={"/forgot-password"}>Forgot Password?</Link></span></p>
+            </div>
           </div>
       </div>
     </>

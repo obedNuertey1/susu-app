@@ -114,7 +114,7 @@ export default function SystemSettingsPage() {
           },
           body:JSON.stringify({
             title:title,
-            name:title, 
+            name:name, 
             footer:footer, 
             abb:abb, 
             currency:currency, 
@@ -180,7 +180,9 @@ export default function SystemSettingsPage() {
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>System Settings</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
-                  {image && <Image src={`${image}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
+                  {image && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                    <Image src={`${image}`} alt="System Settings image" width="50" height="50" className='object-center w-1/2 h-1/2 m-auto' unoptimized />
+                  </div>}
                   {/* {image && <img src={`${imageUrl}`} alt="logo" className='object-cover text-inherit w-44 h-44' />} */}
                   {!image && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />}
                 </div>
