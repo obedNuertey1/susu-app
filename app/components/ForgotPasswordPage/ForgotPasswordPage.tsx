@@ -1,13 +1,16 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import InputField from '../InputField/InputField';
 import Link from 'next/link';
 import waiting from '@/app/funcs/waiting';
 import { confirmPasswordReset, getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import "./ForgotPasswordPage.css";
+import { useRouter } from 'next/navigation';
 
 function ForgotPasswordPage({params, searchParams}: {params: {email: string}, searchParams?:{[key: string]:string|string[]|undefined},}) {
     const auth = getAuth();
     // const {oobCode}:any = searchParams;
+    const router = useRouter();
     console.log("_______auth.currentUser______");
     console.log(auth.currentUser);
     console.log(searchParams);
@@ -15,6 +18,18 @@ function ForgotPasswordPage({params, searchParams}: {params: {email: string}, se
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [email, setEmail] = useState<string>("");
+
+    const forgotPasswordRef = useRef<HTMLDivElement>(null);
+
+    useEffect(()=>{
+      forgotPasswordRef.current?.classList.toggle("animate-appear-top");
+      forgotPasswordRef.current?.classList.remove("animate-disappear-down");
+      // forgotPasswordRef.current?.classList.add("animate-disappear-down");
+      return ()=>{
+        forgotPasswordRef.current?.classList.toggle("animate-appear-top");
+      }
+    },[]);
+
     const handleSubmit = async (e:any)=>{
         e.preventDefault();
         try{
@@ -83,8 +98,7 @@ function ForgotPasswordPage({params, searchParams}: {params: {email: string}, se
                 <span>{successMessage}</span>
             </div>
         }
-      <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 '>
-
+      <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 original-state' ref={forgotPasswordRef}>
           <div className='w-full mb-6'>
             <h2 className='text-center text-2xl font-extrabold'>Email</h2>
           </div>
@@ -92,7 +106,16 @@ function ForgotPasswordPage({params, searchParams}: {params: {email: string}, se
             <InputField isRequired={true} placeholder='Enter your email' inputText={setEmail} inputTextValue={email} inputTypeValue='email' labelText='Your Email:' />
             <button type='submit' {...(isLoading?({disabled:true}):({disabled:false}))} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
           </form>
-          <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/login"}>Login instead?</Link></span></p>
+          {/* <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/login"}>Login instead?</Link></span></p> */}
+          <p
+          onClick={async ()=>{
+            forgotPasswordRef.current?.classList.remove("original-state");
+            forgotPasswordRef.current?.classList.add("animate-disappear-down");
+            await waiting(700);
+            // Move to the bottom and disappear
+            router.push("/login");
+          }}
+          ><span className='text-right text-blue-900 hover:underline hover:decoration-blue-700 link link-hover'>Login instead?</span></p>
         </div>
     </div>
   </>

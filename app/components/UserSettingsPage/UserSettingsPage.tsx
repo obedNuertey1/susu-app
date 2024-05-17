@@ -12,7 +12,7 @@ import waiting from '@/app/funcs/waiting';
 import InputField, { passwordMatchType } from '../InputField/InputField';
 import { warnTextType, warnColorType } from '../InputField/InputField';
 import checkPasswordStrength from '@/app/funcs/checkPasswordStrength';
-import {deleteUser, getAuth, updatePassword, reauthenticateWithCredential, AuthCredential} from "firebase/auth";
+import {deleteUser, getAuth, updatePassword, reauthenticateWithCredential, AuthCredential, sendEmailVerification, Auth} from "firebase/auth";
 import { useRedirectContext } from '@/app/contexts/RedirectContext';
 import {SHA256} from 'crypto-js';
 import generateRandomText from '@/app/funcs/generateRandomText';
@@ -28,7 +28,7 @@ export default function UserSettingsPage() {
     return router.push("/login");
   }
 
-  const auth2 = getAuth();
+  const auth:Auth = getAuth();
 
   const {setRedirectHashId, redirectHashId}:any = useRedirectContext();
 
@@ -84,11 +84,38 @@ export default function UserSettingsPage() {
   const deletePasswordRef = useRef(null);
 
     // @ts-ignore
-    const {uploadFile, userImageUrl, userImageRef}:any = useImagesContext();
-    const {onloggedOut}:any = useImagesContext();
+    const {onloggedOut, uploadFile, userImageUrl, userImageRef, onloggedIn}:any = useImagesContext();
+    
 
+    const handleSendVerificationMail = async (e:any)=>{
+      try{
+        e.preventDefault();
+        await sendEmailVerification(currentUser, {url: `http://localhost:3000/transactions?email=${currentUser.email}`});
+        setSuccessMessage(`An verification mail has been sent to ${currentUser.email}`);
+        await waiting(4000);
+        setSuccessMessage("");
+      }catch(x){
+        console.log(x);
+        setErrorMessage("Failed to send email verification mail😥");
+        await waiting(4000);
+        setErrorMessage("");
+      }
+    }
 
   useEffect(()=>{
+    onloggedIn();
+    try{
+      if(!auth.currentUser?.emailVerified){
+        (async ()=>{
+            await waiting(4000);
+            setErrorMessage("Please verify your email - UserSettings/resend mail");
+            await waiting(4000);
+            setErrorMessage("");
+        })();
+      }
+    }catch(e){
+      console.log(e);
+    }
     (async ()=>{
       try{
         const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`);
@@ -523,6 +550,16 @@ export default function UserSettingsPage() {
                       <input type="text" id='zip' value={zip} onChange={(e)=>{setZip(e.target.value)}} name='zip' placeholder="Enter your zip code" className="input input-bordered"  />
                     </div>
                     {/* Country Info */}
+                    {
+                    !auth.currentUser?.emailVerified
+                    &&
+                    <>
+                      <div className="divider">Verify your email</div>
+                      <div className="form-control mt-6">
+                          <button onClick={handleSendVerificationMail} className="btn btn-info">Resend verification mail</button>
+                      </div>
+                    </>
+                    }
                     <div className="divider">Actions</div>
                     {/* <div className="card-actions flex flex-col items-center w-full"> */}
                       <div className="form-control mt-6">

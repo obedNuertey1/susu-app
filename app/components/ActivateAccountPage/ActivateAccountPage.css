@@ -1,0 +1,33 @@
+.original-state{
+    -webkit-clip-path: circle(0% at center);
+    clip-path: circle(0% at center);
+}
+
+.popup{
+    transform-origin: 50% 50%;
+    animation: popin 0.7s linear 0.3s 1 forwards;
+}
+
+
+@keyframes popin {
+    to{
+        -webkit-clip-path: circle(100% at center);
+        clip-path: circle(100% at center);
+    }
+}
+
+.popout{
+    transform-origin: 50% 50%;
+    animation: popin-reverse 0.7s linear 0s forwards;
+}
+
+@keyframes popin-reverse{
+    0%{
+        -webkit-clip-path: circle(100% at center);
+        clip-path: circle(100% at center);
+    }
+    100%{
+        -webkit-clip-path: circle(0% at center);
+        clip-path: circle(0% at center);
+    }
+}

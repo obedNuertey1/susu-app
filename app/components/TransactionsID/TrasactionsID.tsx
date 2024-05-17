@@ -9,6 +9,8 @@ import styles from "./[id].module.css";
 import waiting from '@/app/funcs/waiting';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
+import { useImagesContext } from '@/app/contexts/ImagesContext';
+import { Auth, getAuth } from 'firebase/auth';
 
 function TransactionsID({params, searchParams}: {params: {id: string}, searchParams?:{[key: string]:string|string[]|undefined},}) {
     const router = useRouter();
@@ -16,6 +18,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
     if(!currentUser){
       return router.push("/login");
     }
+    const auth:Auth = getAuth();
     const {id}:any = params;
     const [account, setAccount] = useState<string>(`${id}`);
     const [fullName, setFullName] = useState<string>("");
@@ -25,10 +28,24 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [agentUsername, setAgentUsername] = useState<string>("");
+    const {onloggedIn}:any = useImagesContext();
 
     useEffect(()=>{
-      getFields();
+      try{
+        if(!auth.currentUser?.emailVerified){
+          (async ()=>{
+              await waiting(4000);
+              setErrorMessage("Please verify your email - UserSettings/[resend mail]");
+              await waiting(4000);
+              setErrorMessage("");
+          })();
+        }
 
+      }catch(e){
+        console.log(e);
+      }
+      onloggedIn();
+      getFields();
       return ()=>{}
     },[]);
 

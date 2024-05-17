@@ -1,0 +1,33 @@
+.login-original-state{
+    opacity: 0;
+    transform-origin: center;
+    transform: translateY(-50%);
+}
+
+.login-animate-appear-top{
+    opacity: 0;
+    animation: slideDown 0.7s ease-in 0s 1 forwards;
+}
+
+@keyframes slideDown {
+    to{
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+.login-animate-disappear-down{
+    opacity: 1;
+    animation: slideDownVanish 0.7s ease-out 0s 1 forwards;
+}
+
+.state-2{
+    transform: translateY(-50%);
+}
+
+@keyframes slideDownVanish{
+    to{
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+}

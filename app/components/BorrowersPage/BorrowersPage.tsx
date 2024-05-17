@@ -9,6 +9,7 @@ import { useQuery } from 'react-query';
 import { chunk } from 'lodash';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
+import waiting from '@/app/funcs/waiting';
 
 async function getData(key:any){
     try{
@@ -44,6 +45,7 @@ function BorrowersPage() {
     const [searchSpace, setSearchSpace] = useState("");
     const [searchByFilterValue, setSearchByFilterValue] = useState("");
     const [searchSpaceValue, setSearchSpaceValue] = useState("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const {status, data, refetch} = useQuery([pageNum, searchByFilterValue, searchSpaceValue], getData);
     const tableRef = useRef(null);
     const loadRef = useRef(null);
@@ -57,6 +59,14 @@ function BorrowersPage() {
 
     useEffect(()=>{
         getFieldData();
+        if(!currentUser.emailVerified){
+            (async ()=>{
+                await waiting(4000);
+                setErrorMessage("Please verify your email - go to settings to start the process");
+                await waiting(4000);
+                setErrorMessage("");
+            })();
+        }
 
         return ()=>{}
     }, []);
@@ -213,6 +223,15 @@ function BorrowersPage() {
 
   return (
     <>
+            {
+      errorMessage && 
+      <>
+        <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>{errorMessage}</span>
+        </div>
+      </>
+      }
         <div
         className='flex flex-col gap-3 w-full justify-center items-center fixed left-0 right-0 top-11 pt-8 pb-1 bg-base-100 z-20'>
             <div className='flex flex-row justify-between w-full px-5 bg-base-100'>

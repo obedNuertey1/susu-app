@@ -1,18 +1,15 @@
-import React from 'react'
+import React from 'react';
+import ActivateAccountPage from '../components/ActivateAccountPage/ActivateAccountPage';
+import { metadata } from '../layout';
 
 function page({params, searchParams}: {params: {email: string}, searchParams?:{[key: string]:string|string[]|undefined},}) {
-    const {email}:any = searchParams
+    metadata.description = "Activate User's account";
+    metadata.title = "MSYS - activate account"
     return (
-        <div className='flex justify-center items-center h-screen'>
-            <div className='max-w-sm m-auto w-10/12 items-center justify-center flex flex-col'>
-                <div className="card card-bordered card-normal shadow-lg rounded-md p-4">
-                    <div className="card-title"><h1 className='text-center w-full text-primary'>Activate your account</h1></div>
-                    <div className="card-body">
-                    <p className='text-center'>You need to activate your account. An email has been sent to {email}. Visit your email to activate your account and continue</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <>
+            {/* @ts-ignore */}
+            <ActivateAccountPage params={params} searchParams={searchParams} />
+        </>
     )
 }
 

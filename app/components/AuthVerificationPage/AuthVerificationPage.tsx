@@ -1,38 +1,67 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import waiting from '@/app/funcs/waiting';
-import { EmailAuthProvider, confirmPasswordReset, getAuth} from 'firebase/auth';
+import { Auth, EmailAuthProvider, applyActionCode, confirmPasswordReset, getAuth} from 'firebase/auth';
 import InputField from '../InputField/InputField';
 import { useRouter } from 'next/navigation';
 import getSearchQueryParams from '@/app/funcs/getSearchQueryParams';
 import { useAuth } from '@/app/contexts/AuthContext';
+import "./AuthVerificationPage.css";
 
 
 function AuthVerificationPage({params, searchParams}: {params: {email: string}, searchParams?:{[key: string]:string|string[]|undefined},}) {
     const router = useRouter();
     const {oobCode, continueUrl, mode}:any = searchParams;
-    
-    if(!oobCode || !continueUrl){
-        return router.push("/login");
+    const auth:Auth = getAuth();
+    try{
+      if(!mode || !oobCode || !continueUrl){
+          return router.push("/page-not-found");
+      }else if(auth.currentUser?.emailVerified){
+        return router.push("/transactions");
+      }
+      
+    }catch(e){
+      console.log(e)
     }
-    const auth = getAuth();
 
     const {login}:any = useAuth();
 
-
-    console.log("_____getSearchQueryParams(continue).email_______");
     const {email} = getSearchQueryParams(continueUrl);
-    console.log(email);
 
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [password, setPassword] = useState<string>("");
+    const cardAnimeRef = useRef<HTMLDivElement>(null);
 
-    const promptForCredential = (userEmail:string, userPassword:string) =>{
-        const credential = EmailAuthProvider.credential(userEmail, userPassword);
-        return credential;
+    useEffect(()=>{
+      cardAnimeRef.current?.classList.add("popup");
+      return ()=>{
+        cardAnimeRef.current?.classList.remove("popup");
+        cardAnimeRef.current?.classList.remove("popout");
       }
+    }, []);
+
+    const handleVerify = async (e:any)=>{
+      e.preventDefault();
+      try{
+        setIsLoading(true);
+        await applyActionCode(auth, oobCode);
+        setSuccessMessage("Email has been successfully verified 🥳🥳")
+        await waiting(4000);
+        setSuccessMessage("");
+        setIsLoading(false);
+        cardAnimeRef.current?.classList.add("popout");
+        await waiting(700);
+        window.location.reload();
+      }catch(x){
+        console.log(x);
+        setErrorMessage("Failed to verify email 🥺🥺");
+        await waiting(4000);
+        setErrorMessage("");
+        setIsLoading(false);
+      }
+    }
 
     const handleSubmit = async (e:any)=>{
         e.preventDefault();
@@ -73,6 +102,8 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
             await waiting(4000);
             setSuccessMessage("");
             setIsLoading(false);
+            cardAnimeRef.current?.classList.add("popout");
+            await waiting(700);
             router.push("/transactions");
 
         }catch(e){
@@ -104,7 +135,7 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
         {
         (mode === "resetPassword")
         &&
-        <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 '>
+        <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 original-state' ref={cardAnimeRef}>
             <div className='w-full mb-6'>
               <h2 className='text-center text-2xl font-extrabold'>New Password</h2>
             </div>
@@ -115,15 +146,15 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
         </div>
         }
         {
-          (mode === "action")
+          (mode === "verifyEmail")
           &&
           <div className='max-w-md m-auto w-10/12 items-center justify-center flex flex-col'>
-            <div className="card card-bordered card-normal shadow-lg rounded-md p-4">
-              <div className="card-title"><h1 className='text-center w-full'>Email Verified!🥳🥳</h1></div>
+            <div className="card card-bordered card-normal shadow-lg rounded-lg p-4 original-state" ref={cardAnimeRef}>
+              <div className="card-title"><h1 className='text-center w-full'>Email verification - One step to go!😅😅</h1></div>
               <div className="card-body">
-                <p className='text-center'>Welcome aboard! Your email has been successfully verified. We're thrilled to have you join us!</p>
+                <p className='text-center'>Welcome aboard! Your email is one step closer to being verified. Click the button below to verify your email</p>
               </div>
-              <div className="card-actions flex flex-row justify-center items-center"><button className='btn btn-outline btn-primary'>Go to homepage</button></div>
+              <div className="card-actions flex flex-row justify-center items-center"><button {...(isLoading?({disabled:true}):({disabled:false}))} onClick={handleVerify} className='btn btn-outline btn-primary'>Complete Verification</button></div>
             </div>
           </div>
         }

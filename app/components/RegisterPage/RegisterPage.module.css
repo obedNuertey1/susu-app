@@ -1,0 +1,45 @@
+.registerOriginalState{
+    opacity: 0;
+    transform-origin: center;
+    transform: translateX(-50%);
+}
+
+.registerAnimateAppearTop{
+    opacity: 0;
+    animation: slideDown 0.7s ease-in 0s 1 forwards;
+}
+
+@keyframes slideDown {
+    to{
+        transform: translateX(0%);
+        opacity: 1;
+    }
+}
+
+.registerAnimateDisappearDown{
+    opacity: 1;
+    animation: slideDownVanish 0.7s ease-out 0s 1 forwards;
+}
+
+.loginAnimateDisappearDown{
+    opacity: 0;
+    animation: slideDownVanishLogin 0.7s ease-in 0s 1 forwards;
+}
+
+@keyframes slideDownVanishLogin {
+    to{
+        transform: translateX(-50%);
+        opacity: 0;
+    }
+}
+
+.state2{
+    transform: translateX(-50%);
+}
+
+@keyframes slideDownVanish{
+    to{
+        transform: translateX(-50%);
+        opacity: 0;
+    }
+}

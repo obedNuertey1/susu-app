@@ -12,6 +12,7 @@ import waiting from '@/app/funcs/waiting';
 import { imageRepo, imagesRef } from '@/app/firebase/firebase.config';
 import { StorageReference, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
 import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
+import { Auth, getAuth } from 'firebase/auth';
 
 export default function SystemSettingsPage() {
   const router = useRouter();
@@ -49,8 +50,25 @@ export default function SystemSettingsPage() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
   
-  // @ts-ignore
-  const {uploadFile, systemImageRef}:any = useImagesContext();
+  const {uploadFile, systemImageRef, onloggedIn}:any = useImagesContext();
+  const auth:Auth = getAuth();
+  
+
+  useEffect(()=>{
+    onloggedIn();
+    try{
+      if(!auth.currentUser?.emailVerified){
+        (async ()=>{
+            await waiting(4000);
+            setErrorMessage("Please verify your email - go to settings to start the process");
+            await waiting(4000);
+            setErrorMessage("");
+        })();
+      }
+    }catch(e){
+      console.log(e);
+    }
+  }, []);
 
   useEffect(()=>{
     (async ()=>{

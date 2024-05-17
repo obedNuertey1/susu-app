@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 import waiting from '@/app/funcs/waiting';
 import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
+import { Auth, getAuth } from 'firebase/auth';
 
 async function getData(key:any){
   try{
@@ -41,11 +42,26 @@ export default function TransactionsPage() {
   if(!currentUser){
     return router.push("/login");
   }
+  const auth:Auth = getAuth();
   const [accountNum, setAccountNum] = useState("");
   const {status, data} = useQuery([accountNum], getData);
   const {onloggedIn, getUser, getSystem}:any = useImagesContext();
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(()=>{
+
+    try{
+      if(!auth.currentUser?.emailVerified){
+        (async ()=>{
+            await waiting(4000);
+            setErrorMessage("Please verify your email - UserSettings/[resend mail]");
+            await waiting(4000);
+            setErrorMessage("");
+        })();
+      }
+    }catch(e){
+      console.log(e);
+    }
     onloggedIn();
   }, []);
   // @ts-ignore
@@ -109,6 +125,15 @@ export default function TransactionsPage() {
 
   return (
     <>
+    {
+      errorMessage && 
+      <>
+        <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>{errorMessage}</span>
+        </div>
+      </>
+      }
         <div className="hero min-h-screen bg-base-200 relative scroll-m-0 scroll-p-0">
         <Image src={illustration_1} alt="transaction illustration 1" className='sm:fixed w-1/4 right-2 stroke-base-100 fill-base-100' />
         <Image src={illustration_2} alt="transaction illustration 2" className='sm:fixed w-1/4 left-2 stroke-base-100 fill-base-100'/>

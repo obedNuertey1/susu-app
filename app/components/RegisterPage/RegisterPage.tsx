@@ -10,6 +10,8 @@ import {useRouter} from 'next/navigation';
 import waiting from '@/app/funcs/waiting';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
+import "./RegisterPage.css";
+import styles from "./RegisterPage.module.css";
 
 
 async function getData(key:any){
@@ -56,6 +58,7 @@ const Register = () => {
   const loadingRef = useRef(null);
   const goodRef = useRef(null);
   const takenRef = useRef(null);
+  const registerRef = useRef<HTMLDivElement>(null);
   
   const {status, data} = useQuery([username], getData);
   
@@ -65,6 +68,17 @@ const Register = () => {
   
   console.log(JSON.stringify(currentUser));
   // @ts-ignore
+
+  useEffect(()=>{
+    registerRef.current?.classList.add("register-animate-appear-top");
+    registerRef.current?.classList.remove("register-animate-disappear-down");
+    // registerRef.current?.classList.add("register-animate-disappear-down");
+    return ()=>{
+      registerRef.current?.classList.remove("register-animate-appear-top");
+      // registerRef.current?.classList.remove("register-animate-disappear-down");
+    }
+  }, []);
+
   useEffect(()=>{
     (async ()=>{ // For first password field
       
@@ -219,7 +233,7 @@ const Register = () => {
             }
             await onloggedIn();
             setLoading(false);
-            router.push("/transactions")
+            router.push(`/activate-account?email=${email}`);
           })();
         }else{
           (async ()=>{
@@ -251,8 +265,8 @@ const Register = () => {
         </>
         }
       <div className='navbar'></div>
-      <div className='flex justify-center items-center h-screen sm:h-full mb-[18%] sm:mb-[10%] md:mb-[2%] '>
-        <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 '>
+      <div className='flex justify-center items-center h-[100%] my-2 sm:h-screen lg:h-[100%] overflow-x-clip overflow-y-clip'>
+        <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 register-original-state' ref={registerRef} >
             <div className='w-full mb-6'>
               <LoginAvatar />
               <h2 className='text-center text-2xl font-extrabold'>Register</h2>
@@ -306,7 +320,16 @@ const Register = () => {
               <InputField isRequired={false} placeholder='Enter admin passkey from authorities' inputText={setAdminPass} inputTextValue={adminPass} inputTypeValue='text' showPassword={true} labelText='Become An Admin:' />
               <button type='submit' {...(data?.verify === false || loading === true)?{disabled: true}:{disabled: false}} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
             </form>
-            <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/login"}>Login instead?</Link></span></p>
+            {/* <p><span><Link className='text-right text-blue-900 hover:underline hover:decoration-blue-700' href={"/login"}>Login instead?</Link></span></p> */}
+            <p
+            onClick={async ()=>{
+              registerRef.current?.classList.remove("register-original-state");
+              registerRef.current?.classList.add("register-animate-disappear-down");
+              await waiting(700);
+              // Move to the bottom and disappear
+              router.push("/login");
+            }}
+            ><span className='text-right text-blue-900 hover:underline hover:decoration-blue-700 link link-hover'>Login instead?</span></p>
           </div>
       </div>
       {/* <footer className="footer items-center p-4 bg-neutral text-neutral-content  opacity-1 z-50">
