@@ -82,6 +82,7 @@ export default function UserSettingsPage() {
 
   const [deletePasswordInput, setDeletePasswordInput] = useState<string>("");
   const deletePasswordRef = useRef(null);
+  const cardAnimeRef = useRef<HTMLDivElement>(null);
 
     // @ts-ignore
     const {onloggedOut, uploadFile, userImageUrl, userImageRef, onloggedIn}:any = useImagesContext();
@@ -135,7 +136,9 @@ export default function UserSettingsPage() {
       }
     })();
 
-    return ()=>{}
+    return ()=>{
+      cardAnimeRef.current?.classList.remove(`${styles.cardAnimeUp}`);
+    }
   },[])
 
     // @ts-ignore
@@ -223,50 +226,94 @@ export default function UserSettingsPage() {
             throw new Error("Failed to send image");
           })();
         })
+        await getDownloadURL(userImageRef).then(async (url)=>{
+  
+          const res1 = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`)
+          if(!res1.ok){
+            setErrorMessage("Failed to update");
+            await waiting(4000);
+            setErrorMessage("");
+            setIsLoading(false);
+            return;
+          }
+          const res1Data = await res1.json();
+          console.log("res1Data.userid");
+          console.log(res1Data.userid);
+          const res = await fetch(`${process.env.REACT_SERVER_API}/users/${res1Data.userid}`, {
+            method: "PATCH",
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body:JSON.stringify({
+              phone,
+              addr1: address1,
+              addr2: address2,
+              country: country,
+              state: state,
+              zip: zip,
+              city: city,
+              image: url.toString()
+            })
+          });
+          if(!res.ok){
+            setErrorMessage("Failed to update");
+            await waiting(4000);
+            setErrorMessage("");
+            setIsLoading(false);
+            return;
+          }
+          setSuccessMessage("Updated Successfully");
+          await waiting(4000);
+          setIsLoading(false);
+          setSuccessMessage("");
+          cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
+          await waiting(500);
+          router.push("/transactions");
+        })
+        return;
       }
 
-      await getDownloadURL(userImageRef).then(async (url)=>{
 
-        const res1 = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`)
-        if(!res1.ok){
-          setErrorMessage("Failed to update");
-          await waiting(4000);
-          setErrorMessage("");
-          setIsLoading(false);
-          return;
-        }
-        const res1Data = await res1.json();
-        console.log("res1Data.userid");
-        console.log(res1Data.userid);
-        const res = await fetch(`${process.env.REACT_SERVER_API}/users/${res1Data.userid}`, {
-          method: "PATCH",
-          headers: {
-            'Content-Type': "application/json"
-          },
-          body:JSON.stringify({
-            phone,
-            addr1: address1,
-            addr2: address2,
-            country: country,
-            state: state,
-            zip: zip,
-            city: city,
-            image: url.toString()
-          })
-        });
-        if(!res.ok){
-          setErrorMessage("Failed to update");
-          await waiting(4000);
-          setErrorMessage("");
-          setIsLoading(false);
-          return;
-        }
-        setSuccessMessage("Updated Successfully");
+      const res1 = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`)
+      if(!res1.ok){
+        setErrorMessage("Failed to update");
         await waiting(4000);
+        setErrorMessage("");
         setIsLoading(false);
-        setSuccessMessage("");
-        router.push("/transactions");
-      })
+        return;
+      }
+      const res1Data = await res1.json();
+      console.log("res1Data.userid");
+      console.log(res1Data.userid);
+      const res = await fetch(`${process.env.REACT_SERVER_API}/users/${res1Data.userid}`, {
+        method: "PATCH",
+        headers: {
+          'Content-Type': "application/json"
+        },
+        body:JSON.stringify({
+          phone,
+          addr1: address1,
+          addr2: address2,
+          country: country,
+          state: state,
+          zip: zip,
+          city: city
+        })
+      });
+      if(!res.ok){
+        setErrorMessage("Failed to update");
+        await waiting(4000);
+        setErrorMessage("");
+        setIsLoading(false);
+        return;
+      }
+      setSuccessMessage("Updated Successfully");
+      await waiting(4000);
+      setIsLoading(false);
+      setSuccessMessage("");
+      cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
+      await waiting(500);
+      router.push("/transactions");
 
     }catch(e){
       setErrorMessage('Failed to update info')
@@ -346,6 +393,8 @@ export default function UserSettingsPage() {
           passwordModalRef?.current?.close();
           setSuccessMessage("Password Updated: You'll be redirected to login again");
           await waiting(4000);
+          cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
+          await waiting(500);
           // move to relogin page
           router.push(`/relogin?usingEmail=true&hashInfo=${emailHash}`);
         }).catch(async ()=>{
@@ -478,8 +527,8 @@ export default function UserSettingsPage() {
       </div>
       <div className={`navbar hidden ${styles.pushUp}`}></div>
       <div className='navbar lg:hidden xl:block'></div>
-      <div className={`relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px] `}>
-          <div className="card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90">
+      <div className={`relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px] overflow-y-clip`}>
+          <div className={`card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90 ${styles.cardAnimeDown}`} ref={cardAnimeRef}>
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>User Settings</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
@@ -566,7 +615,11 @@ export default function UserSettingsPage() {
                         <button onClick={handleSubmit} {...(isLoading?{disabled:true}:{disabled:false})} type='submit' className="btn btn-primary">Update</button>
                       </div>
                       <div className="form-control mt-2">
-                          <Link role='link' href={"/transactions"} className="btn btn-error">Cancel</Link>
+                          <span role='link' className="btn btn-error" onClick={async ()=>{
+                            cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
+                            await waiting(500);
+                            router.push("/transactions");
+                          }} >Cancel</span>
                       </div>
                     {/* </div> */}
                     <div className="divider divider-error text-error">Danger Zone</div>

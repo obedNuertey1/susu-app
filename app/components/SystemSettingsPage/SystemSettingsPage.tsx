@@ -2,7 +2,7 @@
 import { faGears} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styles from "./system-settings.module.css";
 import girlEngineer from "../../assets/Groupengineering-girl.svg"
 import Image from 'next/image';
@@ -52,6 +52,7 @@ export default function SystemSettingsPage() {
   
   const {uploadFile, systemImageRef, onloggedIn}:any = useImagesContext();
   const auth:Auth = getAuth();
+  const cardAnimeRef = useRef<HTMLDivElement>(null);
   
 
   useEffect(()=>{
@@ -67,6 +68,9 @@ export default function SystemSettingsPage() {
       }
     }catch(e){
       console.log(e);
+    }
+    return ()=>{
+      cardAnimeRef.current?.classList.remove(`${styles.cardAnimeUp}`)
     }
   }, []);
 
@@ -123,43 +127,82 @@ export default function SystemSettingsPage() {
             throw new Error("Failed to send image");
           })();
         });
-      }
-      await getDownloadURL(systemImageRef).then(async (url)=>{
-        const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings/1`, {
-          method: "PATCH",
-          headers: {
-            'Content-Type': "application/json"
-          },
-          body:JSON.stringify({
-            title:title,
-            name:name, 
-            footer:footer, 
-            abb:abb, 
-            currency:currency, 
-            sms_charges:sms_charges, 
-            fax:fax, website:website, 
-            mobile:mobile, 
-            email:email, 
-            address:address, 
-            map:map, 
-            stamp:stamp, 
-            timezone:timezone,
-            image: url.toString()
-          })
-        });
-        if(!res.ok){
-          setErrorMessage("Failed to update");
+        await getDownloadURL(systemImageRef).then(async (url)=>{
+          const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings/1`, {
+            method: "PATCH",
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body:JSON.stringify({
+              title:title,
+              name:name, 
+              footer:footer, 
+              abb:abb, 
+              currency:currency, 
+              sms_charges:sms_charges, 
+              fax:fax, website:website, 
+              mobile:mobile, 
+              email:email, 
+              address:address, 
+              map:map, 
+              stamp:stamp, 
+              timezone:timezone,
+              image: url.toString()
+            })
+          });
+          if(!res.ok){
+            setErrorMessage("Failed to update");
+            await waiting(4000);
+            setErrorMessage("");
+            setIsLoading(false);
+            return;
+          }
+          setSuccessMessage("Updated Successfully");
           await waiting(4000);
-          setErrorMessage("");
           setIsLoading(false);
-          return;
-        }
-        setSuccessMessage("Updated Successfully");
+          setSuccessMessage("");
+          cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
+          await waiting(500);
+          router.push("/transactions");
+        })
+        return;
+      }
+
+      const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings/1`, {
+        method: "PATCH",
+        headers: {
+          'Content-Type': "application/json"
+        },
+        body:JSON.stringify({
+          title:title,
+          name:name, 
+          footer:footer, 
+          abb:abb, 
+          currency:currency, 
+          sms_charges:sms_charges, 
+          fax:fax, website:website, 
+          mobile:mobile, 
+          email:email, 
+          address:address, 
+          map:map, 
+          stamp:stamp, 
+          timezone:timezone
+        })
+      });
+      if(!res.ok){
+        setErrorMessage("Failed to update");
         await waiting(4000);
+        setErrorMessage("");
         setIsLoading(false);
-        setSuccessMessage("");
-        router.push("/transactions");
-      })
+        return;
+      }
+      setSuccessMessage("Updated Successfully");
+      await waiting(4000);
+      setIsLoading(false);
+      setSuccessMessage("");
+      cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
+      await waiting(500);
+      router.push("/transactions");
 
     }catch(e){
       setErrorMessage(`Failed to update info ${e}`)
@@ -193,8 +236,8 @@ export default function SystemSettingsPage() {
       </div>
       <div className={`navbar hidden ${styles.pushUp}`}></div>
       <div className='navbar lg:hidden xl:block'></div>
-      <div className={`relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px] `}>
-          <div className="card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90">
+      <div className={`relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px] overflow-y-clip`}>
+          <div className={`card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90 ${styles.cardAnimeDown}`} ref={cardAnimeRef}>
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>System Settings</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
@@ -352,7 +395,11 @@ export default function SystemSettingsPage() {
                         <button onClick={handleSubmit} {...(isLoading?{disabled:true}:{disabled:false})} type='submit' className="btn btn-primary">Update</button>
                       </div>
                       <div className="form-control mt-2">
-                          <Link role='link' href={"/transactions"} className="btn btn-error">Cancel</Link>
+                          <span role='link' className="btn btn-error" onClick={async ()=>{
+                            cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`);
+                            await waiting(500);
+                            router.push("/transactions");
+                          }} >Cancel</span>
                       </div>
                     
                 </form>

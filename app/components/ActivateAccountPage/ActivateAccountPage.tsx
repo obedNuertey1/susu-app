@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from 'react';
+import React, { use, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { Auth, getAuth, sendEmailVerification } from 'firebase/auth';
@@ -7,11 +7,14 @@ import { useImagesContext } from '@/app/contexts/ImagesContext';
 import "./ActivateAccountPage.css";
 
 function ActivateAccountPage({params, searchParams}: {params: {email: string}, searchParams?:{[key: string]:string|string[]|undefined},}) {
+    const router = useRouter();
+    const emailRegex:RegExp = /.+@.{2,10}\..+/i;
+    const {email}:any = searchParams;
+    
     const auth:Auth = getAuth();
     const currentUser:any = auth.currentUser
-    const router = useRouter();
-    const {email}:any = searchParams;
-    const emailRegex:RegExp = /.+@.{2,10}\..+/i;
+    
+
     try{
         if(!email || !emailRegex.test(email) || auth.currentUser?.emailVerified){
             return router.push("/page-not-found");
@@ -19,19 +22,22 @@ function ActivateAccountPage({params, searchParams}: {params: {email: string}, s
     }catch(e){
         console.log(e);
     }
-
     const cardAnimeRef = useRef<HTMLDivElement>(null)
-
+    
     // @ts-ignore
     const {onloggedIn}:any = useImagesContext();
-
+    
     useEffect(()=>{
+        
+        
+        
         try{
-        onloggedIn();
-        if(cardAnimeRef.current?.classList.contains("popout")){
-            cardAnimeRef.current?.classList.remove("popout");
-        }
-        cardAnimeRef.current?.classList.add("popup");
+
+            onloggedIn();
+            if(cardAnimeRef.current?.classList.contains("popout")){
+                cardAnimeRef.current?.classList.remove("popout");
+            }
+            cardAnimeRef.current?.classList.add("popup");
             sendEmailVerification(currentUser, {url: `http://localhost:3000/transactions?email=${currentUser.email}`})
         }catch(e){
             console.log(e);
