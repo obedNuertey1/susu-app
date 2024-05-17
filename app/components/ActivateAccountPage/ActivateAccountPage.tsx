@@ -12,8 +12,12 @@ function ActivateAccountPage({params, searchParams}: {params: {email: string}, s
     const router = useRouter();
     const {email}:any = searchParams;
     const emailRegex:RegExp = /.+@.{2,10}\..+/i;
-    if(!email || !emailRegex.test(email) || auth.currentUser?.emailVerified){
-        return router.push("/page-not-found");
+    try{
+        if(!email || !emailRegex.test(email) || auth.currentUser?.emailVerified){
+            return router.push("/page-not-found");
+        }
+    }catch(e){
+        console.log(e);
     }
 
     const cardAnimeRef = useRef<HTMLDivElement>(null)
@@ -22,12 +26,12 @@ function ActivateAccountPage({params, searchParams}: {params: {email: string}, s
     const {onloggedIn}:any = useImagesContext();
 
     useEffect(()=>{
+        try{
         onloggedIn();
         if(cardAnimeRef.current?.classList.contains("popout")){
             cardAnimeRef.current?.classList.remove("popout");
         }
         cardAnimeRef.current?.classList.add("popup");
-        try{
             sendEmailVerification(currentUser, {url: `http://localhost:3000/transactions?email=${currentUser.email}`})
         }catch(e){
             console.log(e);

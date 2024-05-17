@@ -9,6 +9,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import waiting from '@/app/funcs/waiting';
 import { useRedirectContext } from '@/app/contexts/RedirectContext';
 import { useImagesContext } from '@/app/contexts/ImagesContext';
+import "./ReLoginPage.css";
 
 
 const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchParams?:{[key: string]:string|string[]|undefined},}) => {
@@ -54,7 +55,7 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
       const res = await fetch(`${process.env.REACT_SERVER_API}/users/username/${username}`);
       if(!res.ok){
         setRegisterError('Failed to log in');
-        await waiting(3000);
+        await waiting(4000);
         setRegisterError('');
         setLoading(false);
         throw new Error("Failed to log in")
@@ -100,7 +101,7 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
       {
         registerError && 
         <>
-          <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row">
+          <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row prompt-anime">
             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <span>{registerError}</span>
           </div>

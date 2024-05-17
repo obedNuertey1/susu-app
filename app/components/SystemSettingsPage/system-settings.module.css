@@ -15,3 +15,24 @@
         top: 1rem;
     }
 }
+
+.promptAnime{
+    transform-origin: center;
+    transform: translateY(-100%);
+    animation: forPromptDown 4s linear 0s 1;
+}
+
+@keyframes forPromptDown {
+    0%{
+        transform: translateY(-100%);
+    }
+    5%{
+        transform: translateY(0%);
+    }
+    95%{
+        transform: translateY(0%);
+    }
+    100%{
+        transform: translateY(-100%);
+    }
+}

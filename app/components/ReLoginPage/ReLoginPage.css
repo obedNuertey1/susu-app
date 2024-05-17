@@ -1,25 +1,3 @@
-@keyframes fadeInLeft {
-    0%{
-        opacity: 0;
-        transform: translateX(-200px);
-    }
-    100%{
-        opacity: 1;
-        transform: translateX(0px);
-    }
-}
-
-@keyframes fadeInRight {
-    0%{
-        opacity: 0;
-        transform: translateX(200px);
-    }
-    100%{
-        opacity: 1;
-        transform: translateX(0px);
-    }
-}
-
 .prompt-anime{
     transform-origin: center;
     transform: translateY(-100%);

@@ -70,7 +70,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
       e.preventDefault();
       if(amount == ""){
         setErrorMessage("Enter an amount")
-        await waiting(3000)
+        await waiting(4000)
         setErrorMessage('');
         return;
       }
@@ -99,13 +99,15 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
           throw new Error("Transaction Failed");
         }
         if(res.ok){setErrorMessage(''); setSuccessMessage('Transaction Successful')}
-        await waiting(3000);
+        await waiting(4000);
         setIsLoading(false);
         await waiting(500);
         setSuccessMessage('');
         router.push('/transactions');
       }catch(e){
         setErrorMessage("failed to make transaction");
+        await waiting(4000);
+        setErrorMessage("");
         console.log(e);
       }
 
@@ -116,7 +118,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
       {
         errorMessage && 
         <>
-          <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row">
+          <div role="alert" className={`alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row ${styles.promptAnime}`}>
             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <span>{errorMessage}</span>
           </div>
@@ -125,7 +127,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
         {
           successMessage &&
           <>
-          <div role="alert" className="alert alert-success fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row">
+          <div role="alert" className={`alert alert-success fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row ${styles.promptAnime}`}>
             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <span>{successMessage}</span>
           </div>

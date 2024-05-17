@@ -11,7 +11,6 @@ import waiting from '@/app/funcs/waiting';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { IimageContext, useImagesContext } from '@/app/contexts/ImagesContext';
 import "./RegisterPage.css";
-import styles from "./RegisterPage.module.css";
 
 
 async function getData(key:any){
@@ -22,10 +21,10 @@ async function getData(key:any){
     }
     const resData = await res.json();
     if(resData[0] != null){
-      // await waiting(20000);
+      await waiting(2000);
       return {verify: false};
     }else{
-      // await waiting(20000);
+      await waiting(2000);
       return {verify: true};
     }
 
@@ -191,14 +190,14 @@ const Register = () => {
 
     if(password.length < 5 || password2.length < 5){
       setRegisterError("Password is too short - 8 entries should do");
-      await waiting(3000);
+      await waiting(4000);
       setRegisterError('');
       return;
     }
 
     if(password !== password2){
       setRegisterError("Passwords do not match");
-      await waiting(3000);
+      await waiting(4000);
       setRegisterError('');
       return;
     }
@@ -227,7 +226,7 @@ const Register = () => {
             });
             if(!res.ok){
               setRegisterError('Failed to Register');
-              await waiting(3000);
+              await waiting(4000);
               setRegisterError('');
               throw new Error("Failed to Register")
             }
@@ -258,7 +257,7 @@ const Register = () => {
         {
         registerError && 
         <>
-          <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row">
+          <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row prompt-anime">
             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <span>{registerError}</span>
           </div>
