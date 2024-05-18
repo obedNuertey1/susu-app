@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import businessIcon from "../../assets/business-deal-london-200-ico.svg";
 import Image from 'next/image';
 import blackAfroGirl from "../../assets/black-afro-girl.svg";
@@ -29,6 +29,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [agentUsername, setAgentUsername] = useState<string>("");
     const {onloggedIn}:any = useImagesContext();
+    const cardAnimeRef = useRef<HTMLDivElement>(null)
 
     useEffect(()=>{
       try{
@@ -46,7 +47,9 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
       }
       onloggedIn();
       getFields();
-      return ()=>{}
+      return ()=>{
+        cardAnimeRef.current?.classList.remove(`${styles.cardAnimeUp}`);
+      }
     },[]);
 
     // obwan@gmail.com
@@ -101,6 +104,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
         if(res.ok){setErrorMessage(''); setSuccessMessage('Transaction Successful')}
         await waiting(4000);
         setIsLoading(false);
+        cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`);
         await waiting(500);
         setSuccessMessage('');
         router.push('/transactions');
@@ -108,6 +112,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
         setErrorMessage("failed to make transaction");
         await waiting(4000);
         setErrorMessage("");
+        setIsLoading(false);
         console.log(e);
       }
 
@@ -138,63 +143,72 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
         <Image src={blackGuyWhiteGirl} alt='black guy with white girl' className='w-2/5 left-2 top-1/3 bottom-0 absolute'/>
       </div>
       <div className='navbar'></div>
-      {/* <div className='navbar sm:hidden'></div> */}
+      {/* <div className='navbar sm:hidden max-md:flex'></div> */}
       {/* <div className={`flex flex-col justify-center items-center w-full h-[120%] sm:h-fit sm:-mb-[5%] md:mb-[0%] ${styles.scaleDown}`}> */}
-      <div className='relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px]'>
-          <div className='flex flex-col gap-1 justify-center items-center'>
-            <h1 className='block text-3xl font-extrabold'>Make A Transaction</h1>
-            <div className='w-30 h-30 rounded-full'>
-              <Image className='object-cover' src={businessIcon} alt='business image' />
+      <div className={`relative flex flex-col justify-center items-center w-full max-sm:h-[100%] max-md:h-[110vh] mx-xl:h-[100%] gap-[2px] overflow-y-clip`}>
+        <div className={`flex flex-col justify-center items-center w-full h-[100%] ${styles.cardAnimeDown}`} ref={cardAnimeRef}>
+            <div className='flex flex-col gap-1 justify-center items-center'>
+              <h1 className='block text-3xl font-extrabold'>Make A Transaction</h1>
+              <div className='w-30 h-30 rounded-full'>
+                <Image className='object-cover' src={businessIcon} alt='business image' />
+              </div>
             </div>
-          </div>
-          {/* <div className="card  w-full max-w-sm shadow-2xl bg-base-100 sm:scale-90"> */}
-          <div className='card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90'>
-                <form className="card-body" onSubmit={handleSubmit}>
-                  <div className="form-control">
-                    <label className="label" htmlFor='account-num'>
-                      <span className="label-text">Acc No.</span>
-                    </label>
-                    <input type="text" id='account-num' name='account-num' value={account} pattern='\d+' title="Text Space can only contain digits" placeholder="Enter account number" className="input input-bordered" required />
-                  </div>
-                  <div className="form-control">
-                    <label className="label" htmlFor='full-name'>
-                      <span className="label-text">Full Name</span>
-                    </label>
-                    <input type="text" id='full-name' name='full-name' value={fullName} placeholder="Enter Full Name" className="input input-bordered" required />
-                  </div>
-                  <div className="form-control">
-                    <label className="label" htmlFor='agent_username'>
-                      <span className="label-text">Agent Username</span>
-                    </label>
-                    <input type="text" id='agent_username' name='agent_username' value={agentUsername} placeholder="Enter Agent Username" className="input input-bordered" required />
-                  </div>
-                  <div className="form-control">
-                    <label className="label" htmlFor='phone-num'>
-                      <span className="label-text">Phone Number</span>
-                    </label>
-                    <input type="tel" id='phone-num' value={phoneNumber} name='phone-num' title='Please Enter a Phone Number' pattern='^[0|\+233](2[0|3|4|5|6|7|8]|5[0|3|4|5|7|9])\d{7}$' placeholder="Enter Phone Number" className="input input-bordered" required />
-                  </div>
-                  <div className='form-control'>
-                    <label className="label" htmlFor='amount-text'>
-                      <span className="label-text" id='amount-text'>Enter an Amount</span>
-                    </label>
-                    <label className="input input-bordered flex items-center gap-2" htmlFor='amount-figures'>
-                      GH₵
-                      <input type="number" value={amount} 
-                      onChange={(e)=>{
-                        setAmount(e.target.value);
-                      }} 
-                      step={0.01} min={1} className="grow" placeholder="money" id='amount-figures' />
-                    </label>
-                  </div>
-                  <div className="form-control mt-6">
-                    <button type='submit' {...(isLoading?{disabled: true}:{disabled: false})} className="btn btn-primary">Save</button>
-                  </div>
-                  <div className="form-control mt-2">
-                      <Link role='link' href={"/transactions"} className="btn btn-error">Cancel</Link>
-                  </div>
-                </form>
+            {/* <div className="card  w-full max-w-sm shadow-2xl bg-base-100 sm:scale-90"> */}
+            <div className='card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90'>
+                  <form className="card-body" onSubmit={handleSubmit}>
+                    <div className="form-control">
+                      <label className="label" htmlFor='account-num'>
+                        <span className="label-text">Acc No.</span>
+                      </label>
+                      <input type="text" id='account-num' name='account-num' value={account} pattern='\d+' title="Text Space can only contain digits" placeholder="Enter account number" className="input input-bordered" required />
+                    </div>
+                    <div className="form-control">
+                      <label className="label" htmlFor='full-name'>
+                        <span className="label-text">Full Name</span>
+                      </label>
+                      <input type="text" id='full-name' name='full-name' value={fullName} placeholder="Enter Full Name" className="input input-bordered" required />
+                    </div>
+                    <div className="form-control">
+                      <label className="label" htmlFor='agent_username'>
+                        <span className="label-text">Agent Username</span>
+                      </label>
+                      <input type="text" id='agent_username' name='agent_username' value={agentUsername} placeholder="Enter Agent Username" className="input input-bordered" required />
+                    </div>
+                    <div className="form-control">
+                      <label className="label" htmlFor='phone-num'>
+                        <span className="label-text">Phone Number</span>
+                      </label>
+                      <input type="tel" id='phone-num' value={phoneNumber} name='phone-num' title='Please Enter a Phone Number' pattern='^[0|\+233](2[0|3|4|5|6|7|8]|5[0|3|4|5|7|9])\d{7}$' placeholder="Enter Phone Number" className="input input-bordered" required />
+                    </div>
+                    <div className='form-control'>
+                      <label className="label" htmlFor='amount-text'>
+                        <span className="label-text" id='amount-text'>Enter an Amount</span>
+                      </label>
+                      <label className="input input-bordered flex items-center gap-2" htmlFor='amount-figures'>
+                        GH₵
+                        <input type="number" value={amount} 
+                        onChange={(e)=>{
+                          setAmount(e.target.value);
+                        }} 
+                        step={0.01} min={1} className="grow" placeholder="money" id='amount-figures' />
+                      </label>
+                    </div>
+                    <div className="form-control mt-6">
+                      <button type='submit' {...(isLoading?{disabled: true}:{disabled: false})} className="btn btn-primary">Save</button>
+                    </div>
+                    <div className="form-control mt-2">
+                        {/* <Link role='link' href={"/transactions"} className="btn btn-error">Cancel</Link> */}
+                        <span
+                        onClick={async ()=>{
+                          cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`);
+                          await waiting(500);
+                          router.push("/transactions");
+                        }} 
+                         role='link'  className="btn btn-error">Cancel</span>
+                    </div>
+                  </form>
             </div>
+        </div>
       </div>
       {/* lg:h-screen lg:mb-4 mb-4 md:mb-0 */}
       {/* <div className="nav opacity-0 lg:block"></div> */}

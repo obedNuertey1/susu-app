@@ -31,3 +31,28 @@
         transform: translateY(-100%);
     }
 }
+
+.cardAnimeDown{
+    transform-origin: 50% 0%;
+    transform: translateY(-100%);
+    animation: animeCardDown 0.5s linear 0s 1 forwards;
+}
+
+@keyframes animeCardDown {
+    to{
+        transform: translateY(0%);
+    }
+}
+
+.cardAnimeUp{
+    animation: animeCardUp 0.5s linear 0s 1;
+}
+
+@keyframes animeCardUp{
+    0%{
+        transform: translateY(0%);
+    }
+    100%{
+        transform: translateY(-100%);
+    }
+}
