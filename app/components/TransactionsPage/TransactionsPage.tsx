@@ -7,7 +7,7 @@ import styles from './transactions.module.css';
 import './transactions.css'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faPeopleGroup, faGears, faUserGear, faHandHoldingDollar } from '@fortawesome/free-solid-svg-icons';
+import {faPeopleGroup, faGears, faUserGear, faHandHoldingDollar, faMoneyBillTransfer, faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import {useQuery} from 'react-query';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
@@ -107,6 +107,36 @@ export default function TransactionsPage() {
     }
     </>
     ,
+    <>
+    {
+      isAdmin
+      &&
+      <div key="all-transactions" className='tooltip tooltip-bottom' data-tip="all transactions page">
+      <Link href="/transactions/all-transactions" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
+        <div className='flex flex-col justify-center items-center origin-center scale-90'>
+          <FontAwesomeIcon icon={faMoneyBillTransfer} className='w-7 h-7' />
+          <span className={`${styles.smallText} font-semibold text-wrap overfl`}>All<br/>Transacts</span>
+        </div>
+      </Link>
+    </div>
+    }
+    </>
+    ,
+    <>
+    {
+      isAdmin
+      &&
+      <div key="all-users" className='tooltip tooltip-bottom' data-tip="all transactions page">
+      <Link href="/transactions/all-users" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
+        <div className='flex flex-col justify-center items-center origin-center scale-90'>
+          <FontAwesomeIcon icon={faUserFriends} className='w-7 h-7' />
+          <span className={`${styles.smallText} font-semibold text-wrap overfl`}>All<br/>Users</span>
+        </div>
+      </Link>
+    </div>
+    }
+    </>
+    ,
     <div key="user-settings" className='tooltip tooltip-bottom' data-tip="user settings page" >
     <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
       <div className='flex flex-col justify-center items-center origin-center scale-90'>
@@ -190,7 +220,9 @@ export default function TransactionsPage() {
               </div>
             </div>
             <div className='card w-full max-w-screen-md flex flex-row gap-3 flex-wrap justify-center items-center sm:gap-7'>
-              {buttons}
+              <div className='w-[66%] sm:w-[50%] flex flex-row flex-wrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4'>
+                {buttons}
+              </div>
             </div>
           </div>
       </div>

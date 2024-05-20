@@ -1,0 +1,42 @@
+@keyframes fadeInLeft {
+    0%{
+        opacity: 0;
+        transform: translateX(-200px);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+
+@keyframes fadeInRight {
+    0%{
+        opacity: 0;
+        transform: translateX(200px);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+
+.prompt-anime{
+    transform-origin: center;
+    transform: translateY(-100%);
+    animation: forPromptDown 4s linear 0s 1;
+}
+
+@keyframes forPromptDown {
+    0%{
+        transform: translateY(-100%);
+    }
+    5%{
+        transform: translateY(0%);
+    }
+    95%{
+        transform: translateY(0%);
+    }
+    100%{
+        transform: translateY(-100%);
+    }
+}

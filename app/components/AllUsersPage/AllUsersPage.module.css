@@ -1,0 +1,48 @@
+.animateFadeInLeft{
+    transform: translateX(-100px);
+    animation: fadeInLeft 1s linear 0s 1 forwards;
+}
+
+.translateLeft{
+    transform: translateX(100px);
+    opacity: 0;
+}
+
+@keyframes fadeInLeft {
+    0%{
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+
+
+.animateFadeInRight{
+    transform: translateX(-100px);
+    animation: fadeInRight 1s linear 0s 1 forwards;
+}
+
+.translateRight{
+    transform: translateX(-100px);
+    opacity: 0;
+}
+
+@keyframes fadeInRight {
+    0%{
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+
+@media screen and (max-width: 361px){
+    .smallScreenSize{
+        transform: scale(0.65);
+    }
+}
