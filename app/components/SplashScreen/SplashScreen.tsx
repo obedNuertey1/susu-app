@@ -5,7 +5,7 @@ import React, {useEffect, useState} from "react";
 import Image from "next/image";
 import "./splashScreen.css";
 
-export default async ()=>{
+const SplashScreen= async ()=>{
     let companyName = "";
     let imageUrl = "";
     try{
@@ -41,6 +41,8 @@ export default async ()=>{
 
 }
 
+SplashScreen.displayName = 'SplashScreen';
+export default SplashScreen;
 /**
  * <div id='organisation-logo'>
                       <div className="block w-24 h-24 rounded-full m-auto bg-transparent border-transparent border overflow-clip">

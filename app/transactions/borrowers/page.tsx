@@ -9,6 +9,7 @@ function Borrowers() {
   metadata.description = "A table of all borrowers of money";
   return (
     <ReactQueryProvider>
+      {/* @ts-ignore */}
         <BorrowersPage />
     </ReactQueryProvider>
   )

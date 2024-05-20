@@ -122,4 +122,7 @@ const InputField = forwardRef((props:IinputField<string>, ref:any)=>{
   )
 })
 
-export default InputField
+// Setting the display name for the InputField component
+InputField.displayName = 'InputField';
+
+export default InputField;

@@ -8,6 +8,7 @@ function Transactions() {
   metadata.description = "Create a Trasaction to continue";
   return (
     <ReactQueryProvider>
+      {/* @ts-ignore */}
       <TransactionsPage/>
     </ReactQueryProvider>
   )

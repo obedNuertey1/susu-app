@@ -8,6 +8,7 @@ function SystemSettings() {
   metadata.title = "System settings";
   return (
     <ReactQueryProvider>
+      {/* @ts-ignore */}
       <SystemSettingsPage />
     </ReactQueryProvider>
   )

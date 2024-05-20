@@ -15,9 +15,6 @@ import { Auth, getAuth } from 'firebase/auth';
 function TransactionsID({params, searchParams}: {params: {id: string}, searchParams?:{[key: string]:string|string[]|undefined},}) {
     const router = useRouter();
     const {currentUser}:any = useAuth();
-    if(!currentUser){
-      return router.push("/login");
-    }
     const auth:Auth = getAuth();
     const {id}:any = params;
     const [account, setAccount] = useState<string>(`${id}`);
@@ -33,6 +30,13 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
 
     useEffect(()=>{
       try{
+        if(!currentUser){
+          return router.push("/login");
+        }
+      }catch(e){
+        console.log(e);
+      }
+      try{
         if(!auth.currentUser?.emailVerified){
           (async ()=>{
               await waiting(4000);
@@ -47,8 +51,9 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
       }
       onloggedIn();
       getFields();
+      const cardAnimeVar = cardAnimeRef.current;
       return ()=>{
-        cardAnimeRef.current?.classList.remove(`${styles.cardAnimeUp}`);
+        cardAnimeVar?.classList.remove(`${styles.cardAnimeUp}`);
       }
     },[]);
 

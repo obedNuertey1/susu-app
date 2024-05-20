@@ -8,6 +8,7 @@ function UserSettings() {
   metadata.title = "User Settings";
   return (
     <ReactQueryProvider>
+      {/* @ts-ignore */}
       <UserSettingsPage />
     </ReactQueryProvider>
   )

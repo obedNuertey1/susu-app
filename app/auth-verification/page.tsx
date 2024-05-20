@@ -12,4 +12,4 @@ function page({params, searchParams}: {params: {email: string}, searchParams?:{[
       </>
     )
   }
-export default page
+export default page;

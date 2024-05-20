@@ -18,12 +18,6 @@ export default function SystemSettingsPage() {
   const router = useRouter();
   const {currentUser, signup, logout}:any = useAuth();
   const {userRole}:any = useImagesContext();
-  if(userRole?.toLowerCase() != 'admin'){
-    return router.push("/page-not-found");
-  }
-  if(!currentUser){ // Go to login page if user has not logged in.
-    return router.push("/login");
-  }
 
   // const {systemImageUrl,uploadFile}:any = useImagesContext();
 
@@ -56,6 +50,17 @@ export default function SystemSettingsPage() {
   
 
   useEffect(()=>{
+    // cardAnimeRef.current?.classList.add(`${styles.animeDown}`);
+    try{
+      if(userRole?.toLowerCase() != 'admin'){
+        return router.push("/page-not-found");
+      }
+      if(!currentUser){ // Go to login page if user has not logged in.
+        return router.push("/login");
+      }
+    }catch(e){
+      console.log(e);
+    }
     onloggedIn();
     try{
       if(!auth.currentUser?.emailVerified){
@@ -69,8 +74,10 @@ export default function SystemSettingsPage() {
     }catch(e){
       console.log(e);
     }
+    const cardAnimeRefVar = cardAnimeRef.current;
     return ()=>{
-      cardAnimeRef.current?.classList.remove(`${styles.cardAnimeUp}`)
+      cardAnimeRefVar?.classList.remove(`${styles.cardAnimeUp}`);
+      // cardAnimeRefVar?.classList.remove(`${styles.animeDown}`);
     }
   }, []);
 
@@ -403,7 +410,7 @@ export default function SystemSettingsPage() {
                       </div>
                     
                 </form>
-            </div>
+          </div>
       </div>
     </>
   )

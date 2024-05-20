@@ -45,18 +45,22 @@
 
 .cardAnimeDown{
     transform-origin: 50% 0%;
+    transform: scale(1);
     transform: translateY(-100%);
     animation: animeCardDown 0.5s linear 0s 1 forwards;
 }
 
 @keyframes animeCardDown {
-    to{
+    0%{
+        transform: translateY(-100%);
+    }
+    100%{
         transform: translateY(0%);
     }
 }
 
 .cardAnimeUp{
-    animation: animeCardUp 0.5s linear 0s 1;
+    animation: animeCardUp 0.5s linear 0s 1 forwards;
 }
 
 @keyframes animeCardUp{

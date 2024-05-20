@@ -39,9 +39,7 @@ async function getData(key:any){
 export default function TransactionsPage() {
   const router = useRouter();
   const {currentUser}:any = useAuth();
-  if(!currentUser){
-    return router.push("/login");
-  }
+
   const auth:Auth = getAuth();
   const [accountNum, setAccountNum] = useState("");
   const {status, data} = useQuery([accountNum], getData);
@@ -49,7 +47,13 @@ export default function TransactionsPage() {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(()=>{
-
+    try{
+      if(!currentUser){
+        return router.push("/login");
+      }
+    }catch(e){
+      console.log(e);
+    }
     try{
       if(!auth.currentUser?.emailVerified){
         (async ()=>{
@@ -63,6 +67,7 @@ export default function TransactionsPage() {
       console.log(e);
     }
     onloggedIn();
+    return ()=>{}
   }, []);
   // @ts-ignore
   const {systemName, systemImageUrl, userRole}:any = useImagesContext();
@@ -86,12 +91,12 @@ export default function TransactionsPage() {
 
   const isAdmin = userRole?.toLowerCase() == 'admin';
 
-  const buttons = [
+  const buttons = ([
     <>
     {
       isAdmin
       &&
-      <div className='tooltip tooltip-bottom' data-tip="system settings page">
+      <div key="system-settings" className='tooltip tooltip-bottom' data-tip="system settings page">
       <Link href="/transactions/system-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
         <div className='flex flex-col justify-center items-center origin-center scale-90'>
           <FontAwesomeIcon icon={faGears} className='w-7 h-7' />
@@ -102,7 +107,7 @@ export default function TransactionsPage() {
     }
     </>
     ,
-    <div className='tooltip tooltip-bottom' data-tip="user settings page" >
+    <div key="user-settings" className='tooltip tooltip-bottom' data-tip="user settings page" >
     <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
       <div className='flex flex-col justify-center items-center origin-center scale-90'>
         <FontAwesomeIcon icon={faUserGear} className='w-7 h-7' />
@@ -110,7 +115,7 @@ export default function TransactionsPage() {
       </div>
     </Link>
   </div>,
-  <div className='tooltip tooltip-bottom' data-tip="borrowers page">
+  <div key="borrowers" className='tooltip tooltip-bottom' data-tip="borrowers page">
   <Link href="/transactions/borrowers" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
     <div className='flex flex-col justify-center items-center origin-center scale-90'>
       <FontAwesomeIcon icon={faHandHoldingDollar} className='w-7 h-7' />
@@ -118,9 +123,9 @@ export default function TransactionsPage() {
     </div>
   </Link>
 </div>
-  ].map((elem, i)=>{
+  ]).map((elem:any, i:number)=>{
     let animatedUp = {animation: `showUpButtons 0.3s ease-in ${0.3*i}s 1 forwards`};
-    return <div style={{...moveDown, ...animatedUp}}>{elem}</div>
+    return (<div key={i} style={{...moveDown, ...animatedUp}}>{elem}</div>);
   })
 
   return (

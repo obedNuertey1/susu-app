@@ -7,6 +7,7 @@ function page() {
     metadata.title = "Msys - Forgot Password";
   return (
     <>
+    {/* @ts-ignore */}
         <ForgotPasswordPage />
     </>
   )

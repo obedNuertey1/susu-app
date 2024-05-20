@@ -15,21 +15,20 @@ function ActivateAccountPage({params, searchParams}: {params: {email: string}, s
     const currentUser:any = auth.currentUser
     
 
-    try{
-        if(!email || !emailRegex.test(email) || auth.currentUser?.emailVerified){
-            return router.push("/page-not-found");
-        }
-    }catch(e){
-        console.log(e);
-    }
     const cardAnimeRef = useRef<HTMLDivElement>(null)
     
     // @ts-ignore
     const {onloggedIn}:any = useImagesContext();
     
     useEffect(()=>{
-        
-        
+        try{
+            if(!email || !emailRegex.test(email) || auth.currentUser?.emailVerified){
+                router.push("/page-not-found");
+                return;
+            }
+        }catch(e){
+            console.log(e);
+        }
         
         try{
 
@@ -42,11 +41,13 @@ function ActivateAccountPage({params, searchParams}: {params: {email: string}, s
         }catch(e){
             console.log(e);
         }
+        const cardAnimeRefVar = cardAnimeRef.current;
         return ()=>{
-            cardAnimeRef.current?.classList.remove("popup");
-            cardAnimeRef.current?.classList.remove("popout");
+            cardAnimeRefVar?.classList.remove("popup");
+            cardAnimeRefVar?.classList.remove("popout");
         }
-    },[])
+    },[]);
+
     return (
         <div className='flex justify-center items-center h-screen'>
             <div className='max-w-sm m-auto w-10/12 items-center justify-center flex flex-col'>

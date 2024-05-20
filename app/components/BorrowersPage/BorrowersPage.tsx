@@ -37,9 +37,6 @@ async function getData(key:any){
 function BorrowersPage() {
     const router = useRouter();
     const {currentUser}:any = useAuth();
-    if(!currentUser){
-      return router.push("/login");
-    }
     const [pageNum, setPageNum] = useState(1);
     const [searchByFilter, setSearchByFilter] = useState("");
     const [searchSpace, setSearchSpace] = useState("");
@@ -55,9 +52,13 @@ function BorrowersPage() {
     let fieldNames:any = [];
     let searchBy:any = [];
     const [searchByField, setSearchByField] = useState<string[]>([]);
-
-
+    
+    
     useEffect(()=>{
+        if(!currentUser){
+          return router.push("/login");
+        }
+
         getFieldData();
         if(!currentUser.emailVerified){
             (async ()=>{
@@ -69,7 +70,7 @@ function BorrowersPage() {
         }
 
         return ()=>{}
-    }, []);
+    }, [currentUser]);
 
     const getFieldData = async ()=>{
         try{
@@ -130,7 +131,7 @@ function BorrowersPage() {
         try{
             if(status === "success"){
                 // @ts-ignore
-                searchBy = searchByField.map((elem)=>{return <option value={elem} className='text-xs'>{elem}</option>})
+                searchBy = searchByField.map((elem, i)=>{return <option key={i} value={elem} className='text-xs'>{elem}</option>})
                 // @ts-ignore
                 if(data[2] == 0){
                     dataDisplayStates("no data");
@@ -141,7 +142,7 @@ function BorrowersPage() {
                 // @ts-ignore
                 if(data[0] !== undefined || data[0] !== null || Boolean(data[0]) === true){
                     // @ts-ignore
-                    fieldNames = data[0]?.map((elem)=>{return<th>{elem}</th>});
+                    fieldNames = data[0]?.map((elem, i)=>{return<th key={i}>{elem}</th>});
                     // @ts-ignore
                     tableData = data[1]?.map((elem:ItableData, i:number)=>{
                         if(i%2 === 0){
@@ -154,9 +155,9 @@ function BorrowersPage() {
                                 animation: `fadeInRight 0.1s linear ${0.1*i}s 1 forwards`
                             }
 
-                            let fieldVals = Object.values(elem).map((elem2:any)=><td>{elem2}</td>);
+                            let fieldVals = Object.values(elem).map((elem2:any, keyVal)=><td key={keyVal} >{elem2}</td>);
                             return (
-                                <tr style={{...translateRight, ...animateFadeInRight}}>
+                                <tr key={i} style={{...translateRight, ...animateFadeInRight}}>
                                     <th>{i+1}</th> 
                                     {fieldVals}
                                 </tr>
@@ -170,9 +171,9 @@ function BorrowersPage() {
                                 transform: "translateX(-200px)",
                                 animation: `fadeInLeft 0.1s linear ${0.1*i}s 1 forwards`
                             }
-                            let fieldVals = Object.values(elem).map((elem2:any)=><td>{elem2}</td>);
+                            let fieldVals = Object.values(elem).map((elem2:any, index)=><td key={index}>{elem2}</td>);
                             return (
-                                <tr style={{...translateLeft, ...animateFadeInLeft}}>
+                                <tr key={i} style={{...translateLeft, ...animateFadeInLeft}}>
                                     <th>{i+1}</th>
                                     {fieldVals}
                                 </tr>
@@ -212,7 +213,7 @@ function BorrowersPage() {
         }
     }
 
-    useLayoutEffect(()=>{
+    useEffect(()=>{
         try{
             // @ts-ignore
             if(data[2] > 1 && pageNum == 0){

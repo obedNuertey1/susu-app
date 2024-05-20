@@ -13,17 +13,6 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
     const router = useRouter();
     const {oobCode, continueUrl, mode}:any = searchParams;
     const auth:Auth = getAuth();
-    try{
-      if(!mode || !oobCode || !continueUrl){
-          return router.push("/page-not-found");
-      }else if(auth.currentUser?.emailVerified){
-        return router.push("/transactions");
-      }
-      
-    }catch(e){
-      console.log(e)
-    }
-
     const {login}:any = useAuth();
 
     const {email} = getSearchQueryParams(continueUrl);
@@ -35,6 +24,16 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
     const cardAnimeRef = useRef<HTMLDivElement>(null);
 
     useEffect(()=>{
+      try{
+        if(!mode || !oobCode || !continueUrl){
+            return router.push("/page-not-found");
+        }else if(auth.currentUser?.emailVerified){
+          return router.push("/transactions");
+        }
+        
+      }catch(e){
+        console.log(e)
+      }
       cardAnimeRef.current?.classList.add("popup");
       return ()=>{
         cardAnimeRef.current?.classList.remove("popup");

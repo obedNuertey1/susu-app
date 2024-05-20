@@ -24,9 +24,6 @@ import { EmailAuthProvider } from 'firebase/auth';
 export default function UserSettingsPage() {
   const router = useRouter();
   const {currentUser, signup, logout}:any = useAuth();
-  if(!currentUser){ // Go to login page if user has not logged in.
-    return router.push("/login");
-  }
 
   const auth:Auth = getAuth();
 
@@ -104,6 +101,13 @@ export default function UserSettingsPage() {
     }
 
   useEffect(()=>{
+    try{
+      if(!currentUser){ // Go to login page if user has not logged in.
+        return router.push("/login");
+      }
+    }catch(e){
+      console.log(e);
+    }
     onloggedIn();
     try{
       if(!auth.currentUser?.emailVerified){
@@ -136,8 +140,9 @@ export default function UserSettingsPage() {
       }
     })();
 
+    const cardAnimeRefVar = cardAnimeRef.current;
     return ()=>{
-      cardAnimeRef.current?.classList.remove(`${styles.cardAnimeUp}`);
+      cardAnimeRefVar?.classList.remove(`${styles.cardAnimeUp}`);
     }
   },[])
 
@@ -681,7 +686,7 @@ export default function UserSettingsPage() {
                               <div className="modal-action w-full">
                                 <form className='card-body w-full flex flex-col justify-center items-stretch gap-2' method="dialog">
                                   <p className='text-base text-center text-gray-900'>Enter the text to match the pattern below</p>
-                                  <p className='text-base text-center text-gray-900'>pattern: <span className='text-gray-900' ref={randomTextRef}>{randomText}</span></p>
+                                  <p className='text-base text-center text-gray-900'>pattern: <span className='text-gray-900 select-none' ref={randomTextRef}>{randomText}</span></p>
                                     <div className='flex flex-col gap-3 items-center justify-center'>
                                       {/*  */}
                                       <input ref={deleteInputRef} type="text" placeholder="Type here" value={deleteInput} onChange={(e)=>setDeleteInput(e.target.value)} className="input bg-red-100 input-bordered w-full max-w-xs input-error text-gray-900" />
