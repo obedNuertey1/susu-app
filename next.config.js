@@ -6,7 +6,8 @@ const nextConfig = {
     REACT_FIREBASE_STORAGEBUCKET:"susu-app-dev-1d33a.appspot.com",
     REACT_FIREBASE_MESSAGINGSENDERID:"143378439351",
     REACT_FIREBASE_APPID:"1:143378439351:web:4e39ecc3449cdd2d738132",
-    REACT_SERVER_API:"http://localhost:4000/api/v1"
+    REACT_SERVER_API:"http://localhost:4000/api/v1",
+    CONTINUE_URL:"http://localhost:3000/transactions"
 },
     images: {
         remotePatterns: [
