@@ -96,7 +96,7 @@ export default function TransactionsPage() {
     {
       isAdmin
       &&
-      <div key="system-settings" className='tooltip tooltip-bottom' data-tip="system settings page">
+      <div key="system-settings" className='tooltip tooltip-bottom z-50' data-tip="system settings page">
       <Link href="/transactions/system-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
         <div className='flex flex-col justify-center items-center origin-center scale-90'>
           <FontAwesomeIcon icon={faGears} className='w-7 h-7' />
@@ -220,7 +220,7 @@ export default function TransactionsPage() {
               </div>
             </div>
             <div className='card w-full max-w-screen-md flex flex-row gap-3 flex-wrap justify-center items-center sm:gap-7'>
-              <div className='w-[66%] sm:w-[50%] flex flex-row flex-wrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4'>
+              <div className='w-[66%] sm:w-full flex flex-row flex-wrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4'>
                 {buttons}
               </div>
             </div>

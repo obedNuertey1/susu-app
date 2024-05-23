@@ -17,7 +17,7 @@ import { useRedirectContext } from '@/app/contexts/RedirectContext';
 import {SHA256} from 'crypto-js';
 import generateRandomText from '@/app/funcs/generateRandomText';
 import { useImagesContext } from '@/app/contexts/ImagesContext';
-import { getDownloadURL } from 'firebase/storage';
+import { getDownloadURL, deleteObject } from 'firebase/storage';
 import { EmailAuthProvider } from 'firebase/auth';
 
 
@@ -272,7 +272,7 @@ export default function UserSettingsPage() {
           setIsLoading(false);
           setSuccessMessage("");
           cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
-          await waiting(500);
+          await waiting(1000);
           router.push("/transactions");
         })
         return;
@@ -317,7 +317,7 @@ export default function UserSettingsPage() {
       setIsLoading(false);
       setSuccessMessage("");
       cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
-      await waiting(500);
+      await waiting(1000);
       router.push("/transactions");
 
     }catch(e){
@@ -399,7 +399,7 @@ export default function UserSettingsPage() {
           setSuccessMessage("Password Updated: You'll be redirected to login again");
           await waiting(4000);
           cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
-          await waiting(500);
+          await waiting(1000);
           // move to relogin page
           router.push(`/relogin?usingEmail=true&hashInfo=${emailHash}`);
         }).catch(async ()=>{
@@ -408,7 +408,7 @@ export default function UserSettingsPage() {
           setEmailState(''); setPassword(''); setPassword2('');
           await waiting(4000);
           setErrorMessage("");
-          await waiting(500);
+          await waiting(1000);
           await onloggedOut();
           await logout();
         });
@@ -461,6 +461,9 @@ export default function UserSettingsPage() {
 
     try{
       setDeleteButtonDisabled(true);
+      if(`${image}`.startsWith(`${process.env.STORAGE_SERVICE_URL}`)){
+        await deleteObject(userImageRef);
+      }
       await reauthenticateWithCredential(currentUser, promptForCredential(currentUser.email, deletePasswordInput)).then(async ()=>{
 
         const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`, {method: 'DELETE'});
@@ -622,7 +625,7 @@ export default function UserSettingsPage() {
                       <div className="form-control mt-2">
                           <span role='link' className="btn btn-error" onClick={async ()=>{
                             cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
-                            await waiting(500);
+                            await waiting(1000);
                             router.push("/transactions");
                           }} >Cancel</span>
                       </div>

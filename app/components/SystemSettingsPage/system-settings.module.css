@@ -41,7 +41,7 @@
     transform-origin: 50% 0%;
     transform: scale(1);
     transform: translateY(-100%);
-    animation: animeCardDown 0.5s linear 0s 1 forwards;
+    animation: animeCardDown 1s linear 0s 1 forwards;
 }
 
 /* .animeDown{
@@ -57,7 +57,7 @@
 }
 
 .cardAnimeUp{
-    animation: animeCardUp 0.5s linear 0s 1 forwards;
+    animation: animeCardUp 1s linear 0s 1 forwards;
 }
 
 @keyframes animeCardUp{

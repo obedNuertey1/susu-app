@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faMailForward, faMailReply} from "@fortawesome/free-solid-svg-icons";
+import { faFilter, faMailForward, faMailReply, faPlus} from "@fortawesome/free-solid-svg-icons";
 import Link from 'next/link';
 import styles from "./borrowers.module.css";
 import "./borrowers.css";
@@ -10,6 +10,7 @@ import { chunk } from 'lodash';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 import waiting from '@/app/funcs/waiting';
+import { useImagesContext } from '@/app/contexts/ImagesContext';
 
 async function getData(key:any){
     try{
@@ -52,7 +53,7 @@ function BorrowersPage() {
     let fieldNames:any = [];
     let searchBy:any = [];
     const [searchByField, setSearchByField] = useState<string[]>([]);
-    
+    const {userRole}:any = useImagesContext();
     
     useEffect(()=>{
         if(!currentUser){
@@ -155,9 +156,11 @@ function BorrowersPage() {
                                 animation: `fadeInRight 0.1s linear ${0.1*i}s 1 forwards`
                             }
 
-                            let fieldVals = Object.values(elem).map((elem2:any, keyVal)=><td key={keyVal} >{elem2}</td>);
+                            let fieldVals = Object.values(elem).map((elem2:any, keyVal)=>(<td key={keyVal} >{elem2}</td>));
                             return (
-                                <tr key={i} style={{...translateRight, ...animateFadeInRight}}>
+                                <tr key={i} id={`${elem.account}`} onClick={(e:any)=>{
+                                    router.push(`/transactions/borrowers/${e.currentTarget.id}`);
+                                }} className='hover:rounded-sm hover:bg-white hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white hover:border hover:border-base-100 hover:border-spacing-1 hover:scale-110 hover:shadow-lg hover:cursor-pointer hover:text-inherit' style={{...translateRight, ...animateFadeInRight}}>
                                     <th>{i+1}</th> 
                                     {fieldVals}
                                 </tr>
@@ -171,9 +174,15 @@ function BorrowersPage() {
                                 transform: "translateX(-200px)",
                                 animation: `fadeInLeft 0.1s linear ${0.1*i}s 1 forwards`
                             }
+
+                            
+
                             let fieldVals = Object.values(elem).map((elem2:any, index)=><td key={index}>{elem2}</td>);
                             return (
-                                <tr key={i} style={{...translateLeft, ...animateFadeInLeft}}>
+                                <tr className='hover:rounded-sm dark:hover:bg-white dark:hover:text-gray-900 hover:bg-gray-900 hover:text-gray-700 hover:border hover:border-base-100 hover:border-spacing-1 hover:scale-110 hover:shadow-lg hover:cursor-pointer hover:text-inherit' key={i} 
+                                id={`${elem.account}`} onClick={(e:any)=>{
+                                    router.push(`/transactions/borrowers/${e.currentTarget.id}`);
+                                }} style={{...translateLeft, ...animateFadeInLeft}}>
                                     <th>{i+1}</th>
                                     {fieldVals}
                                 </tr>
@@ -236,12 +245,24 @@ function BorrowersPage() {
         <div
         className='flex flex-col gap-3 w-full justify-center items-center fixed left-0 right-0 top-11 pt-8 pb-1 bg-base-100 z-20'>
             <div className='flex flex-row justify-between w-full px-5 bg-base-100'>
+                <div className='hidden sm:flex'></div>
                 <Link href="/transactions" className='shadow-md h-16 w-16 bg-orangered text-white rounded-full self-start justify-self-start flex flex-col justify-center items-center hover:contrast-75 active:scale-95'>
                     <FontAwesomeIcon icon={faMailReply} className='w-5 h-5' />
                     <span className='text-xs font-semibold truncate'>Go Back</span>
                 </Link>
                 <h1 className='text-3xl font-bold self-center justify-center text-center'>Borrowers</h1>
-                <div className='h-16 w-16'></div>
+                {
+                    (userRole?.toLowerCase() == 'admin') &&
+                    <div className='tooltip tooltip-bottom' data-tip="Add a borrower">
+                    <Link href="/transactions/borrowers/add" className="shadow-md h-16 w-16 bg-orangered text-white rounded-full self-start justify-self-start flex flex-col justify-center items-center hover:contrast-75 active:scale-95">
+                        <FontAwesomeIcon icon={faPlus}className='text-l' /><span className='text-xs font-semibold'>Add</span>
+                    </Link>
+                </div>
+                }
+                {
+                    !(userRole?.toLowerCase() == 'admin') && <div className=' hidden sm:flex'></div>
+                }
+                <div className=' hidden sm:flex'></div>
             </div>
             <form onSubmit={handleSubmit} className={`join scale-[75%] sm:scale-75 ${styles.smallScreenSize}`}>
                 <label className="tooltip tooltip-top join-item border border-gray-300 flex items-center px-2 py-1 outline-none focus:outline-offset-0 focus:outline-none" data-tip={`Search for an \n item in the table`}>

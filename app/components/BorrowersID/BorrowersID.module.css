@@ -1,0 +1,70 @@
+@media screen and (max-height:720px ){
+    .scaleDown{
+        transform-origin: 50% 50%;
+        transform: scale(0.9); 
+    }
+}
+
+@media screen and (max-width: 365px){
+    .top{
+        top: 5rem;
+    }
+}
+@media screen and (max-width: 350px){
+    .top{
+        top: 1rem;
+    }
+}
+
+.promptAnime{
+    transform-origin: center;
+    transform: translateY(-100%);
+    animation: forPromptDown 4s linear 0s 1;
+}
+
+@keyframes forPromptDown {
+    0%{
+        transform: translateY(-100%);
+    }
+    5%{
+        transform: translateY(0%);
+    }
+    95%{
+        transform: translateY(0%);
+    }
+    100%{
+        transform: translateY(-100%);
+    }
+}
+
+.cardAnimeDown{
+    transform-origin: 50% 0%;
+    transform: scale(1);
+    transform: translateY(-100%);
+    animation: animeCardDown 1s linear 0s 1 forwards;
+}
+
+/* .animeDown{
+} */
+
+@keyframes animeCardDown {
+    0%{
+        transform: translateY(-100%);
+    }
+    100%{
+        transform: translateY(0%);
+    }
+}
+
+.cardAnimeUp{
+    animation: animeCardUp 1s linear 0s 1 forwards;
+}
+
+@keyframes animeCardUp{
+    0%{
+        transform: translateY(0%);
+    }
+    100%{
+        transform: translateY(-100%);
+    }
+}

@@ -169,7 +169,7 @@ export default function SystemSettingsPage() {
           setIsLoading(false);
           setSuccessMessage("");
           cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
-          await waiting(500);
+          await waiting(1000);
           router.push("/transactions");
         })
         return;
@@ -208,7 +208,7 @@ export default function SystemSettingsPage() {
       setIsLoading(false);
       setSuccessMessage("");
       cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
-      await waiting(500);
+      await waiting(1000);
       router.push("/transactions");
 
     }catch(e){
@@ -404,7 +404,7 @@ export default function SystemSettingsPage() {
                       <div className="form-control mt-2">
                           <span role='link' className="btn btn-error" onClick={async ()=>{
                             cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`);
-                            await waiting(500);
+                            await waiting(1000);
                             router.push("/transactions");
                           }} >Cancel</span>
                       </div>
