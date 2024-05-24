@@ -34,7 +34,7 @@ function ForgotPasswordPage({params, searchParams}: {params: {email: string}, se
         e.preventDefault();
         try{
             setIsLoading(true);
-            const checkEmail = await fetch(`${process.env.REACT_SERVER_API}/users/email/${email}`);
+            const checkEmail = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${email}`);
             if(!checkEmail.ok){
                 setErrorMessage("An error occured");
                 await waiting(4000);
@@ -52,7 +52,7 @@ function ForgotPasswordPage({params, searchParams}: {params: {email: string}, se
             }
             const firstname = emailData.name?.split(/\s/)[0];
 
-            const getCompanyData = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+            const getCompanyData = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
             if(!getCompanyData.ok){
                 setErrorMessage("Failed to send email");
                 await waiting(4000);

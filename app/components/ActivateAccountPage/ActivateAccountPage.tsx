@@ -37,7 +37,7 @@ function ActivateAccountPage({params, searchParams}: {params: {email: string}, s
                 cardAnimeRef.current?.classList.remove("popout");
             }
             cardAnimeRef.current?.classList.add("popup");
-            sendEmailVerification(currentUser, {url: `${process.env.CONTINUE_URL}?email=${currentUser.email}`})
+            sendEmailVerification(currentUser, {url: `${process.env.NEXT_PUBLIC_CONTINUE_URL}?email=${currentUser.email}`})
         }catch(e){
             console.log(e);
         }

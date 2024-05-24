@@ -3,12 +3,12 @@ import {getAuth} from "firebase/auth";
 import {getStorage, ref} from "firebase/storage";
 
 const app = initializeApp({
-    apiKey: process.env.REACT_FIREBASE_APIKEY,
-    authDomain: process.env.REACT_FIREBASE_AUTHDOMAIN,
-    projectId: process.env.REACT_FIREBASE_PROJECTID,
-    storageBucket: process.env.REACT_FIREBASE_STORAGEBUCKET,
-    messagingSenderId: process.env.REACT_FIREBASE_MESSAGINGSENDERID,
-    appId: process.env.REACT_FIREBASE_APPID
+    apiKey: process.env.NEXT_PUBLIC_REACT_FIREBASE_APIKEY,
+    authDomain: process.env.NEXT_PUBLIC_REACT_FIREBASE_AUTHDOMAIN,
+    projectId: process.env.NEXT_PUBLIC_REACT_FIREBASE_PROJECTID,
+    storageBucket: process.env.NEXT_PUBLIC_REACT_FIREBASE_STORAGEBUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_REACT_FIREBASE_MESSAGINGSENDERID,
+    appId: process.env.NEXT_PUBLIC_REACT_FIREBASE_APPID
 });
 
 // @ts-ignore

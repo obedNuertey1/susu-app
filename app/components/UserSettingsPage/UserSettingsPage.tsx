@@ -46,6 +46,7 @@ export default function UserSettingsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
+  const [imageSrc, setImageSrc] = useState(null);
 
   const [password, setPassword] = useState<string>("");
   const [passwordWarnText, setPasswordWarnText] = useState<string>("");
@@ -123,7 +124,7 @@ export default function UserSettingsPage() {
     }
     (async ()=>{
       try{
-        const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
         if(!res.ok){throw new Error("Couldn't get user data")}
         const data:any = await res.json();
         setPhone(data.phone);
@@ -233,7 +234,7 @@ export default function UserSettingsPage() {
         })
         await getDownloadURL(userImageRef).then(async (url)=>{
   
-          const res1 = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`)
+          const res1 = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`)
           if(!res1.ok){
             setErrorMessage("Failed to update");
             await waiting(4000);
@@ -244,7 +245,7 @@ export default function UserSettingsPage() {
           const res1Data = await res1.json();
           console.log("res1Data.userid");
           console.log(res1Data.userid);
-          const res = await fetch(`${process.env.REACT_SERVER_API}/users/${res1Data.userid}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/${res1Data.userid}`, {
             method: "PATCH",
             headers: {
               'Content-Type': "application/json"
@@ -279,7 +280,7 @@ export default function UserSettingsPage() {
       }
 
 
-      const res1 = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`)
+      const res1 = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`)
       if(!res1.ok){
         setErrorMessage("Failed to update");
         await waiting(4000);
@@ -290,7 +291,7 @@ export default function UserSettingsPage() {
       const res1Data = await res1.json();
       console.log("res1Data.userid");
       console.log(res1Data.userid);
-      const res = await fetch(`${process.env.REACT_SERVER_API}/users/${res1Data.userid}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/${res1Data.userid}`, {
         method: "PATCH",
         headers: {
           'Content-Type': "application/json"
@@ -372,7 +373,7 @@ export default function UserSettingsPage() {
         // delete current user from firebase
         console.log("emailState=",emailState);
         await updatePassword(currentUser, password).then(async (value:any)=>{
-          const res = await fetch(`${process.env.REACT_SERVER_API}/users/email`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email`, {
             method: 'PUT',
             headers: {
               'Content-Type': "application/json"
@@ -461,12 +462,12 @@ export default function UserSettingsPage() {
 
     try{
       setDeleteButtonDisabled(true);
-      if(`${image}`.startsWith(`${process.env.STORAGE_SERVICE_URL}`)){
+      if(`${image}`.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`)){
         await deleteObject(userImageRef);
       }
       await reauthenticateWithCredential(currentUser, promptForCredential(currentUser.email, deletePasswordInput)).then(async ()=>{
 
-        const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`, {method: 'DELETE'});
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`, {method: 'DELETE'});
         if(!res.ok){
           setErrorMessage("Failed to delete account - !res.ok");
           deleteDialogueRef.current?.close();
@@ -540,8 +541,16 @@ export default function UserSettingsPage() {
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>User Settings</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
-                  {(userImageUrl.length > 40) && <Image src={`${userImageUrl}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
-                  {!(userImageUrl.length > 40) && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faUserGear} />}
+                  {/* {(userImageUrl.length > 40) && <Image src={`${userImageUrl}`} alt="System Settings image" width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />}
+                  {!(userImageUrl.length > 40) && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faUserGear} />} */}
+                {
+                    (imageSrc)?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                    <Image src={imageSrc} alt={`User image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
+                  </div>:(`${userImageUrl}`.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`))?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                    <Image src={`${userImageUrl}`} alt={`User image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
+                  </div>:<FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faUserGear} />
+                  }
+
                 </div>
               </div>
                 <form className="card-body">
@@ -575,6 +584,16 @@ export default function UserSettingsPage() {
                       </label>
                       {/* @ts-ignore */}
                       <input type="file" name='image' id='image' onChange={(e)=>{
+                        // @ts-ignore
+                        const file = e.target.files[0];
+                        if(file){
+                          const reader:any = new FileReader();
+                          reader.onload = (e:any)=>{
+                            // @ts-ignore
+                            setImageSrc(e.target.result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
                         // @ts-ignore
                         setAddImage(e.target.files[0])
                       }} className="file-input file-input-bordered w-full max-w-full" />

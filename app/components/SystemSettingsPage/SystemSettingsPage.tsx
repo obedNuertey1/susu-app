@@ -17,7 +17,7 @@ import { Auth, getAuth } from 'firebase/auth';
 export default function SystemSettingsPage() {
   const router = useRouter();
   const {currentUser, signup, logout}:any = useAuth();
-  const {userRole}:any = useImagesContext();
+  // const {userRole}:any = useImagesContext();
 
   // const {systemImageUrl,uploadFile}:any = useImagesContext();
 
@@ -38,7 +38,7 @@ export default function SystemSettingsPage() {
   const [map, setMap] = useState<string>(""); //<-location
   const [stamp, setStamp] = useState<string>(""); //<- Time
   const [timezone, setTimezone] = useState<string>(""); //<- Time
-
+  const [imageSrc, setImageSrc] = useState(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -51,10 +51,26 @@ export default function SystemSettingsPage() {
 
   useEffect(()=>{
     // cardAnimeRef.current?.classList.add(`${styles.animeDown}`);
-    try{
-      if(userRole?.toLowerCase() != 'admin'){
-        return router.push("/page-not-found");
+    (async ()=>{
+      try{
+          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+          if(!res.ok){
+              return router.push("/page-not-found")
+          }
+          const data = await res.json();
+          if(data.role.toLowerCase() != 'admin'){
+              return router.push("/page-not-found");
+          }
+          return;
+      }catch(e){
+          console.log(e);
       }
+
+  })();
+    try{
+      // if(userRole?.toLowerCase() != 'admin'){
+      //   return router.push("/page-not-found");
+      // }
       if(!currentUser){ // Go to login page if user has not logged in.
         return router.push("/login");
       }
@@ -84,7 +100,7 @@ export default function SystemSettingsPage() {
   useEffect(()=>{
     (async ()=>{
       try{
-        const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
         if(!res.ok){throw new Error("Couldn't get user data")}
         const data:any = await res.json();
         setSysid(data.sysid);
@@ -135,7 +151,7 @@ export default function SystemSettingsPage() {
           })();
         });
         await getDownloadURL(systemImageRef).then(async (url)=>{
-          const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings/1`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings/1`, {
             method: "PATCH",
             headers: {
               'Content-Type': "application/json"
@@ -175,7 +191,7 @@ export default function SystemSettingsPage() {
         return;
       }
 
-      const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings/1`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings/1`, {
         method: "PATCH",
         headers: {
           'Content-Type': "application/json"
@@ -248,11 +264,21 @@ export default function SystemSettingsPage() {
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>System Settings</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
-                  {image && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                  {/* {image && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
                     <Image src={`${image}`} alt="System Settings image" width="50" height="50" className='object-center w-1/2 h-1/2 m-auto' unoptimized />
                   </div>}
-                  {/* {image && <img src={`${imageUrl}`} alt="logo" className='object-cover text-inherit w-44 h-44' />} */}
-                  {!image && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />}
+                  {!image && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />} */}
+                  {
+                    (imageSrc)?
+                    <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                    <Image src={imageSrc} alt="System Settings image" width="50" height="50" className='object-center w-1/2 h-1/2 m-auto' unoptimized />
+                    </div>
+                    :(`${image}`.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`))?
+                    <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                      <Image src={`${image}`} alt="System Settings image" width="50" height="50" className='object-center w-1/2 h-1/2 m-auto' unoptimized />
+                    </div>
+                    :<FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />
+                  }
                 </div>
               </div>
                 <form className="card-body">
@@ -310,6 +336,16 @@ export default function SystemSettingsPage() {
                       </label>
                       {/* @ts-ignore */}
                       <input type="file" name='image' id='image' onChange={(e)=>{
+                        // @ts-ignore
+                        const file = e.target.files[0];
+                        if(file){
+                          const reader = new FileReader();
+                          reader.onload = (e)=>{
+                            // @ts-ignore
+                            setImageSrc(e.target.result);
+                          }
+                          reader.readAsDataURL(file);
+                        }
                         // @ts-ignore
                         setAddImage(e.target.files[0])
                       }} className="file-input file-input-bordered w-full max-w-full" />

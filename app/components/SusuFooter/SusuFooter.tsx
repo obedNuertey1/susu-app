@@ -6,7 +6,7 @@ import React from 'react'
 export default async function SusuFooter() {
     let systemImageUrl:string="";
     try{
-        const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
         if(!res.ok){
             console.log("Error fetching footer info");
         }

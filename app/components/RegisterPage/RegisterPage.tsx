@@ -15,7 +15,7 @@ import "./RegisterPage.css";
 
 async function getData(key:any){
   try{
-    const res = await fetch(`${process.env.REACT_SERVER_API}/users/username/${key.queryKey[0]}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/username/${key.queryKey[0]}`);
     if(!res.ok){
       throw new Error("Network response was not ok");
     }
@@ -212,7 +212,7 @@ const Register = () => {
       onAuthStateChanged(auth, (user)=>{
         if(user){
           (async ()=>{
-            const res = await fetch(`${process.env.REACT_SERVER_API}/users?makeAdmin=${adminPass}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users?makeAdmin=${adminPass}`, {
               method: "Post",
               headers: {
                 "Content-Type": "application/json",

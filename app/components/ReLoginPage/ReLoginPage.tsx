@@ -52,7 +52,7 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
     try{
       setRegisterError('');
       setLoading(true);
-      const res = await fetch(`${process.env.REACT_SERVER_API}/users/username/${username}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/username/${username}`);
       if(!res.ok){
         setRegisterError('Failed to log in');
         await waiting(4000);

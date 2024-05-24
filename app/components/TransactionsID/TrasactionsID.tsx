@@ -61,7 +61,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
 
     const getFields = async () => {
       try{
-        const res = await Promise.all([fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${id}`), fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`)]);
+        const res = await Promise.all([fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${id}`), fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`)]);
         if(!res[0].ok){throw new Error("Network busy")}
         const data = await Promise.all([res[0].json(), res[1].json()]);
         console.log("_________data__________");
@@ -85,7 +85,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
 
       try{
         setIsLoading(true);
-        const res = await fetch(`${process.env.REACT_SERVER_API}/transactions`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/transactions`, {
           method: 'Post', 
           headers:{
             'Content-Type': "application/json",

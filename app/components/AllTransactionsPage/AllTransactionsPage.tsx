@@ -10,12 +10,14 @@ import { chunk } from 'lodash';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 import waiting from '@/app/funcs/waiting';
+import { Auth, getAuth } from 'firebase/auth';
+import { useImagesContext } from '@/app/contexts/ImagesContext';
 
 async function getData(key:any){
     try{
         console.log("key");
         console.log(key)
-        const res2 = await Promise.all([fetch(`${process.env.REACT_SERVER_API}/transactions?fields=true`), fetch(`${process.env.REACT_SERVER_API}/transactions/alldata/?pageIndex=${key?.queryKey[0]}&rowsPerPage=20&searchKey=${key?.queryKey[1]}&searchQuery=${key?.queryKey[2]}`)]);
+        const res2 = await Promise.all([fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/transactions?fields=true`), fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/transactions/alldata/?pageIndex=${key?.queryKey[0]}&rowsPerPage=20&searchKey=${key?.queryKey[1]}&searchQuery=${key?.queryKey[2]}`)]);
         if(res2[0].ok == false || res2[1].ok == false){throw new Error("Network response was not ok")}
         const res2data = await Promise.allSettled([res2[0].json(), res2[1].json()]);
         //   @ts-ignore
@@ -52,7 +54,50 @@ function AllTransactionsPage() {
     let fieldNames:any = [];
     let searchBy:any = [];
     const [searchByField, setSearchByField] = useState<string[]>([]);
-    
+    const auth:Auth = getAuth();
+    // const {userRole}:any = useImagesContext();
+
+    useEffect(()=>{
+        // cardAnimeRef.current?.classList.add(`${styles.animeDown}`);
+        (async ()=>{
+            try{
+                const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+                if(!res.ok){
+                    return router.push("/page-not-found")
+                }
+                const data = await res.json();
+                if(data.role.toLowerCase() != 'admin'){
+                    return router.push("/page-not-found");
+                }
+                return;
+            }catch(e){
+                console.log(e);
+            }
+
+        })();
+        try{
+        // if(userRole?.toLowerCase() != 'admin'){
+        //     return router.push("/page-not-found");
+        // }
+          if(!currentUser){ // Go to login page if user has not logged in.
+            return router.push("/login");
+          }
+        }catch(e){
+          console.log(e);
+        }
+        try{
+          if(!auth.currentUser?.emailVerified){
+            (async ()=>{
+                await waiting(4000);
+                setErrorMessage("Please verify your email - go to settings to start the process");
+                await waiting(4000);
+                setErrorMessage("");
+            })();
+          }
+        }catch(e){
+          console.log(e);
+        }
+      }, []);
     
     useEffect(()=>{
         if(!currentUser){
@@ -74,7 +119,7 @@ function AllTransactionsPage() {
 
     const getFieldData = async ()=>{
         try{
-            const res = await fetch(`${process.env.REACT_SERVER_API}/transactions?fields=true`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/transactions?fields=true`);
             if(!res.ok) throw new Error("Failed to fetch data");
             const data = await res.json();
             // console.log("_________data_________");
@@ -236,12 +281,14 @@ function AllTransactionsPage() {
         <div
         className='flex flex-col gap-3 w-full justify-center items-center fixed left-0 right-0 top-11 pt-8 pb-1 bg-base-100 z-20'>
             <div className='flex flex-row justify-between w-full px-5 bg-base-100'>
+                <div className=' hidden sm:flex'></div>
                 <Link href="/transactions" className='shadow-md h-16 w-16 bg-orangered text-white rounded-full self-start justify-self-start flex flex-col justify-center items-center hover:contrast-75 active:scale-95'>
                     <FontAwesomeIcon icon={faMailReply} className='w-5 h-5' />
                     <span className='text-xs font-semibold truncate'>Go Back</span>
                 </Link>
                 <h1 className='text-3xl font-bold self-center justify-center text-center'>All Transactions</h1>
                 <div className='h-16 w-16'></div>
+                <div className=' hidden sm:flex'></div>
             </div>
             <form onSubmit={handleSubmit} className={`join scale-[75%] sm:scale-75 ${styles.smallScreenSize}`}>
                 <label className="tooltip tooltip-top join-item border border-gray-300 flex items-center px-2 py-1 outline-none focus:outline-offset-0 focus:outline-none" data-tip={`Search for an \n item in the table`}>

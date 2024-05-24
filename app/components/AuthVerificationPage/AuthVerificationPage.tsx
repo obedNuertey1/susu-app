@@ -78,7 +78,7 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
                 (async()=>{
                     console.log("############################Beneath confirmPasswordReset#######################################")
                     console.log('email=',email);
-                    const updateUserPassword = await fetch(`${process.env.REACT_SERVER_API}/users/email`, {
+                    const updateUserPassword = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email`, {
                         method: "PUT",
                         headers: {
                             "Content-Type": "application/json"

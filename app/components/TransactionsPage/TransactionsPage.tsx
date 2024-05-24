@@ -18,7 +18,7 @@ import { Auth, getAuth } from 'firebase/auth';
 async function getData(key:any){
   try{
     await waiting(3000);
-    const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${key?.queryKey[0]}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${key?.queryKey[0]}`);
     if(!res.ok){
       throw new Error("Network response was not ok");
     }
@@ -54,6 +54,7 @@ export default function TransactionsPage() {
     }catch(e){
       console.log(e);
     }
+    onloggedIn();
     try{
       if(!auth.currentUser?.emailVerified){
         (async ()=>{
@@ -66,7 +67,6 @@ export default function TransactionsPage() {
     }catch(e){
       console.log(e);
     }
-    onloggedIn();
     return ()=>{}
   }, []);
   // @ts-ignore
@@ -96,7 +96,7 @@ export default function TransactionsPage() {
     {
       isAdmin
       &&
-      <div key="system-settings" className='tooltip tooltip-bottom z-50' data-tip="system settings page">
+      <div key="system-settings" className='tooltip tooltip-top sm:tooltip-bottom' data-tip="system settings page">
       <Link href="/transactions/system-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
         <div className='flex flex-col justify-center items-center origin-center scale-90'>
           <FontAwesomeIcon icon={faGears} className='w-7 h-7' />
@@ -111,7 +111,7 @@ export default function TransactionsPage() {
     {
       isAdmin
       &&
-      <div key="all-transactions" className='tooltip tooltip-bottom' data-tip="all transactions page">
+      <div key="all-transactions" className='tooltip tooltip-top sm:tooltip-bottom' data-tip="all transactions page">
       <Link href="/transactions/all-transactions" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
         <div className='flex flex-col justify-center items-center origin-center scale-90'>
           <FontAwesomeIcon icon={faMoneyBillTransfer} className='w-7 h-7' />
@@ -126,7 +126,7 @@ export default function TransactionsPage() {
     {
       isAdmin
       &&
-      <div key="all-users" className='tooltip tooltip-bottom' data-tip="all transactions page">
+      <div key="all-users" className='tooltip tooltip-top sm:tooltip-bottom' data-tip="all transactions page">
       <Link href="/transactions/all-users" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
         <div className='flex flex-col justify-center items-center origin-center scale-90'>
           <FontAwesomeIcon icon={faUserFriends} className='w-7 h-7' />
@@ -152,7 +152,12 @@ export default function TransactionsPage() {
       <span className={`${styles.smallText} font-semibold text-wrap line`}>Borrowers</span>
     </div>
   </Link>
-</div>
+</div>,
+<>
+  {
+    !isAdmin && <div className='h-16 w-16'></div>
+  }
+</>
   ]).map((elem:any, i:number)=>{
     let animatedUp = {animation: `showUpButtons 0.3s ease-in ${0.3*i}s 1 forwards`};
     return (<div key={i} style={{...moveDown, ...animatedUp}}>{elem}</div>);
@@ -206,7 +211,7 @@ export default function TransactionsPage() {
                     required />
                   </div>
                   <div className="form-control mt-6">
-                    <Link role='button' href={`/transactions/[id]/?name=Obed+Nuertey&age=22&favorite=14`} as={`/transactions/${encodeURI(accountNum)}`} className={`btn btn-primary ${(!(data?.verify === true)?"btn-disabled cursor-not-allowed":"")}`}>
+                    <Link role='button' href={`/transactions/[id]/?name=Obed+Nuertey&age=22&favorite=14`} as={`/transactions/${encodeURI(accountNum.trim())}`} className={`btn btn-primary ${(!(data?.verify === true)?"btn-disabled cursor-not-allowed":"")}`}>
                       {
                         (accountNum.length === 0)?"No Acc. No.":
                         (status === "loading" || status === "idle")

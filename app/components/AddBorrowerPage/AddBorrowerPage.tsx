@@ -37,6 +37,7 @@ export default function AddBorrowersPage() {
   const [date_time, setDate_time] = useState<string>("");//
   const [status, setStatus] = useState<string>("");//
   const [addImage, setAddImage] = useState<string>("");//
+  const [imageSrc, setImageSrc] = useState(null);
 
 
 
@@ -51,11 +52,28 @@ export default function AddBorrowersPage() {
   
 
   useEffect(()=>{
+
+    (async ()=>{
+      try{
+          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+          if(!res.ok){
+              return router.push("/page-not-found")
+          }
+          const data = await res.json();
+          if(data.role.toLowerCase() != 'admin'){
+              return router.push("/page-not-found");
+          }
+          return;
+      }catch(e){
+          console.log(e);
+      }
+
+  })();
     
     try{
-      if(userRole?.toLowerCase() != 'admin'){
-        return router.push("/page-not-found");
-      }
+      // if(userRole?.toLowerCase() != 'admin'){
+      //   return router.push("/page-not-found");
+      // }
       if(!currentUser){ // Go to login page if user has not logged in.
         return router.push("/login");
       }
@@ -90,7 +108,7 @@ export default function AddBorrowersPage() {
     try{
         
         //   Post a borrower to get a borrower ID
-        const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers`, {
             method: "POST",
             headers: {
                 'Content-Type': "application/json"
@@ -138,7 +156,7 @@ export default function AddBorrowersPage() {
           });
           await getDownloadURL(borrowerImageRef).then(async (url)=>{
               // Post a borrower to get a borrower Id
-            const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${account}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${account}`, {
               method: "PATCH",
               headers: {
                 'Content-Type': "application/json"
@@ -159,7 +177,7 @@ export default function AddBorrowersPage() {
             setIsLoading(false);
             setSuccessMessage("");
             cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
-            await waiting(500);
+            await waiting(800);
             router.push("/transactions/borrowers");
           })
           return;
@@ -169,7 +187,7 @@ export default function AddBorrowersPage() {
       setIsLoading(false);
       setSuccessMessage("");
       cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`)
-      await waiting(500);
+      await waiting(800);
       router.push("/transactions/borrowers");
 
     }catch(e){
@@ -208,12 +226,19 @@ export default function AddBorrowersPage() {
       <div className={`relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px] overflow-y-clip`}>
           <div className={`card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90 ${styles.cardAnimeDown}`} ref={cardAnimeRef}>
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
-                <h1 className='block text-3xl font-extrabold'>Borrower Info</h1>
+                <h1 className='block text-3xl font-extrabold'>Add Borrower</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
-                  {image && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                  {/* {image && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
                     <Image src={`${image}`} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
                   </div>}
-                  {!image && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />}
+                  {!image && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />} */}
+                  {
+                    (imageSrc)?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                    <Image src={imageSrc} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
+                  </div>:(`${image}`.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`))?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                    <Image src={`${image}`} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
+                  </div>:<FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />
+                  }
                 </div>
               </div>
                 <form className="card-body">
@@ -335,6 +360,16 @@ export default function AddBorrowersPage() {
                       {/* @ts-ignore */}
                       <input type="file" name='image' id='image' onChange={async (e)=>{
                         // @ts-ignore
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (e) => {
+                            // @ts-ignore
+                            setImageSrc(e.target.result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                        // @ts-ignore
                         setAddImage(e.target.files[0])
                       }} className="file-input file-input-bordered w-full max-w-full" />
                     </div>
@@ -347,7 +382,7 @@ export default function AddBorrowersPage() {
                       <div className="form-control mt-2">
                           <span role='link' className="btn btn-warning" onClick={async ()=>{
                             cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`);
-                            await waiting(500);
+                            await waiting(800);
                             router.push("/transactions/borrowers");
                           }} >Cancel</span>
                       </div>

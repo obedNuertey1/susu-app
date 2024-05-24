@@ -14,7 +14,7 @@ export function useImagesContext(){
   // useEffect(()=>{
     // (async ()=>{
     //   try{
-    //     const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+    //     const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
     //     if(!res.ok){throw new Error("Couldn't get user data")}
     //     const data:any = await res.json();
     //     setSysid(data.sysid);
@@ -128,7 +128,7 @@ export function ImageContextProvider({children}:any){
         
         const getUser = async ()=>{
           try{ // user
-              const res = await fetch(`${process.env.REACT_SERVER_API}/users/email/${currentUser.email}`);
+              const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
               if(!res.ok){throw new Error("Couldn't get user data")}
               const data:any = await res.json();
               const userSettingsImageRef = ref(imagesRef, 'userSettings');
@@ -175,7 +175,7 @@ export function ImageContextProvider({children}:any){
 
         const getSystem = async ()=>{ // For system
           try{
-            const res = await fetch(`${process.env.REACT_SERVER_API}/system-settings`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
             if(!res.ok){throw new Error("Couldn't get user data")}
             const data:any = await res.json();
             const systemSettingsImageRef = ref(imagesRef, 'systemSettings');

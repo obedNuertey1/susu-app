@@ -17,7 +17,7 @@ import { Auth, getAuth } from 'firebase/auth';
 export default function BorrowersID({params, searchParams}: {params: {id: string}, searchParams?:{[key: string]:string|string[]|undefined},}) {
   const router = useRouter();
   const {currentUser, signup, logout}:any = useAuth();
-  const {userRole}:any = useImagesContext();
+  // const {userRole}:any = useImagesContext();
 
   // const {systemImageUrl,uploadFile}:any = useImagesContext();
 
@@ -38,6 +38,7 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
   const [date_time, setDate_time] = useState<string>("");//
   const [status, setStatus] = useState<string>("");//
   const [addImage, setAddImage] = useState<string>("");//
+  const [imageSrc, setImageSrc] = useState(null);
 
 
 
@@ -53,10 +54,26 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
 
   useEffect(()=>{
     // cardAnimeRef.current?.classList.add(`${styles.animeDown}`);
-    try{
-      if(userRole?.toLowerCase() != 'admin'){
-        return router.push("/page-not-found");
+    (async ()=>{
+      try{
+          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+          if(!res.ok){
+              return router.push("/page-not-found")
+          }
+          const data = await res.json();
+          if(data.role.toLowerCase() != 'admin'){
+              return router.push("/page-not-found");
+          }
+          return;
+      }catch(e){
+          console.log(e);
       }
+
+  })();
+    try{
+      // if(userRole?.toLowerCase() != 'admin'){
+      //   return router.push("/page-not-found");
+      // }
       if(!currentUser){ // Go to login page if user has not logged in.
         return router.push("/login");
       }
@@ -86,7 +103,7 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
   useEffect(()=>{
     (async ()=>{
       try{
-        const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${params.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${params.id}`);
         if(!res.ok){throw new Error("Couldn't get user data")}
         const data:any = await res.json();
         setBorrowerId(data.sysid);
@@ -139,7 +156,7 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
           })();
         });
         await getDownloadURL(borrowerImageRef).then(async (url)=>{
-          const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${params.id}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${params.id}`, {
             method: "PATCH",
             headers: {
               'Content-Type': "application/json"
@@ -178,7 +195,7 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
         return;
       }
 
-      const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${params.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${params.id}`, {
         method: "PATCH",
         headers: {
           'Content-Type': "application/json"
@@ -227,11 +244,11 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
     setIsLoadingDelete(true);
     try{
       if(Boolean(image)){
-        if(image.startsWith(`${process.env.STORAGE_SERVICE_URL}`)){
+        if(image.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`)){
           const borrowerImage:StorageReference = ref(imagesRef, 'borrowers');
           const borrowerImageRef:StorageReference = ref(borrowerImage, `${params.id}.jpg`);
           deleteObject(borrowerImageRef).then(async (value)=>{
-            const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${params.id}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${params.id}`, {
               method: "DELETE"
             })
             if(!res.ok){
@@ -252,7 +269,7 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
           return;
         }
       }
-      const res = await fetch(`${process.env.REACT_SERVER_API}/borrowers/accountNumber/${params.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${params.id}`, {
             method: "DELETE"
           })
           if(!res.ok){
@@ -306,11 +323,23 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>Borrower Info</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
-                  {image && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                  {/* {(image.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`) && !imageSrc) && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
                     <Image src={`${image}`} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
                   </div>}
+                  { 
+                  (imageSrc && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                  <Image src={imageSrc} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
+                </div>)
+                  } */}
                   {/* {image && <img src={`${imageUrl}`} alt="logo" className='object-cover text-inherit w-44 h-44' />} */}
-                  {!image && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />}
+                  {/* {!(image.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`) && imageSrc) && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />} */}
+                  {
+                    (imageSrc)?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                    <Image src={imageSrc} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
+                  </div>:(`${image}`.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`))?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
+                    <Image src={`${image}`} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
+                  </div>:<FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />
+                  }
                 </div>
               </div>
                 <form className="card-body">
@@ -430,7 +459,17 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
                         <span className="label-text">Image:</span>
                       </label>
                       {/* @ts-ignore */}
-                      <input type="file" name='image' id='image' onChange={(e)=>{
+                      <input type="file" name='image' id='image' onChange={async (e)=>{
+                        // @ts-ignore
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (e) => {
+                            // @ts-ignore
+                            setImageSrc(e.target.result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
                         // @ts-ignore
                         setAddImage(e.target.files[0])
                       }} className="file-input file-input-bordered w-full max-w-full" />
@@ -440,9 +479,7 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
                         <span className="label-text">Date and Time:</span>
                       </label>
                       {/* @ts-ignore */}
-                      <input type="datetime-local" id='date_time' name='date_time' value={date_time} onChange={(e)=>{
-                        setDate_time(e.target.value)
-                      }} placeholder="Date time" className="input input-bordered"  />
+                      <input type="text" id='date_time' name='date_time' value={date_time} placeholder="Date time" className="input input-bordered"  />
                     </div>
 
                     <div className="divider">Actions</div>
