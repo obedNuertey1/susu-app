@@ -9,7 +9,7 @@ const SplashScreen= async ()=>{
     let companyName = "";
     let imageUrl = "";
     try{
-        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SSR_SERVER_API}/system-settings`)
         if(!res.ok){
             throw new Error("Bad request")
         }
@@ -32,9 +32,9 @@ const SplashScreen= async ()=>{
             </div>
             <div id='organisation-name' className='w-fit -mt-1.5 mx-auto'>
                 {/* {companyName && <>{companyName}</>} */}
-                <span className="text-lg text-white text-cneter">MSYS</span>
+                <span className="text-sm text-white -mb-1 text-cneter">{companyName}</span>
             </div>
-            <span className="mx-auto text-center mt-1 loading loading-infinity w-12 text-white"></span>
+            <span className="mx-auto text-center -mt-2 loading loading-infinity w-8 text-white"></span>
             </div>
         </div>
     );
