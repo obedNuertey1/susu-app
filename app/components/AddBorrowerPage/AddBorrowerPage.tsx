@@ -151,7 +151,7 @@ export default function AddBorrowersPage() {
               await waiting(4000);
               setErrorMessage('');
               setIsLoading(false);
-              throw new Error("Failed to send image");
+              console.error("Failed to send image");
             })();
           });
           await getDownloadURL(borrowerImageRef).then(async (url)=>{
