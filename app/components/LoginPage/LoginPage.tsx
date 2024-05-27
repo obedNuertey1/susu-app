@@ -49,6 +49,7 @@ const LoginPage = () => {
       setLoading(true);
       console.log("Above res = await fetch at line 50");
       const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/username/${username}`);
+      console.log("Below res = await fetch at line 52");
       if(!res.ok){
         setRegisterError(`Failed to log in response - level`);
         await waiting(3000);
