@@ -228,7 +228,7 @@ const Register = () => {
               setRegisterError('Failed to Register');
               await waiting(4000);
               setRegisterError('');
-              throw new Error("Failed to Register")
+              return;
             }
             await onloggedIn();
             setLoading(false);

@@ -101,7 +101,7 @@ export default function SystemSettingsPage() {
     (async ()=>{
       try{
         const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
-        if(!res.ok){throw new Error("Couldn't get user data")}
+        if(!res.ok){console.error("Couldn't get user data"); return;}
         const data:any = await res.json();
         setSysid(data.sysid);
         await waiting(4000);
@@ -147,7 +147,7 @@ export default function SystemSettingsPage() {
             await waiting(4000);
             setErrorMessage('');
             setIsLoading(false);
-            throw new Error("Failed to send image");
+            return;
           })();
         });
         await getDownloadURL(systemImageRef).then(async (url)=>{

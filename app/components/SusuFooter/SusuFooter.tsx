@@ -1,26 +1,34 @@
+"use client";
 import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-export default async function SusuFooter() {
-    let systemImageUrl:string="";
-    try{
-        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
-        if(!res.ok){
-            console.log("Error fetching footer info");
-        }
-        const data = await res.json();
-        systemImageUrl = data.image;
-    }catch(e:any){
-        console.log(e.message);
-    }
+export default function SusuFooter() {
+    const [systemImageUrl, setSystemImageUrl] = useState<string>("");
+    const [year, setYear] = useState<string>("");
+    useEffect(()=>{
+        (async ()=>{
+            try{
+                const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
+                if(!res.ok){
+                    console.log("Error fetching footer info");
+                    return;
+                }
+                const data = await res.json();
+                setSystemImageUrl(data.image);
+            }catch(e:any){
+                console.log(e.message);
+            }
+        })();
+        const currentDate:string = new Date().toDateString();
+        const dateRegex:RegExp = /.*(\d{4})$/;
+        
+        // @ts-ignore
+        setYear(`${(currentDate.match(dateRegex))[1]}`)
+        return ()=>{};
+    }, []);
 
-    const currentDate:string = new Date().toDateString();
-    const dateRegex:RegExp = /.*(\d{4})$/;
-
-    // @ts-ignore
-    let year:string|null = (currentDate.match(dateRegex))[1]
 
   return (
     <>
