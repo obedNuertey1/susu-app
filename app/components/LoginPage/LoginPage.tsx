@@ -53,7 +53,8 @@ const LoginPage = () => {
         await waiting(3000);
         setRegisterError('');
         setLoading(false);
-        throw new Error("Failed to log in")
+        console.error("Failed to log in");
+        return;
       }
       const data = await res.json();
       const {email} = data[0];

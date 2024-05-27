@@ -104,7 +104,7 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
     (async ()=>{
       try{
         const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${params.id}`);
-        if(!res.ok){throw new Error("Couldn't get user data")}
+        if(!res.ok){console.error("Couldn't get user data"); return;}
         const data:any = await res.json();
         setBorrowerId(data.sysid);
         await waiting(4000);
@@ -256,7 +256,8 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
               await waiting(4000);
               setErrorMessage("");
               setIsLoadingDelete(false);
-              throw new Error("Failed to delete object from database")
+              console.error("Failed to delete object from database");
+              return;
             }
             setSuccessMessage("Deleted Successfully");
             await waiting(4000);
@@ -277,7 +278,8 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
             await waiting(4000);
             setErrorMessage("");
             setIsLoadingDelete(false);
-            throw new Error("Failed to delete object from database")
+            console.error("Failed to delete object from database");
+            return;
           }
           setSuccessMessage("Deleted Successfully");
           await waiting(4000);

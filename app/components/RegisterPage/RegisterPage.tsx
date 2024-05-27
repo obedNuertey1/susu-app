@@ -17,7 +17,8 @@ async function getData(key:any){
   try{
     const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/username/${key.queryKey[0]}`);
     if(!res.ok){
-      throw new Error("Network response was not ok");
+      console.error("Network response was not ok");
+      return;
     }
     const resData = await res.json();
     if(resData[0] != null){

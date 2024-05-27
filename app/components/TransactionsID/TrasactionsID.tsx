@@ -62,7 +62,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
     const getFields = async () => {
       try{
         const res = await Promise.all([fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${id}`), fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`)]);
-        if(!res[0].ok){throw new Error("Network busy")}
+        if(!res[0].ok){console.error("Network busy"); return;}
         const data = await Promise.all([res[0].json(), res[1].json()]);
         console.log("_________data__________");
         console.log(data[0]);
@@ -104,7 +104,8 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
           setIsLoading(false);
           await waiting(4000);
           setErrorMessage('');
-          throw new Error("Transaction Failed");
+          console.error("Transaction Failed");
+          return;
         }
         if(res.ok){setErrorMessage(''); setSuccessMessage('Transaction Successful')}
         await waiting(4000);

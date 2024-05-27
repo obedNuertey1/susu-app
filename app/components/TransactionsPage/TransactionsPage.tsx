@@ -20,7 +20,8 @@ async function getData(key:any){
     await waiting(3000);
     const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/borrowers/accountNumber/${key?.queryKey[0]}`);
     if(!res.ok){
-      throw new Error("Network response was not ok");
+      console.error("Network response was not ok");
+      return;
     }
 
     const resData = await res.json();

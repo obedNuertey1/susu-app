@@ -129,7 +129,7 @@ export function ImageContextProvider({children}:any){
         const getUser = async ()=>{
           try{ // user
               const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
-              if(!res.ok){throw new Error("Couldn't get user data")}
+              if(!res.ok){console.error("Couldn't get user data"); return;}
               const data:any = await res.json();
               const userSettingsImageRef = ref(imagesRef, 'userSettings');
               setUserImageRef(ref(userSettingsImageRef, `${data.userid}.jpg`));
@@ -176,7 +176,7 @@ export function ImageContextProvider({children}:any){
         const getSystem = async ()=>{ // For system
           try{
             const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
-            if(!res.ok){throw new Error("Couldn't get user data")}
+            if(!res.ok){console.error("Couldn't get user data"); return;}
             const data:any = await res.json();
             const systemSettingsImageRef = ref(imagesRef, 'systemSettings');
             setSystemImageRef(ref(systemSettingsImageRef, `${data.sysid}.jpg`));
