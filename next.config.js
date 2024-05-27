@@ -10,6 +10,15 @@ const nextConfig = {
 //     CONTINUE_URL:"http://localhost:3000/transactions",
 //     STORAGE_SERVICE_URL: "https://firebasestorage.googleapis.com"
 // },
+    async redirects(){
+        return [
+            {
+                source: '/',
+                destination: '/transactions',
+                permanent: true, // 308 Permanent Redirect
+            }
+        ]
+    },
     images: {
         remotePatterns: [
             {
