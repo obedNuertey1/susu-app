@@ -53,7 +53,8 @@ const LoginPage = () => {
         await waiting(3000);
         setRegisterError('');
         setLoading(false);
-        console.error("Failed to log in");
+        console.error("Unable to get aws stuffs");
+        console.log(res);
         return;
       }
       const data = await res.json();
