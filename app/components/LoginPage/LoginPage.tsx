@@ -49,7 +49,7 @@ const LoginPage = () => {
       setLoading(true);
       const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/username/${username}`);
       if(!res.ok){
-        setRegisterError('Failed to log in');
+        setRegisterError(`Failed to log in response - level`);
         await waiting(3000);
         setRegisterError('');
         setLoading(false);
@@ -74,7 +74,7 @@ const LoginPage = () => {
           (async()=>{
             setPassword("");
             setUsername("");
-            setRegisterError('Failed to log in');
+            setRegisterError(`Failed to log in ${user}`);
             await waiting(4000);
             setRegisterError('');
             setLoading(false);
@@ -84,8 +84,9 @@ const LoginPage = () => {
       });
       return;
 
-    }catch{
-      setRegisterError("Failed to Login");
+    }catch(e){
+      // setRegisterError("Failed to Login");
+      setRegisterError(`Failed to Login - ${e}`);
       await waiting(4000);
       setRegisterError("");
       setLoading(false);
