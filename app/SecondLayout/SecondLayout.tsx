@@ -28,7 +28,7 @@ function SecondLayout({children}:any) {
         return ()=>{};
     }, []);
   return (
-    <Suspense fallback={<SplashScreen companyName={companyName} imageUrl={image} />}>
+    <Suspense fallback={<SplashScreen />}>
         <FirstLayout>
             {children}
         </FirstLayout>
