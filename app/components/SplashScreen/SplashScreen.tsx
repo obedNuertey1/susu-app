@@ -25,7 +25,7 @@ const SplashScreen=()=>{
         })();
 
         return ()=>{};
-    }, [companyName, imageUrl]);
+    }, []);
 
 
     return (
