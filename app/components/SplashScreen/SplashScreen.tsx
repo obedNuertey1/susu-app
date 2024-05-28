@@ -3,7 +3,7 @@ import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {useEffect, useState} from "react";
 import Image from "next/image";
-import "./splashScreen.css";
+import styles from "./splashScreen.module.css";
 
 // const SplashScreen= async ()=>{
 //     let companyName = "";
@@ -53,7 +53,7 @@ const SplashScreen = ({ companyName, imageUrl }:any) => {
         <div className={`w-full h-screen flex flex-col items-center justify-center bg-project-blue`}>
             <div id='organisation-logo-name' className={`w-full flex flex-col gap-[1px] justify-center items-center`}>
                 <div id='organisation-logo'>
-                    <div className="block w-24 h-24 rounded-full m-auto bg-transparent border-transparent border overflow-clip image-loading">
+                    <div className={`block w-24 h-24 rounded-full m-auto bg-transparent border-transparent border overflow-clip ${styles["image-loading"]}`}>
                         {!imageUrl && <FontAwesomeIcon icon={faPeopleGroup} className='w-1/2 h-1/2 text-lg text-color text-project-blue' />}
                         {imageUrl && <div className="w-full h-[100%] flex flex-col items-center justify-center"><Image src={`${imageUrl}`} alt="System Settings image" width="50" height="50" className='block m-auto w-2/3 h-2/3 ' unoptimized /></div>}
                     </div>

@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { ComponentType, lazy, Suspense } from 'react';
 import waiting from './funcs/waiting';
 import SplashScreen from './components/SplashScreen/SplashScreen';
+import FirstLayout from './FirstLayout/FirstLayout';
 
 // const FirstLayout:any = lazy(async ():Promise<{default: ComponentType<JSX.Element>}>=>{
 //   await waiting(10000);
@@ -38,10 +39,10 @@ import SplashScreen from './components/SplashScreen/SplashScreen';
 //   )
 // }
 
-const FirstLayout: any = lazy(async (): Promise<{ default: ComponentType<JSX.Element> }> => {
-  await waiting(10000);
-  return await import("./FirstLayout/FirstLayout");
-})
+// const FirstLayout: any = lazy(async (): Promise<{ default: ComponentType<JSX.Element> }> => {
+//   await waiting(10000);
+//   return await import("./FirstLayout/FirstLayout");
+// })
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -70,15 +71,16 @@ export default async function RootLayout({
       console.log(e.message);
   }
 
+  /*<Suspense fallback={<SplashScreen companyName={companyName} imageUrl={imageUrl} />}>
+              </Suspense>*/
   return (
       <html lang="en">
           <body className={inter.className}>
-              <Suspense fallback={<SplashScreen companyName={companyName} imageUrl={imageUrl} />}>
-                  <FirstLayout>
-                      {children}
-                  </FirstLayout>
-              </Suspense>
+              <FirstLayout>
+                  {children}
+              </FirstLayout>
           </body>
       </html>
   )
 }
+
