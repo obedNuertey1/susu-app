@@ -39,9 +39,7 @@ import SplashScreen from './components/SplashScreen/SplashScreen';
 // }
 
 const FirstLayout: any = lazy(async (): Promise<{ default: ComponentType<JSX.Element> }> => {
-  setTimeout(async ()=>{
-    await waiting(10000);
-  }, 0);
+  await waiting(10000);
   return await import("./FirstLayout/FirstLayout");
 })
 
