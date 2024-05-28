@@ -33,8 +33,11 @@ function ForgotPasswordPage() {
         e.preventDefault();
         try{
             setIsLoading(true);
+            console.log("Above checkmain on line 36");
             const checkEmail = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${email}`);
+            console.log("Beneath checkEmail on line 38");
             if(!checkEmail.ok){
+                console.log("!checkEmail.ok was true");
                 setErrorMessage("An error occured");
                 await waiting(4000);
                 setErrorMessage("");
@@ -43,6 +46,7 @@ function ForgotPasswordPage() {
             }
             const emailData = await checkEmail.json();
             if(!emailData){
+                console.log("!emailData was true");
                 setErrorMessage("The email you provided does not exist");
                 await waiting(4000);
                 setErrorMessage("");
@@ -53,6 +57,7 @@ function ForgotPasswordPage() {
 
             const getCompanyData = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
             if(!getCompanyData.ok){
+                console.log("!getCompanyData was true");
                 setErrorMessage("Failed to send email");
                 await waiting(4000);
                 setErrorMessage("");
@@ -62,8 +67,10 @@ function ForgotPasswordPage() {
             const getCompanyInfo = await getCompanyData.json();
             const companyLogoLink = getCompanyInfo.image;
             const companyName = getCompanyInfo.title;
-
+            
+            console.log("above sendPasswordResetEmail")
             await sendPasswordResetEmail(auth, email, {url: `http://localhost:3000/forgot-password?email=${email}&firstname=${firstname}&company_logo_link=${companyLogoLink}&company_name=${companyName}`});
+            console.log("below sendPasswordResetEmail");
             setSuccessMessage(`An email has been sent to ${email} to reset password`);
             await waiting(4000);
             setSuccessMessage("");
@@ -73,6 +80,8 @@ function ForgotPasswordPage() {
 
         }catch(e){
             setErrorMessage("An error occured");
+            console.log("catch(e) - error;=>")
+            console.log(e);
             await waiting(4000);
             setErrorMessage('');
             setIsLoading(false);
