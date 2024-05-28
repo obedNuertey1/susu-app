@@ -1,31 +1,38 @@
-// "use client";
+"use client";
 import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {useEffect, useState} from "react";
 import Image from "next/image";
 import styles from "./splashScreen.module.css";
 
-const SplashScreen= async ()=>{
-    let companyName = "Msys";
-    let imageUrl = "";
-    try{
-        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`)
-        if(!res.ok){
-            throw new Error("Bad request")
-        }
-        const data = await res.json();
-        imageUrl = data.image;
-        companyName = data.title || "Msys";
-    }catch(e:any){
-        console.log(e.message);
-    }
+const SplashScreen=()=>{
+
+    const [companyName, setCompanyName] = useState<string>("Msys");
+    const [imageUrl, setImageUrl] = useState<string>("");
+    useEffect(()=>{
+        (async ()=>{
+            try{
+                const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`)
+                if(!res.ok){
+                    throw new Error("Bad request")
+                }
+                const data = await res.json();
+                setImageUrl(`${data.image}`);
+                setCompanyName(`${data.title}`);
+            }catch(e:any){
+                console.log(e.message);
+            }
+        })();
+
+        return ()=>{};
+    }, [companyName, imageUrl]);
 
 
     return (
         <div className={`w-full h-screen flex flex-col items-center justify-center bg-project-blue`}>
             <div id='organisation-logo-name' className={`w-full flex flex-col gap-[1px] justify-center items-center`}>
             <div id='organisation-logo'>
-                <div className="block w-24 h-24 rounded-full m-auto bg-transparent border-transparent border overflow-clip image-loading">
+                <div className={`block w-24 h-24 rounded-full m-auto bg-transparent border-transparent border overflow-clip ${styles["image-loading"]}`}>
                 {!imageUrl && <FontAwesomeIcon icon={faPeopleGroup} className='w-1/2 h-1/2 text-lg text-color text-project-blue' />}
                     {imageUrl && <div className="w-full h-[100%] flex flex-col itmes-center justify-center"><Image src={`${imageUrl}`} alt="System Settings image" width="50" height="50" className='block m-auto w-2/3 h-2/3 ' unoptimized /></div>}
                 </div>
