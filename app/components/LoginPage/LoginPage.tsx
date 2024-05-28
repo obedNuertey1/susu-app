@@ -47,16 +47,13 @@ const LoginPage = () => {
     try{
       setRegisterError('');
       setLoading(true);
-      console.log("Above res = await fetch at line 50");
       const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/username/${username}`);
-      console.log("Below res = await fetch at line 52");
       if(!res.ok){
-        setRegisterError(`Failed to log in response - level`);
+        setRegisterError(`Failed to log in`);
         await waiting(3000);
         setRegisterError('');
         setLoading(false);
         console.error("Unable to get aws stuffs");
-        console.log(res);
         return;
       }
       const data = await res.json();
@@ -76,7 +73,7 @@ const LoginPage = () => {
           (async()=>{
             setPassword("");
             setUsername("");
-            setRegisterError(`Failed to log in ${user}`);
+            setRegisterError(`Failed to log in`);
             await waiting(4000);
             setRegisterError('');
             setLoading(false);
@@ -87,8 +84,7 @@ const LoginPage = () => {
       return;
 
     }catch(e){
-      // setRegisterError("Failed to Login");
-      setRegisterError(`Failed to Login - ${e}`);
+      setRegisterError(`Failed to Login`);
       await waiting(4000);
       setRegisterError("");
       setLoading(false);
@@ -116,7 +112,7 @@ const LoginPage = () => {
       {
         registerError && 
         <>
-          <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row prompt-anime">
+          <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row mx-auto prompt-anime">
             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <span>{registerError}</span>
           </div>

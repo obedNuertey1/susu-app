@@ -33,11 +33,8 @@ function ForgotPasswordPage() {
         e.preventDefault();
         try{
             setIsLoading(true);
-            console.log("Above checkmain on line 36");
             const checkEmail = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${email}`);
-            console.log("Beneath checkEmail on line 38");
             if(!checkEmail.ok){
-                console.log("!checkEmail.ok was true");
                 setErrorMessage("An error occured");
                 await waiting(4000);
                 setErrorMessage("");
@@ -46,7 +43,6 @@ function ForgotPasswordPage() {
             }
             const emailData = await checkEmail.json();
             if(!emailData){
-                console.log("!emailData was true");
                 setErrorMessage("The email you provided does not exist");
                 await waiting(4000);
                 setErrorMessage("");
@@ -57,7 +53,6 @@ function ForgotPasswordPage() {
 
             const getCompanyData = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`);
             if(!getCompanyData.ok){
-                console.log("!getCompanyData was true");
                 setErrorMessage("Failed to send email");
                 await waiting(4000);
                 setErrorMessage("");
@@ -68,9 +63,8 @@ function ForgotPasswordPage() {
             const companyLogoLink = getCompanyInfo.image;
             const companyName = getCompanyInfo.title;
             
-            console.log("above sendPasswordResetEmail")
+            
             await sendPasswordResetEmail(auth, email, {url: `${process.env.NEXT_PUBLIC_CONTINUE_URL}?email=${email}&firstname=${firstname}&company_logo_link=${companyLogoLink}&company_name=${companyName}`});
-            console.log("below sendPasswordResetEmail");
             setSuccessMessage(`An email has been sent to ${email} to reset password`);
             await waiting(4000);
             setSuccessMessage("");
@@ -80,8 +74,6 @@ function ForgotPasswordPage() {
 
         }catch(e){
             setErrorMessage("An error occured");
-            console.log("catch(e) - error;=>")
-            console.log(e);
             await waiting(4000);
             setErrorMessage('');
             setIsLoading(false);
@@ -93,7 +85,7 @@ function ForgotPasswordPage() {
     {
       errorMessage && 
       <>
-        <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row prompt-anime">
+        <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row mx-auto prompt-anime">
           <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <span>{errorMessage}</span>
         </div>
@@ -101,7 +93,7 @@ function ForgotPasswordPage() {
       }
       {
             successMessage &&
-            <div role="alert" className="alert alert-success fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row prompt-anime">
+            <div role="alert" className="alert alert-success fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row mx-auto prompt-anime">
                 <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 <span>{successMessage}</span>
             </div>
