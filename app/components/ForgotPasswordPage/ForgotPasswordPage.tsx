@@ -69,7 +69,7 @@ function ForgotPasswordPage() {
             const companyName = getCompanyInfo.title;
             
             console.log("above sendPasswordResetEmail")
-            await sendPasswordResetEmail(auth, email, {url: `http://localhost:3000/forgot-password?email=${email}&firstname=${firstname}&company_logo_link=${companyLogoLink}&company_name=${companyName}`});
+            await sendPasswordResetEmail(auth, email, {url: `${process.env.NEXT_PUBLIC_CONTINUE_URL}?email=${email}&firstname=${firstname}&company_logo_link=${companyLogoLink}&company_name=${companyName}`});
             console.log("below sendPasswordResetEmail");
             setSuccessMessage(`An email has been sent to ${email} to reset password`);
             await waiting(4000);
