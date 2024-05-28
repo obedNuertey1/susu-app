@@ -48,7 +48,7 @@ const SplashScreen=()=>{
 
 }
 
-SplashScreen.displayName = 'SplashScreen';
+// SplashScreen.displayName = 'SplashScreen';
 export default SplashScreen;
 
 
