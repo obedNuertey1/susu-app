@@ -9,7 +9,9 @@ const SplashScreen= async ()=>{
     let companyName = "";
     let imageUrl = "";
     try{
+        console.log("res = await fetch top at line 12")
         const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SSR_SERVER_API}/system-settings`)
+        console.log("bottom = await fetch bottom at line 14")
         if(!res.ok){
             throw new Error("Bad request")
         }
