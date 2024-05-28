@@ -10,7 +10,7 @@ const SplashScreen= async ()=>{
     let companyName = "Msys";
     let imageUrl = "";
     try{
-        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings`)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SSR_SERVER_API}/system-settings`)
         if(!res.ok){
             throw new Error("Bad request")
         }
