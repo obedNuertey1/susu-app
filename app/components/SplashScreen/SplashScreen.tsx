@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {useEffect, useState} from "react";
 import Image from "next/image";
 import styles from "./splashScreen.module.css";
-import { GetServerSideProps } from "next";
 
 const SplashScreen=({companyName, imageUrl}:any)=>{
 
@@ -31,27 +30,27 @@ const SplashScreen=({companyName, imageUrl}:any)=>{
 SplashScreen.displayName = 'SplashScreen';
 export default SplashScreen;
 
-export const getServerSideProps: GetServerSideProps = async () => {
-    let companyName = "Msys";
-    let imageUrl = "";
-    try{
-        const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SSR_SERVER_API}/system-settings`)
-        if(!res.ok){
-            throw new Error("Bad request")
-        }
-        const data = await res.json();
-        imageUrl = data.image;
-        companyName = `${data.title}`;
-    }catch(e:any){
-        console.log(e.message);
-    }
+// export const getServerSideProps: GetServerSideProps = async () => {
+//     let companyName = "Msys";
+//     let imageUrl = "";
+//     try{
+//         const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SSR_SERVER_API}/system-settings`)
+//         if(!res.ok){
+//             throw new Error("Bad request")
+//         }
+//         const data = await res.json();
+//         imageUrl = data.image;
+//         companyName = `${data.title}`;
+//     }catch(e:any){
+//         console.log(e.message);
+//     }
   
-    return {
-      props: {
-        companyName, imageUrl
-      }
-    };
-  };
+//     return {
+//       props: {
+//         companyName, imageUrl
+//       }
+//     };
+//   };
 
 
 
