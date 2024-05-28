@@ -569,13 +569,13 @@ export default function UserSettingsPage() {
                       <label className="label" htmlFor='address1'>
                         <span className="label-text">Address1:</span>
                       </label>
-                      <input type="tel" id='address1' value={address1} onChange={(e)=>{setAddress1(e.target.value)}} name='address1' placeholder="Enter your first address" className="input input-bordered"  />
+                      <input type="text" id='address1' value={address1} onChange={(e)=>{setAddress1(e.target.value)}} name='address1' placeholder="Enter your first address" className="input input-bordered"  />
                     </div>
                     <div className="form-control">
                       <label className="label" htmlFor='address2'>
                         <span className="label-text">Address2:</span>
                       </label>
-                      <input type="tel" id='address2' name='address2' value={address2} onChange={(e)=>{setAddress2(e.target.value)}} title='Please Enter Second address' pattern='^[0|\+233](2[0|3|4|5|6|7|8]|5[0|3|4|5|7|9])\d{7}$' placeholder="Enter Phone Number" className="input input-bordered"  />
+                      <input type="text" id='address2' name='address2' value={address2} onChange={(e)=>{setAddress2(e.target.value)}} title='Please Enter Second address' pattern='^[0|\+233](2[0|3|4|5|6|7|8]|5[0|3|4|5|7|9])\d{7}$' placeholder="Enter Phone Number" className="input input-bordered"  />
                     </div>
                     <div className="divider">Add Photo</div>
                     <div className="form-control">

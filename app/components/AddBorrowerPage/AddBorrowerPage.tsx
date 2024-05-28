@@ -276,7 +276,7 @@ export default function AddBorrowersPage() {
                         <span className="label-text">Phone:</span>
                       </label>
                       {/* @ts-ignore */}
-                      <input type="tel" id='phone' name='phone' value={phone} onChange={(e)=>{
+                      <input type="text" id='phone' name='phone' value={phone} onChange={(e)=>{
                         setPhone(e.target.value)
                       }} placeholder="phone" className="input input-bordered" required />
                     </div>
@@ -285,7 +285,7 @@ export default function AddBorrowersPage() {
                         <span className="label-text">Address 1:</span>
                       </label>
                       {/* @ts-ignore */}
-                      <input type="tel" id='addrs1' name='addrs1' value={addrs1} onChange={(e)=>{
+                      <input type="text" id='addrs1' name='addrs1' value={addrs1} onChange={(e)=>{
                         setAddrs1(e.target.value)
                       }} placeholder="Address 1" className="input input-bordered" required  />
                     </div>

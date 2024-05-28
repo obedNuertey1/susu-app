@@ -403,7 +403,7 @@ export default function SystemSettingsPage() {
                         <span className="label-text">Address:</span>
                       </label>
                       {/* @ts-ignore */}
-                      <input type="tel" id='address' name='address' value={address} onChange={(e)=>{
+                      <input type="text" id='address' name='address' value={address} onChange={(e)=>{
                         setAddress(e.target.value)
                       }} placeholder="Address" className="input input-bordered"  />
                     </div>
