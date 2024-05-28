@@ -238,7 +238,7 @@ export default function SystemSettingsPage() {
  
   
   return (
-    <>
+    <div className='relative'>
         {
             successMessage &&
             <div role="alert" className={`alert alert-success fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row ${styles.promptAnime}`}>
@@ -448,6 +448,6 @@ export default function SystemSettingsPage() {
                 </form>
           </div>
       </div>
-    </>
+    </div>
   )
 }
