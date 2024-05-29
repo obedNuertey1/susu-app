@@ -233,9 +233,18 @@ export default function TransactionsPage() {
               </div>
             </div>
             <div className='card w-full max-w-screen-md flex flex-row gap-3 flex-wrap justify-center items-center sm:gap-7'>
-              <div className={`${isAdmin?"w-[66%] flex-wrap": "w-full flex-nowrap" } sm:w-full flex flex-row justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4`}>
+              {
+                isAdmin &&
+              <div className='w-[66%] sm:w-full flex flex-row flex-wrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4'>
                 {buttons}
               </div>
+              }
+              {
+                !isAdmin &&
+              <div className='w-full sm:w-full flex flex-row flex-nowrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4'>
+                {buttons}
+              </div>
+              }
             </div>
           </div>
       </div>
