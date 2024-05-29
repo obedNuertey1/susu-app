@@ -138,12 +138,6 @@ export default function TransactionsPage() {
     }
     </>
     ,
-    <>
-      {
-        !isAdmin && 
-        <div className='h-16 w-8 btn btn-circle opacity-0'></div>
-      }
-    </>,
     <div key="user-settings" className='tooltip tooltip-bottom' data-tip="user settings page" >
     <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
       <div className='flex flex-col justify-center items-center origin-center scale-90'>
@@ -163,9 +157,15 @@ export default function TransactionsPage() {
 <>
   {
     !isAdmin && 
-    <div className='h-16 w-8 btn btn-circle opacity-0'></div>
+    <div className='h-16 w-16 btn btn-circle opacity-0'></div>
   }
 </>,
+<>
+  {
+    !isAdmin && 
+    <div className='h-16 w-16 btn btn-circle opacity-0'></div>
+  }
+</>
   ]).map((elem:any, i:number)=>{
     let animatedUp = {animation: `showUpButtons 0.3s ease-in ${0.3*i}s 1 forwards`};
     return (<div key={i} style={{...moveDown, ...animatedUp}}>{elem}</div>);
