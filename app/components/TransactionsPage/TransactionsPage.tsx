@@ -258,15 +258,6 @@ export default function TransactionsPage() {
                 </>
                 }
               </div>
-              {/* {
-                isAdmin &&
-              } */}
-              {/* {
-                !isAdmin &&
-              <div className='w-[66%] sm:w-full flex flex-row flex-nowrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4 mx-auto'>
-                  
-              </div>
-              } */}
             </div>
           </div>
       </div>
