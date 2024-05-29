@@ -10,7 +10,8 @@ const nextConfig = {
         NEXT_PUBLIC_REACT_SERVER_API:"https://r30ae1ytih.execute-api.eu-north-1.amazonaws.com/msys-prod/api/v1",
         NEXT_PUBLIC_CONTINUE_URL:"https://msys-susu.netlify.app/transactions",
         NEXT_PUBLIC_STORAGE_SERVICE_URL:"https://firebasestorage.googleapis.com",
-        NEXT_PUBLIC_REACT_SSR_SERVER_API:"http://13.49.148.44:4000/api/v1"
+        NEXT_PUBLIC_REACT_SSR_SERVER_API:"https://r30ae1ytih.execute-api.eu-north-1.amazonaws.com/msys-prod/api/v1"
+        // NEXT_PUBLIC_REACT_SSR_SERVER_API:"http://13.49.148.44:4000/api/v1"
     },
     async redirects(){
         return [
