@@ -14,7 +14,7 @@ async function getData(key:any){
     try{
         console.log("key");
         console.log(key)
-        const res2 = await Promise.all([fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/transactions?fields=true`), fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/transactions/alldata/?pageIndex=${key?.queryKey[0]}&rowsPerPage=20&searchKey=${key?.queryKey[1]}&searchQuery=${key?.queryKey[2]}`)]);
+        const res2 = await Promise.all([fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/transactions?fields=true`), fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/transactions/alldata?pageIndex=${key?.queryKey[0]}&rowsPerPage=20&searchKey=${key?.queryKey[1]}&searchQuery=${key?.queryKey[2]}`)]);
         if(res2[0].ok == false || res2[1].ok == false){console.error("Network response was not ok"); return;}
         const res2data = await Promise.allSettled([res2[0].json(), res2[1].json()]);
         //   @ts-ignore
