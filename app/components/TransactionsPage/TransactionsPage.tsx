@@ -156,7 +156,10 @@ export default function TransactionsPage() {
 </div>,
 <>
   {
-    !isAdmin && <div className='h-16 w-16'></div>
+    !isAdmin && 
+    <div className='tooltip tooltip-bottom opacity-0'>
+        <div className='h-16 w-16'></div>
+    </div>
   }
 </>
   ]).map((elem:any, i:number)=>{
