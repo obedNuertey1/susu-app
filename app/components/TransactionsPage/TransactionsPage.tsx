@@ -158,7 +158,7 @@ export default function TransactionsPage() {
   {
     !isAdmin && 
     <div className='tooltip tooltip-bottom opacity-0'>
-        <div className='h-16 w-16'></div>
+        <div className='h-16 w-16 btn btn-circle opacity-0'></div>
     </div>
   }
 </>
