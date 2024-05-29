@@ -243,7 +243,22 @@ export default function TransactionsPage() {
               {
                 !isAdmin &&
               <div className='w-[66%] sm:w-full flex flex-row flex-nowrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4 mx-auto'>
-                {buttons}
+                  <div key="user-settings" className='tooltip tooltip-bottom' data-tip="user settings page" >
+                    <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
+                      <div className='flex flex-col justify-center items-center origin-center scale-90'>
+                        <FontAwesomeIcon icon={faUserGear} className='w-7 h-7' />
+                        <span className={`${styles.smallText} font-semibold text-wrap line`}> <span style={{display: "block"}}>User</span> Settings</span>
+                      </div>
+                    </Link>
+                  </div>
+                  <div key="borrowers" className='tooltip tooltip-bottom' data-tip="borrowers page">
+                  <Link href="/transactions/borrowers" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
+                    <div className='flex flex-col justify-center items-center origin-center scale-90'>
+                      <FontAwesomeIcon icon={faHandHoldingDollar} className='w-7 h-7' />
+                      <span className={`${styles.smallText} font-semibold text-wrap line`}>Borrowers</span>
+                    </div>
+                  </Link>
+                </div>
               </div>
               }
             </div>
