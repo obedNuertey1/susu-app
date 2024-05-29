@@ -138,6 +138,12 @@ export default function TransactionsPage() {
     }
     </>
     ,
+    <>
+      {
+        !isAdmin && 
+        <div className='h-16 w-16 btn btn-circle opacity-0'></div>
+      }
+    </>,
     <div key="user-settings" className='tooltip tooltip-bottom' data-tip="user settings page" >
     <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
       <div className='flex flex-col justify-center items-center origin-center scale-90'>
