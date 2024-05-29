@@ -153,8 +153,13 @@ export default function TransactionsPage() {
       <span className={`${styles.smallText} font-semibold text-wrap line`}>Borrowers</span>
     </div>
   </Link>
-</div>,
-{/* <>
+</div>
+  ]).map((elem:any, i:number)=>{
+    let animatedUp = {animation: `showUpButtons 0.3s ease-in ${0.3*i}s 1 forwards`};
+    return (<div key={i} style={{...moveDown, ...animatedUp}}>{elem}</div>);
+  })
+
+  /* <>
   {
     !isAdmin && 
     <div className='h-16 w-16 btn btn-circle opacity-0'></div>
@@ -165,11 +170,7 @@ export default function TransactionsPage() {
     !isAdmin && 
     <div className='h-16 w-16 btn btn-circle opacity-0'></div>
   }
-</> */}
-  ]).map((elem:any, i:number)=>{
-    let animatedUp = {animation: `showUpButtons 0.3s ease-in ${0.3*i}s 1 forwards`};
-    return (<div key={i} style={{...moveDown, ...animatedUp}}>{elem}</div>);
-  })
+</> */
 
   return (
     <>
