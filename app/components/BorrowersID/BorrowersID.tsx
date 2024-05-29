@@ -1,5 +1,5 @@
 "use client";
-import { faGears} from '@fortawesome/free-solid-svg-icons'
+import { faGears, faUserEdit} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
 import React, { useEffect, useRef, useState } from 'react'
@@ -325,22 +325,12 @@ export default function BorrowersID({params, searchParams}: {params: {id: string
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
                 <h1 className='block text-3xl font-extrabold'>Borrower Info</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
-                  {/* {(image.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`) && !imageSrc) && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
-                    <Image src={`${image}`} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
-                  </div>}
-                  { 
-                  (imageSrc && <div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
-                  <Image src={imageSrc} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
-                </div>)
-                  } */}
-                  {/* {image && <img src={`${imageUrl}`} alt="logo" className='object-cover text-inherit w-44 h-44' />} */}
-                  {/* {!(image.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`) && imageSrc) && <FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />} */}
                   {
                     (imageSrc)?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
                     <Image src={imageSrc} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
                   </div>:(`${image}`.startsWith(`${process.env.NEXT_PUBLIC_STORAGE_SERVICE_URL}`))?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
                     <Image src={`${image}`} alt={`${fname}'s image`} width="50" height="50" className='object-cover object-center w-full h-full rounded-full' unoptimized />
-                  </div>:<FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faGears} />
+                  </div>:<FontAwesomeIcon className='object-cover m-3 text-inherit w-2/3 h-2/3' icon={faUserEdit} />
                   }
                 </div>
               </div>
