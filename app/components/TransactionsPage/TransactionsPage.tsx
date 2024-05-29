@@ -234,15 +234,11 @@ export default function TransactionsPage() {
               </div>
             </div>
             <div className='card w-full max-w-screen-md flex flex-row gap-3 flex-wrap justify-center items-center sm:gap-7'>
-              {
-                isAdmin &&
               <div className='w-[66%] sm:w-full flex flex-row flex-wrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4'>
-                {buttons}
-              </div>
-              }
-              {
-                !isAdmin &&
-              <div className='w-[66%] sm:w-full flex flex-row flex-nowrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4 mx-auto'>
+                {isAdmin && <>{buttons}</>}
+                {
+                !isAdmin && 
+                <>
                   <div key="user-settings" className='tooltip tooltip-bottom' data-tip="user settings page" >
                     <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
                       <div className='flex flex-col justify-center items-center origin-center scale-90'>
@@ -259,8 +255,18 @@ export default function TransactionsPage() {
                     </div>
                   </Link>
                 </div>
+                </>
+                }
               </div>
-              }
+              {/* {
+                isAdmin &&
+              } */}
+              {/* {
+                !isAdmin &&
+              <div className='w-[66%] sm:w-full flex flex-row flex-nowrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4 mx-auto'>
+                  
+              </div>
+              } */}
             </div>
           </div>
       </div>
