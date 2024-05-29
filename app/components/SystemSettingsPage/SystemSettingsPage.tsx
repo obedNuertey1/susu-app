@@ -190,7 +190,7 @@ export default function SystemSettingsPage() {
         })
         return;
       }
-
+// 
       const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/system-settings/1`, {
         method: "PATCH",
         headers: {
