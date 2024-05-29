@@ -154,7 +154,7 @@ export default function TransactionsPage() {
     </div>
   </Link>
 </div>,
-<>
+{/* <>
   {
     !isAdmin && 
     <div className='h-16 w-16 btn btn-circle opacity-0'></div>
@@ -165,7 +165,7 @@ export default function TransactionsPage() {
     !isAdmin && 
     <div className='h-16 w-16 btn btn-circle opacity-0'></div>
   }
-</>
+</> */}
   ]).map((elem:any, i:number)=>{
     let animatedUp = {animation: `showUpButtons 0.3s ease-in ${0.3*i}s 1 forwards`};
     return (<div key={i} style={{...moveDown, ...animatedUp}}>{elem}</div>);
@@ -233,7 +233,7 @@ export default function TransactionsPage() {
               </div>
             </div>
             <div className='card w-full max-w-screen-md flex flex-row gap-3 flex-wrap justify-center items-center sm:gap-7'>
-              <div className='w-[66%] sm:w-full flex flex-row flex-wrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4'>
+              <div className={`${isAdmin?"w-[66%] flex-wrap": "w-full flex-nowrap" } sm:w-full flex flex-row justify-center items-center gap-x-3 gap-y-2 sm:gap-x-7 sm:gap-y-4`}>
                 {buttons}
               </div>
             </div>
