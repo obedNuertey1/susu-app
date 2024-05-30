@@ -39,7 +39,7 @@
 
 .cardAnimeDown{
     transform-origin: 50% 0%;
-    /* transform: scale(1); */
+    transform: scale(1);
     transform: translateY(-100%);
     animation: animeCardDown 1s linear 0s 1 forwards;
 }
@@ -47,17 +47,11 @@
 /* .animeDown{
 } */
 
-/* @keyframes animeCardDown {
+@keyframes animeCardDown {
     0%{
         transform: translateY(-100%);
     }
     100%{
-        transform: translateY(0%);
-    }
-} */
-
-@keyframes animeCardDown {
-    to{
         transform: translateY(0%);
     }
 }
