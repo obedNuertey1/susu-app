@@ -9,7 +9,7 @@ function Custom404() {
       <div className="flex flex-col lg:flex-row">
         <div className="grid flex-grow h-20 place-items-center text-5xl font-extrabold">404</div> 
         <div className="divider lg:divider-horizontal"></div> 
-        <div className="grid flex-grow h-20 place-items-center">Charley this page does not exist wy</div>
+        <div className="grid flex-grow h-20 place-items-center">This page does not exist</div>
       </div>
       <Image src={svg404} alt='404 image' className='w-40 h-40' />
       <Link href="/transactions" className='btn btn-info btn-base-1'>Go Back</Link>
