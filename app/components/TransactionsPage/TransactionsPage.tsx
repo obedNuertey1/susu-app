@@ -7,7 +7,7 @@ import styles from './transactions.module.css';
 import './transactions.css'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faPeopleGroup, faGears, faUserGear, faHandHoldingDollar, faMoneyBillTransfer, faUserFriends } from '@fortawesome/free-solid-svg-icons';
+import {faPeopleGroup, faGears, faUserGear, faHandHoldingDollar, faMoneyBillTransfer, faUserFriends, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import {useQuery} from 'react-query';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
@@ -247,11 +247,11 @@ export default function TransactionsPage() {
                       </div>
                     </Link>
                   </div>
-                  <div key="borrowers" className='tooltip tooltip-bottom' data-tip="borrowers page">
-                  <Link href="/transactions/borrowers" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
+                  <div key="borrowers" className='tooltip tooltip-bottom' data-tip="Add user page">
+                  <Link href="/transactions/borrowers/add" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
                     <div className='flex flex-col justify-center items-center origin-center scale-90'>
-                      <FontAwesomeIcon icon={faHandHoldingDollar} className='w-7 h-7' />
-                      <span className={`${styles.smallText} font-semibold text-wrap line`}>Borrowers</span>
+                      <FontAwesomeIcon icon={faUserPlus} className='w-7 h-7' />
+                      <span className={`${styles.smallText} font-semibold text-wrap line text-center`}>Add User</span>
                     </div>
                   </Link>
                 </div>
