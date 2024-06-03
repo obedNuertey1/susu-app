@@ -239,22 +239,29 @@ export default function TransactionsPage() {
                 {
                 !isAdmin && 
                 <>
-                  <div key="user-settings" className='tooltip tooltip-bottom' data-tip="user settings page" >
-                    <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
+                  {
+                    [
+                      <div key="user-settings" className='tooltip tooltip-bottom' data-tip="user settings page" >
+                      <Link href="/transactions/user-settings" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
+                        <div className='flex flex-col justify-center items-center origin-center scale-90'>
+                          <FontAwesomeIcon icon={faUserGear} className='w-7 h-7' />
+                          <span className={`${styles.smallText} font-semibold text-wrap line`}> <span style={{display: "block"}}>User</span> Settings</span>
+                        </div>
+                      </Link>
+                    </div>,
+                    <div key="borrowers" className='tooltip tooltip-bottom' data-tip="Add user page">
+                    <Link href="/transactions/borrowers/add" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
                       <div className='flex flex-col justify-center items-center origin-center scale-90'>
-                        <FontAwesomeIcon icon={faUserGear} className='w-7 h-7' />
-                        <span className={`${styles.smallText} font-semibold text-wrap line`}> <span style={{display: "block"}}>User</span> Settings</span>
+                        <FontAwesomeIcon icon={faUserPlus} className='w-7 h-7' />
+                        <span className={`${styles.smallText} font-semibold text-wrap line text-center`}>Add User</span>
                       </div>
                     </Link>
                   </div>
-                  <div key="borrowers" className='tooltip tooltip-bottom' data-tip="Add user page">
-                  <Link href="/transactions/borrowers/add" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
-                    <div className='flex flex-col justify-center items-center origin-center scale-90'>
-                      <FontAwesomeIcon icon={faUserPlus} className='w-7 h-7' />
-                      <span className={`${styles.smallText} font-semibold text-wrap line text-center`}>Add User</span>
-                    </div>
-                  </Link>
-                </div>
+                    ].map((elem:any, i:number)=>{
+                      let animatedUp = {animation: `showUpButtons 0.3s ease-in ${0.3*i}s 1 forwards`};
+                      return (<div key={i} style={{...moveDown, ...animatedUp}}>{elem}</div>);
+                    })
+                  }
                 </>
                 }
               </div>
