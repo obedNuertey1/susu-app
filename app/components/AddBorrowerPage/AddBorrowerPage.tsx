@@ -52,28 +52,8 @@ export default function AddBorrowersPage() {
   
 
   useEffect(()=>{
-
-  //   (async ()=>{
-  //     try{
-  //         const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
-  //         if(!res.ok){
-  //             return router.push("/page-not-found")
-  //         }
-  //         const data = await res.json();
-  //         if(data.role.toLowerCase() != 'admin'){
-  //             return router.push("/page-not-found");
-  //         }
-  //         return;
-  //     }catch(e){
-  //         console.log(e);
-  //     }
-
-  // })();
     
     try{
-      // if(userRole?.toLowerCase() != 'admin'){
-      //   return router.push("/page-not-found");
-      // }
       if(!currentUser){ // Go to login page if user has not logged in.
         return router.push("/login");
       }
@@ -96,7 +76,6 @@ export default function AddBorrowersPage() {
     const cardAnimeRefVar = cardAnimeRef.current;
     return ()=>{
       cardAnimeRefVar?.classList.remove(`${styles.cardAnimeUp}`);
-      // cardAnimeRefVar?.classList.remove(`${styles.animeDown}`);
     }
   }, []);
   
