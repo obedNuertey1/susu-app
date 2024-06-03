@@ -205,7 +205,7 @@ export default function AddBorrowersPage() {
       <div className={`relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px] overflow-y-clip`}>
           <div className={`card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90 ${styles.cardAnimeDown}`} ref={cardAnimeRef}>
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
-                <h1 className='block text-3xl font-extrabold'>{(userRole.toLowerCase() == 'admin') && "Add Borrower"}{(userRole.toLowerCase() != 'admin') && "Add User"}</h1>
+                <h1 className='block text-3xl font-extrabold'>{(userRole.toLowerCase() == 'admin') && "Add Borrower"}{(userRole.toLowerCase() != 'admin') && "Add Account"}</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
                   {
                     (imageSrc)?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
@@ -217,7 +217,7 @@ export default function AddBorrowersPage() {
                 </div>
               </div>
                 <form className="card-body">
-                  <div className="divider">{(userRole.toLowerCase() == 'admin') && "Add Borrower"}{(userRole.toLowerCase() != 'admin') && "Add User"}</div>
+                  <div className="divider">{(userRole.toLowerCase() == 'admin') && "Add Borrower"}{(userRole.toLowerCase() != 'admin') && "Add Account"}</div>
                       {/*System Info*/}
                     <div className="form-control">
                       <label className="label" htmlFor='fname'>

@@ -253,7 +253,7 @@ export default function TransactionsPage() {
                     <Link href="/transactions/borrowers/add" className='btn btn-circle h-16 w-16 text-white bg-orangered rounded-full shadow-xl'>
                       <div className='flex flex-col justify-center items-center origin-center scale-90'>
                         <FontAwesomeIcon icon={faUserPlus} className='w-7 h-7' />
-                        <span className={`${styles.smallText} font-semibold text-wrap line text-center`}>Add User</span>
+                        <span className={`${styles.smallText} font-semibold text-wrap line text-center`}>Add<br />Account</span>
                       </div>
                     </Link>
                   </div>
