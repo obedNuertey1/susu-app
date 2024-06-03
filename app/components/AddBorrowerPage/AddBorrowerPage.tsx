@@ -53,22 +53,22 @@ export default function AddBorrowersPage() {
 
   useEffect(()=>{
 
-    (async ()=>{
-      try{
-          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
-          if(!res.ok){
-              return router.push("/page-not-found")
-          }
-          const data = await res.json();
-          if(data.role.toLowerCase() != 'admin'){
-              return router.push("/page-not-found");
-          }
-          return;
-      }catch(e){
-          console.log(e);
-      }
+  //   (async ()=>{
+  //     try{
+  //         const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+  //         if(!res.ok){
+  //             return router.push("/page-not-found")
+  //         }
+  //         const data = await res.json();
+  //         if(data.role.toLowerCase() != 'admin'){
+  //             return router.push("/page-not-found");
+  //         }
+  //         return;
+  //     }catch(e){
+  //         console.log(e);
+  //     }
 
-  })();
+  // })();
     
     try{
       // if(userRole?.toLowerCase() != 'admin'){
@@ -226,7 +226,7 @@ export default function AddBorrowersPage() {
       <div className={`relative flex flex-col justify-center items-center w-full h-[100%] sm:h-[60%] gap-[2px] overflow-y-clip`}>
           <div className={`card py-5  w-full max-w-sm sm:max-w-xl shadow-2xl bg-base-100 sm:scale-90 ${styles.cardAnimeDown}`} ref={cardAnimeRef}>
             <div className='flex card-title flex-col gap-1 justify-center items-center'>
-                <h1 className='block text-3xl font-extrabold'>Add Borrower</h1>
+                <h1 className='block text-3xl font-extrabold'>{(userRole.toLowerCase() == 'admin') && "Add Borrower"}{(userRole.toLowerCase() != 'admin') && "Add User"}</h1>
                 <div className='w-40 h-40 rounded-full  shadow-md overflow-clip flex flex-row items-center justify-center'>
                   {
                     (imageSrc)?<div className='w-full h-[100%] flex flex-col itmes-center justify-center'>
@@ -238,7 +238,7 @@ export default function AddBorrowersPage() {
                 </div>
               </div>
                 <form className="card-body">
-                  <div className="divider">Add Borrower</div>
+                  <div className="divider">{(userRole.toLowerCase() == 'admin') && "Add Borrower"}{(userRole.toLowerCase() != 'admin') && "Add User"}</div>
                       {/*System Info*/}
                     <div className="form-control">
                       <label className="label" htmlFor='fname'>
@@ -376,11 +376,24 @@ export default function AddBorrowersPage() {
                         <button onClick={handleSubmit} {...(isLoading?{disabled:true}:{disabled:false})} type='submit' className="btn btn-primary">Save</button>
                       </div>
                       <div className="form-control mt-2">
+                        {
+                          (userRole.toLowerCase() == 'admin') 
+                                &&
                           <span role='link' className="btn btn-warning" onClick={async ()=>{
                             cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`);
                             await waiting(800);
                             router.push("/transactions/borrowers");
                           }} >Cancel</span>
+                        }
+                        {
+                          (userRole.toLowerCase() != 'admin') 
+                                &&
+                          <span role='link' className="btn btn-error" onClick={async ()=>{
+                            cardAnimeRef.current?.classList.add(`${styles.cardAnimeUp}`);
+                            await waiting(800);
+                            router.push("/transactions");
+                          }} >Cancel</span>
+                        }
                       </div>
                 </form>
           </div>
