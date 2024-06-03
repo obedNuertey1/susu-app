@@ -54,8 +54,24 @@ function BorrowersPage() {
     let searchBy:any = [];
     const [searchByField, setSearchByField] = useState<string[]>([]);
     const {userRole}:any = useImagesContext();
-    
+
     useEffect(()=>{
+        (async ()=>{
+            try{
+                const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+                if(!res.ok){
+                    return router.push("/page-not-found")
+                }
+                const data = await res.json();
+                if(data.role.toLowerCase() != 'admin'){
+                    return router.push("/page-not-found");
+                }
+                return;
+            }catch(e){
+                console.log(e);
+            }
+        })();
+
         if(!currentUser){
           return router.push("/login");
         }
@@ -71,7 +87,7 @@ function BorrowersPage() {
         }
 
         return ()=>{}
-    }, [currentUser]);
+    }, []);
 
     const getFieldData = async ()=>{
         try{
