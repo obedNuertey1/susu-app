@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import waiting from '@/app/funcs/waiting';
 import { Auth, EmailAuthProvider, applyActionCode, confirmPasswordReset, getAuth} from 'firebase/auth';
 import InputField from '../InputField/InputField';
@@ -112,54 +112,78 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
             setIsLoading(false);
         }
     }
-  return (
-    <>
-    <div className='flex justify-center items-center h-screen'>
-    {
-      errorMessage && 
-      <>
-        <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row mx-auto prompt-anime">
-          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span>{errorMessage}</span>
-        </div>
-      </>
+
+    useLayoutEffect(()=>{
+      try{
+        if(!mode || !oobCode || !continueUrl){
+            return router.push("/page-not-found");
+        }else if(auth.currentUser?.emailVerified){
+          return router.push("/transactions");
+        }
+        
+      }catch(e){
+        console.log(e)
       }
-      {
-            successMessage &&
-            <div role="alert" className="alert alert-success fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row mx-auto prompt-anime">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>{successMessage}</span>
-            </div>
-        }
-        {
-        (mode === "resetPassword")
-        &&
-        <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 original-state' ref={cardAnimeRef}>
-            <div className='w-full mb-6'>
-              <h2 className='text-center text-2xl font-extrabold'>New Password</h2>
-            </div>
-            <form className='w-full' onSubmit={handleSubmit}>
-              <InputField isRequired={true} placeholder='Enter your new password' inputText={setPassword} inputTextValue={password} inputTypeValue='password' showPassword={true} labelText='Your New Password:' />
-              <button type='submit' {...(isLoading?({disabled:true}):({disabled:false}))} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
-            </form>
-        </div>
-        }
-        {
-          (mode === "verifyEmail")
-          &&
-          <div className='max-w-md m-auto w-10/12 items-center justify-center flex flex-col'>
-            <div className="card card-bordered card-normal shadow-lg rounded-lg p-4 original-state" ref={cardAnimeRef}>
-              <div className="card-title"><h1 className='text-center w-full'>Email verification - One step to go!😅😅</h1></div>
-              <div className="card-body">
-                <p className='text-center'>Welcome aboard! Your email is one step closer to being verified. Click the button below to verify your email</p>
+    }, []);
+    try{
+      if(!mode || !oobCode || !continueUrl){
+          return <></>;
+      }else if(auth.currentUser?.emailVerified){
+        return <></>;
+      }else{
+        return (
+          <>
+          <div className='flex justify-center items-center h-screen'>
+          {
+            errorMessage && 
+            <>
+              <div role="alert" className="alert alert-error fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row mx-auto prompt-anime">
+                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>{errorMessage}</span>
               </div>
-              <div className="card-actions flex flex-row justify-center items-center"><button {...(isLoading?({disabled:true}):({disabled:false}))} onClick={handleVerify} className='btn btn-outline btn-primary'>Complete Verification</button></div>
-            </div>
+            </>
+            }
+            {
+                  successMessage &&
+                  <div role="alert" className="alert alert-success fixed left-0 z-50 right-0 top-[0vh] w-[90vw] justify-self-center self-center gap-1 flex-row mx-auto prompt-anime">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      <span>{successMessage}</span>
+                  </div>
+              }
+              {
+              (mode === "resetPassword")
+              &&
+              <div className='max-w-md m-auto w-10/12 border items-center border-back p-3 flex flex-col gap-4 original-state' ref={cardAnimeRef}>
+                  <div className='w-full mb-6'>
+                    <h2 className='text-center text-2xl font-extrabold'>New Password</h2>
+                  </div>
+                  <form className='w-full' onSubmit={handleSubmit}>
+                    <InputField isRequired={true} placeholder='Enter your new password' inputText={setPassword} inputTextValue={password} inputTypeValue='password' showPassword={true} labelText='Your New Password:' />
+                    <button type='submit' {...(isLoading?({disabled:true}):({disabled:false}))} className="mt-6 self-center w-full mx-auto block max-w-xs items-center btn btn-md sm:btn-md md:btn-md lg:btn-md bg-blue-700 text-white">Submit</button>
+                  </form>
+              </div>
+              }
+              {
+                (mode === "verifyEmail")
+                &&
+                <div className='max-w-md m-auto w-10/12 items-center justify-center flex flex-col'>
+                  <div className="card card-bordered card-normal shadow-lg rounded-lg p-4 original-state" ref={cardAnimeRef}>
+                    <div className="card-title"><h1 className='text-center w-full'>Email verification - One step to go!😅😅</h1></div>
+                    <div className="card-body">
+                      <p className='text-center'>Welcome aboard! Your email is one step closer to being verified. Click the button below to verify your email</p>
+                    </div>
+                    <div className="card-actions flex flex-row justify-center items-center"><button {...(isLoading?({disabled:true}):({disabled:false}))} onClick={handleVerify} className='btn btn-outline btn-primary'>Complete Verification</button></div>
+                  </div>
+                </div>
+              }
           </div>
-        }
-    </div>
-  </>
-  )
+        </>
+        )
+      }
+      
+    }catch(e){
+      console.log(e)
+    }
 }
 
 export default AuthVerificationPage;
