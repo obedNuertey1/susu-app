@@ -108,16 +108,20 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
     }
 
   }
-  const redirectionToLoginPage = useCallback(()=>{
-    waiting(4000);
+  const redirectionToLoginPage = ()=>{
+    // waiting(4000);
     if(!(redirectHashId == searchParams?.hashInfo)){
       router.push("/login");
     }
     // return <></>;
-  }, [])
+  }
+  useLayoutEffect(()=>{
+    redirectionToLoginPage();
+    return ()=>{}
+  }, []);
 
   if(!(redirectHashId == searchParams?.hashInfo)){
-    redirectionToLoginPage();
+    return <></>;
   }else{
     return (
       <>
