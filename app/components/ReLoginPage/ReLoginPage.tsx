@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import LoginAvatar from '../../components/LoginAvatar/LoginAvatar'
 import InputField from '../../components/InputField/InputField'
 import { useAuth } from '@/app/contexts/AuthContext';
@@ -30,7 +30,12 @@ const ReLoginPage = ({params, searchParams}: {params: {email: string}, searchPar
       router.push("/login");
     }
   }
-  redirectionToLoginPage();
+  useLayoutEffect(() => {
+    redirectionToLoginPage();
+    
+  
+    return () => {};
+  }, [])
   // Generate a v4 UUID
   // ?usingEmail=true&hashInfo=${emailHash}
 
