@@ -5,7 +5,7 @@ import { ComponentType, lazy, Suspense } from 'react';
 import waiting from './funcs/waiting';
 import SplashScreen from './components/SplashScreen/SplashScreen';
 import SecondLayout from './SecondLayout/SecondLayout';
-// app version - 7
+// app version - 8
 
 const inter = Inter({ subsets: ['latin'] })
 
