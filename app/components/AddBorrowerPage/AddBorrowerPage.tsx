@@ -2,7 +2,7 @@
 import { faGears, faUserPlus} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styles from "./AddBorrowerPage.module.css";
 import girlEngineer from "../../assets/Groupengineering-girl.svg"
 import Image from 'next/image';
@@ -52,14 +52,6 @@ export default function AddBorrowersPage() {
   
 
   useEffect(()=>{
-    
-    try{
-      if(!currentUser){ // Go to login page if user has not logged in.
-        return router.push("/login");
-      }
-    }catch(e){
-      console.log(e);
-    }
     onloggedIn();
     try{
       if(!auth.currentUser?.emailVerified){
@@ -179,7 +171,25 @@ export default function AddBorrowersPage() {
 
 
  
-  
+  useLayoutEffect(()=>{
+    try{
+      if(!currentUser){ // Go to login page if user has not logged in.
+        return router.push("/login");
+      }
+    }catch(e){
+      console.log(e);
+    }
+    
+    return ()=>{};
+  }, []);
+
+  try{
+    if(!currentUser){
+      return <></>;
+    }
+  }catch(e){
+    console.log(e);
+  }
   return (
     <>
         {
@@ -379,4 +389,5 @@ export default function AddBorrowersPage() {
       </div>
     </>
   )
+  
 }
