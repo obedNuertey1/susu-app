@@ -239,6 +239,37 @@ function AllUsersPage() {
         }catch(e){}
     },[pageNum]);
 
+    const userType = useState<string>("");
+
+    useLayoutEffect(()=>{
+        (async ()=>{
+            try{
+                const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+                if(!res.ok){
+                    return router.push("/page-not-found")
+                }
+                const data = await res.json();
+                userType[1](data.role.toLowerCase());
+                if(data.role.toLowerCase() != 'admin'){
+                    return router.push("/page-not-found");
+                }
+                return;
+            }catch(e){
+                console.log(e);
+            }
+        })();
+    
+        if(!currentUser){
+          return router.push("/login");
+        }
+      }, []);
+    
+      if(userType[0] != 'admin'){
+          return <></>;
+      }
+      if(!currentUser){
+          return <></>;
+      }
   return (
     <>
             {
