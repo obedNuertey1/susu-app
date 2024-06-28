@@ -118,7 +118,7 @@ export default function AddBorrowersPage() {
           await uploadFile(borrowerImageRef, addImage).then(async(snapshot:any) => {
           }).catch((e:any)=>{
             (async ()=>{
-              setErrorMessage(`Failed to create borrower`);
+              setErrorMessage(`Failed to create a --borrower--`);
               await waiting(4000);
               setErrorMessage('');
               setIsLoading(false);
@@ -137,7 +137,7 @@ export default function AddBorrowersPage() {
               })
             });
             if(!res.ok){
-              setErrorMessage("Failed to create borrower");
+              setErrorMessage("Failed to create 1 borrower");
               await waiting(4000);
               setErrorMessage("");
               setIsLoading(false);
