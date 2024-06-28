@@ -38,6 +38,7 @@ export default function AddBorrowersPage() {
   const [status, setStatus] = useState<string>("");//
   const [addImage, setAddImage] = useState<string>("");//
   const [imageSrc, setImageSrc] = useState(null);
+  const userType = useState<string>("");
 
 
 
@@ -170,26 +171,37 @@ export default function AddBorrowersPage() {
   };
 
 
- 
+
   useLayoutEffect(()=>{
-    try{
-      if(!currentUser){ // Go to login page if user has not logged in.
-        return router.push("/login");
-      }
-    }catch(e){
-      console.log(e);
+    (async ()=>{
+        try{
+            const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+            if(!res.ok){
+                return router.push("/page-not-found")
+            }
+            const data = await res.json();
+            userType[1](data.role.toLowerCase());
+            if(data.role.toLowerCase() != 'admin'){
+                return router.push("/page-not-found");
+            }
+            return;
+        }catch(e){
+            console.log(e);
+        }
+    })();
+
+    if(!currentUser){
+      return router.push("/login");
     }
-    
-    return ()=>{};
   }, []);
 
-  try{
-    if(!currentUser){
+  if(userType[0] != 'admin'){
       return <></>;
-    }
-  }catch(e){
-    console.log(e);
   }
+  if(!currentUser){
+      return <></>;
+  }
+  
   return (
     <>
         {
