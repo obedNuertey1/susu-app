@@ -74,16 +74,17 @@ function AllTransactionsPage() {
         //     }
 
         // })();
-        try{
-        // if(userRole?.toLowerCase() != 'admin'){
-        //     return router.push("/page-not-found");
+        // try{
+        // // if(userRole?.toLowerCase() != 'admin'){
+        // //     return router.push("/page-not-found");
+        // // }
+        //   if(!currentUser){ // Go to login page if user has not logged in.
+        //     return router.push("/login");
+        //   }
+        // }catch(e){
+        //   console.log(e);
         // }
-          if(!currentUser){ // Go to login page if user has not logged in.
-            return router.push("/login");
-          }
-        }catch(e){
-          console.log(e);
-        }
+        getFieldData();
         try{
           if(!auth.currentUser?.emailVerified){
             (async ()=>{
@@ -103,7 +104,6 @@ function AllTransactionsPage() {
           return router.push("/login");
         }
 
-        getFieldData();
         if(!currentUser.emailVerified){
             (async ()=>{
                 await waiting(4000);
@@ -284,6 +284,10 @@ function AllTransactionsPage() {
             }
 
         })();
+
+        if(!currentUser){
+            return router.push("/login");
+        }
     }, []);
 
     if(userType[0] != 'admin'){
