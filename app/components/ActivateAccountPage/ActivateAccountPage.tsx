@@ -71,7 +71,7 @@ function ActivateAccountPage({params, searchParams}: {params: {email: string}, s
     }catch(e){
         console.log(e);
     }
-
+    
 }
 
 export default ActivateAccountPage
