@@ -27,6 +27,7 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
     const [agentUsername, setAgentUsername] = useState<string>("");
     const {onloggedIn}:any = useImagesContext();
     const cardAnimeRef = useRef<HTMLDivElement>(null)
+    const userType = useState<string>("");
 
     useEffect(()=>{
       try{
@@ -127,11 +128,34 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
       }
     },[]);
 
+    useLayoutEffect(()=>{
+      (async ()=>{
+          try{
+              const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+              if(!res.ok){
+                  return router.push("/page-not-found")
+              }
+              const data = await res.json();
+              userType[1](data.role.toLowerCase());
+              if(data.role.toLowerCase() != 'admin'){
+                  return router.push("/page-not-found");
+              }
+              return;
+          }catch(e){
+              console.log(e);
+          }
+
+      })();
+  }, []);
+
     try{
       if(!currentUser){
         return <></>
-      }else{
-        return (
+      }
+      if(userType[0] != 'admin'){
+        return <></>;
+      }
+      return (
           <>
             {
               errorMessage && 
@@ -227,7 +251,6 @@ function TransactionsID({params, searchParams}: {params: {id: string}, searchPar
             {/* <div className="nav opacity-0 lg:block"></div> */}
           </>
         )
-      }
     }catch(e){
       console.log(e);
     }
