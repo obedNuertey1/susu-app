@@ -112,6 +112,7 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
             setIsLoading(false);
         }
     }
+    // Version-8
   return (
     <>
     <div className='flex justify-center items-center h-screen'>
@@ -161,5 +162,6 @@ function AuthVerificationPage({params, searchParams}: {params: {email: string}, 
   </>
   )
 }
+// Version-8
 
 export default AuthVerificationPage;
