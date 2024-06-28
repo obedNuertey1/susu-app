@@ -2,7 +2,7 @@
 import { faGears} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styles from "./system-settings.module.css";
 import girlEngineer from "../../assets/Groupengineering-girl.svg"
 import Image from 'next/image';
@@ -51,32 +51,32 @@ export default function SystemSettingsPage() {
 
   useEffect(()=>{
     // cardAnimeRef.current?.classList.add(`${styles.animeDown}`);
-    (async ()=>{
-      try{
-          const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
-          if(!res.ok){
-              return router.push("/page-not-found")
-          }
-          const data = await res.json();
-          if(data.role.toLowerCase() != 'admin'){
-              return router.push("/page-not-found");
-          }
-          return;
-      }catch(e){
-          console.log(e);
-      }
+  //   (async ()=>{
+  //     try{
+  //         const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+  //         if(!res.ok){
+  //             return router.push("/page-not-found")
+  //         }
+  //         const data = await res.json();
+  //         if(data.role.toLowerCase() != 'admin'){
+  //             return router.push("/page-not-found");
+  //         }
+  //         return;
+  //     }catch(e){
+  //         console.log(e);
+  //     }
 
-  })();
-    try{
-      // if(userRole?.toLowerCase() != 'admin'){
-      //   return router.push("/page-not-found");
-      // }
-      if(!currentUser){ // Go to login page if user has not logged in.
-        return router.push("/login");
-      }
-    }catch(e){
-      console.log(e);
-    }
+  // })();
+  //   try{
+  //     // if(userRole?.toLowerCase() != 'admin'){
+  //     //   return router.push("/page-not-found");
+  //     // }
+  //     if(!currentUser){ // Go to login page if user has not logged in.
+  //       return router.push("/login");
+  //     }
+  //   }catch(e){
+  //     console.log(e);
+  //   }
     onloggedIn();
     try{
       if(!auth.currentUser?.emailVerified){
@@ -235,7 +235,38 @@ export default function SystemSettingsPage() {
     }
   };
 
- 
+
+  const userType = useState<string>("");
+
+  useLayoutEffect(()=>{
+      (async ()=>{
+          try{
+              const res = await fetch(`${process.env.NEXT_PUBLIC_REACT_SERVER_API}/users/email/${currentUser.email}`);
+              if(!res.ok){
+                  return router.push("/page-not-found")
+              }
+              const data = await res.json();
+              userType[1](data.role.toLowerCase());
+              if(data.role.toLowerCase() != 'admin'){
+                  return router.push("/page-not-found");
+              }
+              return;
+          }catch(e){
+              console.log(e);
+          }
+      })();
+  
+      if(!currentUser){
+        return router.push("/login");
+      }
+    }, []);
+  
+    if(userType[0] != 'admin'){
+        return <></>;
+    }
+    if(!currentUser){
+        return <></>;
+    }
   
   return (
     <div>
